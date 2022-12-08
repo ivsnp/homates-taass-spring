@@ -21,7 +21,7 @@ public class ShoppingListController {
     ShoppingListRepository repository;
 
     @GetMapping("/shopping-lists")
-    public List<ShoppingList> getAllCustomers() {
+    public List<ShoppingList> getAllShoppingLists() {
         System.out.println("Get all shopping lists...");
 
         List<ShoppingList> shoppingList = new ArrayList<>();
@@ -38,13 +38,13 @@ public class ShoppingListController {
     }
 
     @PostMapping(value = "/shopping-lists/create")
-    public ShoppingList postCustomer(@RequestBody ShoppingList shoppingList) {
+    public ShoppingList postShoppingList(@RequestBody ShoppingList shoppingList) {
         ShoppingList _shoppingList = repository.save(new ShoppingList(shoppingList.getName(), shoppingList.getProductList()));
         return _shoppingList;
     }
 
     @DeleteMapping("/shopping-lists/{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteShoppingList(@PathVariable("id") long id) {
         System.out.println("Shopping list with ID = " + id + "...");
 
         repository.deleteById(id);
@@ -53,7 +53,7 @@ public class ShoppingListController {
     }
 
     @DeleteMapping("/shopping-lists/delete")
-    public ResponseEntity<String> deleteAllCustomers() {
+    public ResponseEntity<String> deleteAllShoppingLists() {
         System.out.println("Delete shopping lists...");
 
         repository.deleteAll();
@@ -62,7 +62,7 @@ public class ShoppingListController {
     }
 
     @DeleteMapping("/shopping-list/delete-item/{id_list}/{id_prod}")
-    public ResponseEntity<ShoppingList> deleteItem(@PathVariable("id_list") long id_list, @PathVariable("id_prod") long id_prod) {
+    public ResponseEntity<ShoppingList> deleteProdInShoppingList(@PathVariable("id_list") long id_list, @PathVariable("id_prod") long id_prod) {
         System.out.println("Delete Item with ID = " + id_prod + " in List with ID = " + id_list + "...");
         Optional<ShoppingList> shoppingList = repository.findById(id_list);
         if (shoppingList.isPresent()) {
@@ -76,7 +76,7 @@ public class ShoppingListController {
     }
 
     @PutMapping("/shopping-lists/update-name/{id}/{name}")
-    public ResponseEntity<ShoppingList> updateCustomer(@PathVariable("id") long id, @PathVariable("name") String name) {
+    public ResponseEntity<ShoppingList> updateShoppingList(@PathVariable("id") long id, @PathVariable("name") String name) {
         System.out.println("Update shopping list name with ID = " + id + "...");
 
         Optional<ShoppingList> shoppingList = repository.findById(id);
