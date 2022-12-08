@@ -1,5 +1,6 @@
 package com.homates.listespesa.controller;
 
+import com.homates.listespesa.model.ProducInList;
 import com.homates.listespesa.model.ShoppingList;
 import com.homates.listespesa.repo.ShoppingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,13 @@ public class ShoppingListController {
         return shoppingList;
     }
 
+    @GetMapping(value = "/shopping-lists/name/{name}")
+    public List<ShoppingList> findByName(@PathVariable String name) {
+
+        List<ShoppingList> _shoppingList = repository.findByName(name);
+        return _shoppingList;
+    }
+
     @PostMapping(value = "/shopping-lists/create")
     public ShoppingList postCustomer(@RequestBody ShoppingList shoppingList) {
         ShoppingList _shoppingList = repository.save(new ShoppingList(shoppingList.getName(), shoppingList.getProductList()));
@@ -53,11 +61,18 @@ public class ShoppingListController {
         return new ResponseEntity<>("All shopping lists have been deleted!", HttpStatus.OK);
     }
 
-    @GetMapping(value = "/shopping-lists/name/{name}")
-    public List<ShoppingList> findByName(@PathVariable String name) {
-
-        List<ShoppingList> _shoppingList = repository.findByName(name);
-        return _shoppingList;
+    @DeleteMapping("/shopping-list/delete-item/{id_list}/{id_prod}")
+    public ResponseEntity<ShoppingList> deleteItem(@PathVariable("id_list") long id_list, @PathVariable("id_prod") long id_prod) {
+        System.out.println("Delete Item with ID = " + id_prod + " in List with ID = " + id_list + "...");
+        Optional<ShoppingList> shoppingList = repository.findById(id_list);
+        if (shoppingList.isPresent()) {
+            ShoppingList _shopL = shoppingList.get();
+            ProducInList p = _shopL.findProductByID(id_prod);
+            _shopL.getProductList().remove(p);
+            return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/shopping-lists/update-name/{id}/{name}")

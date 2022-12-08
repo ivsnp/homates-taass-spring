@@ -17,9 +17,9 @@ public class ShoppingList {
     // TODO: check OneToMany
     @OneToMany
     @JoinColumn(name = "productList", nullable = false)
-    private List<ProducIntList> productList;
+    private List<ProducInList> productList;
 
-    public ShoppingList(String name, List<ProducIntList> productList) {
+    public ShoppingList(String name, List<ProducInList> productList) {
         this.name = name;
         this.productList = productList;
     }
@@ -44,12 +44,23 @@ public class ShoppingList {
         this.name = name;
     }
 
-    public List<ProducIntList> getProductList() {
+    public List<ProducInList> getProductList() {
         return productList;
     }
 
-    public void setProductList(List<ProducIntList> productList) {
+    public void setProductList(List<ProducInList> productList) {
         this.productList = productList;
+    }
+
+    public ProducInList findProductByID(long id) {
+        ProducInList prod;
+        for(int i = 0; i < productList.size(); i++){
+            prod = productList.get(i);
+            if(prod.getId() == id){
+                return prod;
+            }
+        }
+        return null;
     }
 
     @Override

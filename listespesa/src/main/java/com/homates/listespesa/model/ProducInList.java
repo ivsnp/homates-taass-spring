@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "productList")
-public class ProducIntList {
+public class ProducInList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -16,12 +16,12 @@ public class ProducIntList {
     private Product product;
 
     @Column(name = "descr")
-    private int descr;
+    private String descr;
 
-    public ProducIntList() {
+    public ProducInList() {
     }
 
-    public ProducIntList(Product product, int descr) {
+    public ProducInList(Product product, String descr) {
         this.product = product;
         this.descr = descr;
     }
@@ -42,11 +42,11 @@ public class ProducIntList {
         this.product = product;
     }
 
-    public int getDescr() {
+    public String getDescr() {
         return descr;
     }
 
-    public void setDescr(int descr) {
+    public void setDescr(String descr) {
         this.descr = descr;
     }
 
