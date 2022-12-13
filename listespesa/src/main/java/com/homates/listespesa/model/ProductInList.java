@@ -1,27 +1,30 @@
 package com.homates.listespesa.model;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "productList")
-public class ProducInList {
+public class ProductInList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    // TODO: check ManyToOne
     @ManyToOne
-    @JoinColumn(name = "product", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "product")
     private Product product;
 
     @Column(name = "descr")
     private String descr;
 
-    public ProducInList() {
+    public ProductInList() {
     }
 
-    public ProducInList(Product product, String descr) {
+    public ProductInList(Product product, String descr) {
         this.product = product;
         this.descr = descr;
     }
