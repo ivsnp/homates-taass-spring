@@ -1,6 +1,7 @@
 package com.homates.listespesa.controller;
 
 import com.homates.listespesa.model.ProducInList;
+import com.homates.listespesa.model.Product;
 import com.homates.listespesa.model.ShoppingList;
 import com.homates.listespesa.repo.ShoppingListRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,21 @@ public class ShoppingListController {
             ShoppingList _shopL = shoppingList.get();
             ProducInList p = _shopL.findProductByID(id_prod);
             _shopL.getProductList().remove(p);
+            return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+    @PostMapping("/shopping-list/add-item/{id_list}/{id_prod}")
+    public ResponseEntity<ShoppingList> addProdInShoppingList(@PathVariable("id_list") long id_list, @RequestBody ProducInList producInList) {
+        System.out.println("Add Item in List with ID = " + id_list + "...");
+        Optional<ShoppingList> shoppingList = repository.findById(id_list);
+        if (shoppingList.isPresent()) {
+            //TODO controllo esistenza prodotto, altrimenti aggiungi
+            ShoppingList _shopL = shoppingList.get();
+            _shopL.getProductList().add(producInList);
             return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
