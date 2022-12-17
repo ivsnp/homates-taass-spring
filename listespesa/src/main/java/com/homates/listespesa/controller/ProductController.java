@@ -47,7 +47,7 @@ public class ProductController {
     }
 
     @DeleteMapping(value = "/products/delete/{id}")
-    public ResponseEntity<String> deteleItem(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteItem(@PathVariable("id") long id) {
         System.out.println("Deleting product...");
 
         Optional<Product> product = repository.findById(id);

@@ -43,7 +43,7 @@ public class ShoppingListController {
             if (product.isPresent()) // create match between shopping-list and products
                 _productInList.add(repositoryProductInList.save(new ProductInList(product.get(), shoppingList.getProductList().get(i).getDescr())));
             else
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // TODO: replace with 'BAD_REQUEST'?
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(repository.save(new ShoppingList(shoppingList.getName(), _productInList)), HttpStatus.OK);
     }
@@ -84,7 +84,6 @@ public class ShoppingListController {
     // TODO: POST or PUT?
     @PostMapping("/shopping-list/add-item/{id_list}")
     public ResponseEntity<ShoppingList> addProdInShoppingList(@PathVariable("id_list") long id_list, @RequestBody ProductInList producInList) {
-        // TODO: test API '/shopping-list/add-item/'
         System.out.println("Add Item in List with ID = " + id_list + "...");
         Optional<ShoppingList> shoppingList = repository.findById(id_list);
 
@@ -96,7 +95,7 @@ public class ShoppingListController {
         }
         Optional<Product> product = repositoryProduct.findById(requestProduct.getId());
         if (product.isEmpty()) // create match between shopping-list and products
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);  // TODO: replace with 'BAD_REQUEST'?
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         ProductInList _productInList = repositoryProductInList.save(producInList);
         if (shoppingList.isPresent()) {
@@ -110,12 +109,11 @@ public class ShoppingListController {
 
     @DeleteMapping("/shopping-list/delete-item/{id_list}/{id_prod}")
     public ResponseEntity<ShoppingList> deleteProdInShoppingList(@PathVariable("id_list") long id_list, @PathVariable("id_prod") long id_prod) {
-        // TODO: test API '/shopping-list/delete-item/'
         System.out.println("Delete Item with ID = " + id_prod + " in List with ID = " + id_list + "...");
         Optional<ShoppingList> shoppingList = repository.findById(id_list);
         if (shoppingList.isPresent()) {
             ShoppingList _shopL = shoppingList.get();
-            ProductInList p = _shopL.findProductByID(id_prod);  // TODO replace with ID_ProdInList
+            ProductInList p = _shopL.findProductByID(id_prod);
             _shopL.getProductList().remove(p);
             return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
         } else {
@@ -124,8 +122,7 @@ public class ShoppingListController {
     }
 
     @PutMapping("/shopping-lists/update-name/{id}/{name}")
-    public ResponseEntity<ShoppingList> updateShoppingList(@PathVariable("id") long id, @PathVariable("name") String name) {
-        // TODO: test API '/shopping-list/update-name/'
+    public ResponseEntity<ShoppingList> updateShoppingList(@PathVariable("id") long id, @PathVariable("name") String name){
         System.out.println("Update shopping list name with ID = " + id + "...");
 
         Optional<ShoppingList> shoppingList = repository.findById(id);
@@ -138,4 +135,6 @@ public class ShoppingListController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    //TODO getProdByName to check if product already exists before CreateShoppingList and AddItem
 }
