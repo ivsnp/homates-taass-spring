@@ -1,18 +1,18 @@
 version: "1"
 services:
   dbpostgresql:
-    container_name: postgres
+    container_name: dbpostgresql
     image: "postgres"
     ports:
       - "5432"
     volumes:
-      - db-data:/postgresql/data
+      - db-data:/var/lib/dbpostgresql/data
     networks:
       - homatesnet
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: giorgia2000
+      POSTGRES_PASSWORD: admin
       restart: unless-stopped
 
   pgadmin:
@@ -33,23 +33,20 @@ services:
         - homatesnet
 
   listespesa-service:
-    build: .
+    build: ./listespesa
     container_name: listespesa-service
-    image: listespesa-service:latest
+    image: listespesa-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dbpostgresql
+    networks:
+      - homatesnet
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=giorgia2000
+      - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    ports:
-      - "8081:8081"
-    volumes:
-      -  db-data:/listespesa-service
-    deploy:
-      restart_policy:
-        condition: on-failure
-    networks:
-      - homatesnet
 
    # rabbitmq:
    #     image: rabbitmq:management
@@ -63,3 +60,5 @@ volumes:
 networks:
   homatesnet:
    driver: bridge
+
+# docker compose build && docker compose up -d
