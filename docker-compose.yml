@@ -1,0 +1,65 @@
+version: "1"
+services:
+  dbpostgresql:
+    container_name: postgres
+    image: "postgres"
+    ports:
+      - "5432"
+    volumes:
+      - db-data:/postgresql/data
+    networks:
+      - homatesnet
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: giorgia2000
+      restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+        PGADMIN_DEFAULT_EMAIL: admin@admin.com
+        PGADMIN_DEFAULT_PASSWORD: root
+        PGADMIN_LISTEN_PORT: 50
+    ports:
+        - "5050:50"
+    volumes:
+        - pgadmin-data:/pgadmin
+    depends_on:
+        - dbpostgresql
+    networks:
+        - homatesnet
+
+  listespesa-service:
+    build: .
+    container_name: listespesa-service
+    image: listespesa-service:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=giorgia2000
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8081:8081"
+    volumes:
+      -  db-data:/listespesa-service
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - homatesnet
+
+   # rabbitmq:
+   #     image: rabbitmq:management
+   #     ports:
+   #       - "5672:5672"
+   #       - "15672:15672"
+
+volumes:
+  db-data:
+  pgadmin-data:
+networks:
+  homatesnet:
+   driver: bridge
