@@ -10,7 +10,7 @@
 
 #STAGE 2: run
 FROM openjdk:19
-RUN addgroup -S spring && adduser -S spring -G spring
+RUN groupadd -r spring && useradd -r -gspring spring
 USER spring
 VOLUME /tmp
 EXPOSE 8081
@@ -18,6 +18,7 @@ ARG DEPENDENCY=target
 ADD ${DEPENDENCY}/*.jar listespesa.jar
 #COPY --from=build /workspace/target/*.jar listespesa.jar
 ENTRYPOINT ["java","-jar","/listespesa.jar"]
+#ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/listespesa.jar"]
 #ARG JAR_FILE=build/libs/*.jar
 #COPY ${JAR_FILE} listespesa.jar
 #CMD ["java", "-jar", "listespesa.jar"]
