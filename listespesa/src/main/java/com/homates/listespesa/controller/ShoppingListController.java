@@ -37,7 +37,7 @@ public class ShoppingListController {
             Product requestProduct = shoppingList.getProductList().get(i).getProduct();
 
             if(requestProduct.getId() == -1) // NOTE: if new prod, set id = -1
-                requestProduct = repositoryProduct.save(new Product(requestProduct.getName(), requestProduct.getCategory()));
+                requestProduct = repositoryProduct.save(new Product(requestProduct.getName().toLowerCase(), requestProduct.getCategory().toLowerCase()));
 
             Optional<Product> product = repositoryProduct.findById(requestProduct.getId());
             if (product.isPresent()) // create match between shopping-list and products
@@ -80,9 +80,7 @@ public class ShoppingListController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
-    // TODO: POST or PUT?
-    @PostMapping("/shopping-list/add-item/{id_list}")
+    @PutMapping("/shopping-list/add-item/{id_list}")
     public ResponseEntity<ShoppingList> addProdInShoppingList(@PathVariable("id_list") long id_list, @RequestBody ProductInList producInList) {
         System.out.println("Add Item in List with ID = " + id_list + "...");
         Optional<ShoppingList> shoppingList = repository.findById(id_list);
@@ -90,7 +88,7 @@ public class ShoppingListController {
         // check if product exists, otherwise create product. It doesn't exists if id==-1, otherwise bad data
         Product requestProduct = producInList.getProduct();
         if(requestProduct.getId() == -1) { // NOTE: if new prod, set id = -1
-            requestProduct = repositoryProduct.save(new Product(requestProduct.getName(), requestProduct.getCategory()));
+            requestProduct = repositoryProduct.save(new Product(requestProduct.getName().toLowerCase(), requestProduct.getCategory().toLowerCase()));
             producInList.setProduct(requestProduct);
         }
         Optional<Product> product = repositoryProduct.findById(requestProduct.getId());
@@ -135,6 +133,4 @@ public class ShoppingListController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
-
-    //TODO getProdByName to check if product already exists before CreateShoppingList and AddItem
 }
