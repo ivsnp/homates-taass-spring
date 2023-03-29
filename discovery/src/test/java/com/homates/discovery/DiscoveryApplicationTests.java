@@ -1,10 +1,10 @@
-package com.homates.apigateway;
+package com.homates.discovery;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class ApigatewayApplicationTests {
+class DiscoveryApplicationTests {
 
     @Test
     void contextLoads() {
