@@ -1,64 +1,119 @@
 version: "1"
+
 services:
-  dbpostgresql:
-    container_name: dbpostgresql
-    image: "postgres"
+
+  eureka-service:
+    build: eureka-service
+    container_name: eureka-service
+    image: eurekaservice:latest
     ports:
-      - "5432"
+      - 8761:8761
+    networks:
+      - homatesnet
+    restart: on-failure
+
+  api-gateway:
+    build: api-gateway
+    container_name: api-gateway
+    image: api-gateway:latest
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+    ports:
+      - 8080:8080
+    depends_on:
+      - eureka-service
+    networks:
+      - homatesnet
+    restart: on-failure
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:latest
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - homatesnet
+    restart: on-failure
+
+  # DBs
+  dbhomemates:
+    container_name: dbhomemates
+    image: postgres
+    ports:
+      - 5432:5432
     volumes:
-      - db-data:/var/lib/dbpostgresql/data
+      - db-data:/var/lib/dbhomemates/data
     networks:
       - homatesnet
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
+      POSTGRES_DB: dbhomemates
+      POSTGRES_USER: homates
       POSTGRES_PASSWORD: admin
-      restart: unless-stopped
+      restart: on-failure
 
   pgadmin:
-    container_name: pgadmin4_container
+    container_name: pgadmin4
     image: dpage/pgadmin4
     restart: always
     environment:
-        PGADMIN_DEFAULT_EMAIL: admin@admin.com
-        PGADMIN_DEFAULT_PASSWORD: root
-        PGADMIN_LISTEN_PORT: 50
+      PGADMIN_DEFAULT_EMAIL: homates@homates.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 50
     ports:
-        - "5050:50"
+      - 5050:50
     volumes:
-        - pgadmin-data:/pgadmin
+      - pgadmin-data:/pgadmin
     depends_on:
-        - dbpostgresql
+      - dbhomemates
     networks:
-        - homatesnet
+      - homatesnet
 
-  listespesa-service:
-    build: ./listespesa
-    container_name: listespesa-service
-    image: listespesa-service
+  # APP microservices
+  shopping-list:
+    build: shopping-list
+    container_name: shopping-list
+    image: shopping-list:latest
     ports:
-      - "8081:8081"
+      - 8082:8082
     depends_on:
-      - dbpostgresql
+      - eureka-service
     networks:
       - homatesnet
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomemates:5432/dbhomemates
+      - SPRING_DATASOURCE_USERNAME=homates@homates.com
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
 
-   # rabbitmq:
-   #     image: rabbitmq:management
-   #     ports:
-   #       - "5672:5672"
-   #       - "15672:15672"
+  #listespesa-service:
+  #  build: ./listespesa
+  #  container_name: listespesa-service
+  #  image: listespesa-service
+  #  ports:
+  #    - "8081:8081"
+  #  depends_on:
+  #    - dbpostgresql
+  #  networks:
+  #    - homatesnet
+  #  environment:
+  #    - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+  #    - SPRING_DATASOURCE_USERNAME=postgres
+  #    - SPRING_DATASOURCE_PASSWORD=admin
+  #    - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
 volumes:
   db-data:
   pgadmin-data:
 networks:
   homatesnet:
-   driver: bridge
+    driver: bridge
 
-# docker compose build && docker compose up -d
+# --- HOW-TO ---
+# 1. create .jar files
+# 2. run on terminal in current folder: docker compose build && docker compose up -d

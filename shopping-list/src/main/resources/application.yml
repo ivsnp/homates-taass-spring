@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: shopping-list
+
+server:
+  port: 8082
+  forward-headers-strategy: framework
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: localhost:http://eureka-service:8761/eureka
