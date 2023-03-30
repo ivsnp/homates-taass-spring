@@ -1,4 +1,4 @@
-FROM openjdk
+FROM openjdk:19
 VOLUME /tmp
 EXPOSE 8080
 ARG DEPENDENCY=target
