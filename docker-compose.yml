@@ -37,20 +37,20 @@ services:
     restart: on-failure
 
   # DBs
-  dbhomemates-postgres:
-    container_name: dbhomemates-postgres
-    image: postgres
+  dbhomates-postgres:
+    container_name: dbhomates-postgres
+    image: postgres:latest
     ports:
       - 5432:5432
     volumes:
-      - db-data:/var/lib/dbhomemates-postgres/data
+      - db-data:/var/lib/dbhomates-postgres/data
     networks:
       - homatesnet
     environment:
-      POSTGRES_DB: dbhomemates
+      POSTGRES_DB: dbhomates
       POSTGRES_USER: homates
       POSTGRES_PASSWORD: admin
-      restart: on-failure
+      restart: always
 
   pgadmin:
     container_name: pgadmin4
@@ -65,7 +65,7 @@ services:
     volumes:
       - pgadmin-data:/pgadmin
     depends_on:
-      - dbhomemates-postgres
+      - dbhomates-postgres
     networks:
       - homatesnet
 
@@ -83,7 +83,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomemates-postgres:5432/dbhomemates
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
       - SPRING_DATASOURCE_USERNAME=homates
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -93,6 +93,7 @@ services:
 
 volumes:
   db-data:
+  api-test:
   pgadmin-data:
 networks:
   homatesnet:
