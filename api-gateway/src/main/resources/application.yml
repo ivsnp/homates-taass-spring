@@ -5,12 +5,15 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     serviceUrl:
-      defaultZone: localhost:http://eureka-service:8761/eureka
+      defaultZone: http://eureka-service:8761/eureka
 
 spring:
   application:
     name: api-gateway
   cloud:
+    loadbalancer:
+      cache:
+        enabled: false
     gateway:
       discovery:
         locator:
@@ -20,4 +23,4 @@ spring:
         -   id: shopping-list
             uri: lb://shopping-list
             predicates:
-              - Path=/api/v1/shopping-list/**
+              - Path=/api/v1/shoppinglist/**
