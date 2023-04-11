@@ -4,9 +4,9 @@ spring:
       client:
         registration:
           google:
-            client-id: 820097544051-kvp28gqbpj0948a4rquoan6v1p5fc34j.apps.googleusercontent.com
-            client-secret: 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
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            clientId: 820097544051-kvp28gqbpj0948a4rquoan6v1p5fc34j.apps.googleusercontent.com
+            clientSecret: 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
+            redirectUri: "http://localhost:8080/api/v1/oauth2/google/{registrationId}"
             scope:
               - email
               - profile
@@ -18,4 +18,4 @@ server:
 eureka:
   client:
     serviceUrl:
-      defaultZone: localhost:http://eureka-service:8761/eureka
+      defaultZone: http://eureka-service:8761/eureka

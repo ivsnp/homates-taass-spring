@@ -24,3 +24,7 @@ spring:
             uri: lb://shopping-list
             predicates:
               - Path=/api/v1/shoppinglist/**
+        -   id: accounting
+            uri: lb://accounting
+            predicates:
+              - Path=/api/v1/oauth2/**
