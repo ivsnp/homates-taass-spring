@@ -13,6 +13,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 public class SecurityConfiguration {
+
+    // authentication: authentication manager builder
     @Bean
     public UserDetailsService users() {
         // The builder will ensure the passwords are encoded before saving in memory
@@ -30,8 +32,13 @@ public class SecurityConfiguration {
         return new InMemoryUserDetailsManager(user, admin);
     }
 
-    /*@Bean
+    // authorization: HTTPsecurity
+
+    //encryption
+    /*
+    @Bean
     public PasswordEncoder getPasswordEncoder(){
         return NoOpPasswordEncoder.getInstance();
-    }*/
+    }
+    */
 }

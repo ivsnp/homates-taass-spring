@@ -14,9 +14,18 @@ public class UserController {
     @Autowired
     UserRepositoy repository;
 
-    @GetMapping(value = "/google")
-    public User addItem(@RequestBody User user) {
-        System.out.println("Test accounting...");
-        return user;
+    @GetMapping(value = "/")
+    public String testAll() {
+        return ("<h1>Welcome</h1>");
+    }
+
+    @GetMapping(value = "/user")
+    public String testUser() {
+        return ("<h1>Welcome USER and ADMIN</h1>");
+    }
+
+    @GetMapping(value = "/admin")
+    public String testAdmin() {
+        return ("<h1>Welcome ADMIN</h1>");
     }
 }
