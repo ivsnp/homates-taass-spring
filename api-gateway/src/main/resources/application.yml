@@ -24,3 +24,7 @@ spring:
             uri: lb://shopping-list
             predicates:
               - Path=/api/v1/shoppinglist/**
+        - id: calendar
+          uri: lb://calendar
+          predicates:
+            - Path=/api/v1/calendar/**

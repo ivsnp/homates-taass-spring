@@ -1,9 +1,12 @@
 package com.homates.shoppinglist.model;
 
+
 import jakarta.persistence.*;
+
 
 @Entity
 @Table(name = "product")
+
 public class Product {
 
     @Id

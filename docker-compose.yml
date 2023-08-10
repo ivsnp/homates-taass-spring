@@ -112,6 +112,27 @@ services:
       restart_policy:
         condition: on-failure
 
+  calendar:
+    build: calendar
+    container_name: calendar
+    image: calendar:latest
+    ports:
+      - 8084:8084
+    depends_on:
+      - eureka-service
+    networks:
+      - homatesnet
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
+      - SPRING_DATASOURCE_USERNAME=homates
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
+
 volumes:
   db-data:
   api-test:
