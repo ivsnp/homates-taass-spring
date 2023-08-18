@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.homates</groupId>
-    <artifactId>accounting</artifactId>
+    <artifactId>accounting-test</artifactId>
     <version>1.0.0</version>
     <name>accounting</name>
     <description>accounting</description>
