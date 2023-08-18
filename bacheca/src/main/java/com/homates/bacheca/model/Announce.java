@@ -12,7 +12,7 @@ public class Announce {
         @Column(name = "description")
         private String description;
 
-        @Column(name="user")
+        @Column(name="username")
         private String user;
 
         @Column(name="date")

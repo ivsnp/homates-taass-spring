@@ -21,13 +21,13 @@ public class AnnounceController {
     //add announce
     @PostMapping(value = "/announces/create")
     public Announce addItem(@RequestBody Announce announce) {
-        System.out.println("Creating new product...");
+        System.out.println("Creating new announce...");
         return repository.save(announce);
     }
 
     @GetMapping("/announces")
     public List<Announce> getItems() {
-        System.out.println("Get all products...");
+        System.out.println("Get all announces...");
         List<Announce> announceList = new ArrayList<>();
         repository.findAll().forEach(announceList::add);
         return announceList;

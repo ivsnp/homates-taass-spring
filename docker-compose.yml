@@ -117,7 +117,7 @@ services:
     container_name: bacheca
     image: bacheca:latest
     ports:
-      - 8085:808
+      - 8085:8085
     depends_on:
       - eureka-service
     networks:
