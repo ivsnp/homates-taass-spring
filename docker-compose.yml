@@ -70,10 +70,10 @@ services:
       - homatesnet
 
   # APP microservices
-  accounting:
-    build: accounting
-    container_name: accounting
-    image: accounting:latest
+  user-manager:
+    build: user-manager
+    container_name: user-manager
+    image: user-manager:latest
     ports:
       - 8081:8081
     depends_on:
