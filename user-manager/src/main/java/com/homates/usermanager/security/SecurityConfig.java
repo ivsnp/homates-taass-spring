@@ -34,8 +34,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // https://docs.spring.io/spring-security/reference/servlet/configuration/java.html
-        // https://stackoverflow.com/questions/74753700/cannot-resolve-method-antmatchers-in-authorizationmanagerrequestmatcherregis
 
         http
                 .csrf().disable()
@@ -44,14 +42,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
-
-        /*http
-                .csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic();
 
         /*http
                 .csrf().disable()
@@ -69,23 +59,6 @@ public class SecurityConfig {
                 .httpBasic();*/
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService users(){
-        // TODO: do not use clear passwords
-        UserDetails admin = User.builder()
-                .username("admin")
-                .password("password")
-                .roles("ADMIN")
-                .build();
-
-        UserDetails user = User.builder()
-                .username("user")
-                .password("password")
-                .roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(admin, user);
     }
 
     @Bean
