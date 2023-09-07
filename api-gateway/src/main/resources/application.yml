@@ -27,4 +27,4 @@ spring:
         -   id: user-manager
             uri: lb://user-manager
             predicates:
-              - Path=/api/v1/auth/**
+              - Path=/api/v1/user/**

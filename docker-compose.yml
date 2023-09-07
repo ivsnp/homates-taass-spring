@@ -43,7 +43,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - db-data:/var/lib/dbhomates-postgres/data
+      - homates-db-data:/etc/data
     networks:
       - homatesnet
     environment:
@@ -63,7 +63,7 @@ services:
     ports:
       - 5050:50
     volumes:
-      - pgadmin-data:/pgadmin
+      - homates-pgadmin-data:/pgadmin
     depends_on:
       - dbhomates-postgres
     networks:
@@ -113,9 +113,8 @@ services:
         condition: on-failure
 
 volumes:
-  db-data:
-  api-test:
-  pgadmin-data:
+  homates-db-data:
+  homates-pgadmin-data:
 networks:
   homatesnet:
     driver: bridge
