@@ -27,7 +27,7 @@ public class HouseController {
     @Autowired
     UserRepository userRepository;
 
-    @PostMapping(value = "/houses/create")
+    @PostMapping("/houses/create")
     public ResponseEntity<String> addItem(@RequestBody HouseDto houseDto) {
         System.out.println("Creating a new house...");
 
@@ -62,14 +62,18 @@ public class HouseController {
             UserEntity owner = hu.getOwner();
             UserDto _currentOwner = new UserDto();
             _currentOwner.setUsername(owner.getUsername());
+            _currentOwner.setName(owner.getName());
+            _currentOwner.setSurname(owner.getSurname());
             _currentOwner.setEmail(owner.getEmail());
             _currentOwner.setBio(owner.getBio());
 
-            List<UserEntity> roomMates = hu.getUsers();
+            List<UserEntity> roomMates = hu.getRoomMates();
             ArrayList<UserDto> _currentRoomMates = new ArrayList<>();
             for (UserEntity u: roomMates){
                 UserDto _currentUser = new UserDto();
                 _currentUser.setUsername(u.getUsername());
+                _currentUser.setName(u.getName());
+                _currentUser.setSurname(u.getSurname());
                 _currentUser.setEmail(u.getEmail());
                 _currentUser.setBio(u.getBio());
                 _currentRoomMates.add(_currentUser);
@@ -80,7 +84,7 @@ public class HouseController {
             _currentHouse.setDescription(hu.getDescription());
             _currentHouse.setAddress(hu.getAddress());
             _currentHouse.setOwner(_currentOwner);
-            _currentHouse.setUsers(_currentRoomMates);
+            _currentHouse.setRoomMates(_currentRoomMates);
 
             houseUsersDto.add(_currentHouse);
         }
@@ -127,10 +131,10 @@ public class HouseController {
             House _currentHouse = house.get();
             UserEntity _currentUserEntity = userEntity.get();
 
-            if (_currentHouse.getUsers().contains(_currentUserEntity))
+            if (_currentHouse.getRoomMates().contains(_currentUserEntity))
                 return new ResponseEntity<>("User already assigned to the house.", HttpStatus.BAD_REQUEST);
 
-            _currentHouse.getUsers().add(userEntity.get());
+            _currentHouse.getRoomMates().add(userEntity.get());
             houseRepository.save(_currentHouse);
 
             return new ResponseEntity<>("User has been added to the house.", HttpStatus.OK);
@@ -150,10 +154,10 @@ public class HouseController {
             House _currentHouse = house.get();
             UserEntity _currentUserEntity = userEntity.get();
 
-            if (! _currentHouse.getUsers().contains(_currentUserEntity))
+            if (! _currentHouse.getRoomMates().contains(_currentUserEntity))
                 return new ResponseEntity<>("User not assigned to the house.", HttpStatus.BAD_REQUEST);
 
-            _currentHouse.getUsers().remove(userEntity.get());
+            _currentHouse.getRoomMates().remove(userEntity.get());
             houseRepository.save(_currentHouse);
 
             return new ResponseEntity<>("User has been removed from the house.", HttpStatus.OK);

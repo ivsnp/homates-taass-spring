@@ -30,5 +30,5 @@ public class House {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "house_users", joinColumns = @JoinColumn(name = "house_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-    private List<UserEntity> users = new ArrayList<>();
+    private List<UserEntity> roomMates = new ArrayList<>();
 }
