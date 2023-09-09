@@ -16,8 +16,6 @@ services:
     build: api-gateway
     container_name: api-gateway
     image: api-gateway:latest
-    environment:
-      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka
     ports:
       - 8080:8080
     depends_on:
@@ -25,6 +23,28 @@ services:
     networks:
       - homatesnet
     restart: on-failure
+
+  # keycloak:
+  # container_name: keycloak
+  # image: quay.io/keycloak/keycloak:legacy
+  # ports:
+  #   - "9090:8080"
+  # networks:
+  #   - homatesnet
+  # environment:
+  #   DB_VENDOR: POSTGRES
+  #   DB_ADDR: keycloak-postgres
+  #   DB_DATABASE: keycloak
+  #   DB_USER: homates
+  #   DB_SCHEMA: public
+  #   DB_PASSWORD: admin
+  #   KEYCLOAK_USER: test
+  #   KEYCLOAK_PASSWORD: admin
+  # deploy:
+  #   restart_policy:
+  #     condition: on-failure
+  # depends_on:
+  #   - keycloak-postgres
 
   rabbitmq:
     container_name: rabbitmq
@@ -37,13 +57,43 @@ services:
     restart: on-failure
 
   # DBs
+  # keycloak-postgres:
+  # container_name: keycloak-postgres
+  # image: postgres:latest
+  # ports:
+  #   - 5433:5432
+  # volumes:
+  #   - keycloak-data:/var/lib/postgresql/data
+  # networks:
+  #   - homatesnet
+  # environment:
+  #   POSTGRES_DB: keycloak
+  #   POSTGRES_USER: homates
+  #   POSTGRES_PASSWORD: admin
+  #   restart: always
+
+  user-houses-postgres:
+    container_name: user-houses-postgres
+    image: postgres:latest
+    ports:
+      - 5433:5432
+    volumes:
+      - user-houses-data:/var/lib/postgresql/data
+    networks:
+      - homatesnet
+    environment:
+      POSTGRES_DB: homates-user-houses
+      POSTGRES_USER: homates
+      POSTGRES_PASSWORD: admin
+      restart: always
+
   dbhomates-postgres:
     container_name: dbhomates-postgres
     image: postgres:latest
     ports:
       - 5432:5432
     volumes:
-      - db-data:/var/lib/dbhomates-postgres/data
+      - homates-db-data:/var/lib/postgresql/data
     networks:
       - homatesnet
     environment:
@@ -63,33 +113,35 @@ services:
     ports:
       - 5050:50
     volumes:
-      - pgadmin-data:/pgadmin
+      - homates-pgadmin-data:/var/lib/pgadmin
     depends_on:
       - dbhomates-postgres
+      - user-houses-postgres
     networks:
       - homatesnet
 
   # APP microservices
-  #accounting:
-  #  build: accounting
-  #  container_name: accounting
-  #  image: accounting:latest
-  #  ports:
-  #    - 8081:8081
-  #  depends_on:
-  #    - eureka-service
-  #  networks:
-  #    - homatesnet
-  #  environment:
-  #    - SPRING_PROFILES_ACTIVE=docker
-  #    - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-  #    - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
-  #    - SPRING_DATASOURCE_USERNAME=homates
-  #    - SPRING_DATASOURCE_PASSWORD=admin
-  #    - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-  #  deploy:
-  #    restart_policy:
-  #      condition: on-failure
+
+  user-houses:
+    build: user-houses
+    container_name: user-houses
+    image: user-houses:latest
+    ports:
+      - "8081:8081"
+    networks:
+      - homatesnet
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://user-houses-postgres:5432/homates-user-houses
+      - SPRING_DATASOURCE_USERNAME=homates
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - user-houses-postgres
 
   shopping-list:
     build: shopping-list
@@ -133,10 +185,32 @@ services:
       restart_policy:
         condition: on-failure
 
+  # user-manager:
+  # build: user-manager
+  # container_name: user-manager
+  # image: user-manager:latest
+  # ports:
+  #    - 8081:8081
+  # depends_on:
+  #   - eureka-service
+  # networks:
+  #   - homatesnet
+  # environment:
+  #   - SPRING_PROFILES_ACTIVE=docker
+  #   - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+  #   - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
+  #   - SPRING_DATASOURCE_USERNAME=homates
+  #   - SPRING_DATASOURCE_PASSWORD=admin
+  #   - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+  # deploy:
+  #   restart_policy:
+  #     condition: on-failure
+
 volumes:
-  db-data:
-  api-test:
-  pgadmin-data:
+  homates-db-data:
+  homates-pgadmin-data:
+  user-houses-data:
+  #keycloak-data:
 networks:
   homatesnet:
     driver: bridge
