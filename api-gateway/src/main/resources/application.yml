@@ -24,7 +24,11 @@ spring:
             uri: lb://shopping-list
             predicates:
               - Path=/api/v1/shoppinglist/**
-        -   id: user-manager
-            uri: lb://user-manager
+        -   id: user-houses
+            uri: lb://user-houses
             predicates:
-              - Path=/api/v1/user/**
+              - Path=/api/v1/user-houses/**
+        -   id: wallet
+            uri: lb://wallet
+            predicates:
+              - Path=/api/v1/wallet/**
