@@ -78,11 +78,26 @@ services:
     ports:
       - 5433:5432
     volumes:
-      - user-houses-data:/var/lib/postgresql/data
+      - homates-user-houses-data:/var/lib/postgresql/data
     networks:
       - homatesnet
     environment:
       POSTGRES_DB: homates-user-houses
+      POSTGRES_USER: homates
+      POSTGRES_PASSWORD: admin
+      restart: always
+
+  wallet-postgres:
+    container_name: wallet-postgres
+    image: postgres:latest
+    ports:
+      - 5434:5432
+    volumes:
+      - homates-wallet-data:/var/lib/postgresql/data
+    networks:
+      - homatesnet
+    environment:
+      POSTGRES_DB: homates-wallet
       POSTGRES_USER: homates
       POSTGRES_PASSWORD: admin
       restart: always
@@ -143,12 +158,33 @@ services:
     depends_on:
       - user-houses-postgres
 
+  wallet:
+    build: wallet
+    container_name: wallet
+    image: wallet:latest
+    ports:
+      - "8082:8082"
+    networks:
+      - homatesnet
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://wallet-postgres:5432/homates-wallet
+      - SPRING_DATASOURCE_USERNAME=homates
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - wallet-postgres
+
   shopping-list:
     build: shopping-list
     container_name: shopping-list
     image: shopping-list:latest
     ports:
-      - 8082:8082
+      - 8083:8083
     depends_on:
       - eureka-service
     networks:
@@ -209,7 +245,8 @@ services:
 volumes:
   homates-db-data:
   homates-pgadmin-data:
-  user-houses-data:
+  homates-user-houses-data:
+  homates-wallet-data:
   #keycloak-data:
 networks:
   homatesnet:
