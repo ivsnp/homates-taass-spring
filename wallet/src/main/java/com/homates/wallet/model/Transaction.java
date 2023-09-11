@@ -1,6 +1,5 @@
 package com.homates.wallet.model;
 
-import com.homates.wallet.Currency;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +19,6 @@ public abstract class Transaction {
     private String description;
 
     private float amount;  // importo
-
-    private Currency currency;
 
     private LocalDate date;
 
