@@ -68,7 +68,7 @@ public class TransactionController {
     }
 
     @GetMapping("/transaction/house/{idHouse}")
-    public ResponseEntity<List<Transaction>> getItems(@PathVariable("idHouse") int idHouse) {
+    public ResponseEntity<List<Transaction>> getItem(@PathVariable("idHouse") int idHouse) {
         System.out.println("Getting house transactions...");
         List<Transaction> transactionsDto = transactionRepository.findByIdHouse(idHouse);
 

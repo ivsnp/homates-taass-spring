@@ -102,6 +102,21 @@ services:
       POSTGRES_PASSWORD: admin
       restart: always
 
+  shopping-list-postgres:
+    container_name: shopping-list-postgres
+    image: postgres:latest
+    ports:
+      - 5435:5432
+    volumes:
+      - homates-shopping-list-data:/var/lib/postgresql/data
+    networks:
+      - homatesnet
+    environment:
+      POSTGRES_DB: homates-shopping-list
+      POSTGRES_USER: homates
+      POSTGRES_PASSWORD: admin
+      restart: always
+
   dbhomates-postgres:
     container_name: dbhomates-postgres
     image: postgres:latest
@@ -142,7 +157,7 @@ services:
     container_name: user-houses
     image: user-houses:latest
     ports:
-      - "8081:8081"
+      - 8081:8081
     networks:
       - homatesnet
     environment:
@@ -163,7 +178,7 @@ services:
     container_name: wallet
     image: wallet:latest
     ports:
-      - "8082:8082"
+      - 8082:8082
     networks:
       - homatesnet
     environment:
@@ -185,20 +200,21 @@ services:
     image: shopping-list:latest
     ports:
       - 8083:8083
-    depends_on:
-      - eureka-service
     networks:
       - homatesnet
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://shopping-list-postgres:5432/homates-shopping-list
       - SPRING_DATASOURCE_USERNAME=homates
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     deploy:
       restart_policy:
         condition: on-failure
+    depends_on:
+      - eureka-service
+      - shopping-list-postgres
 
   bacheca:
     build: bacheca
@@ -247,6 +263,7 @@ volumes:
   homates-pgadmin-data:
   homates-user-houses-data:
   homates-wallet-data:
+  homates-shopping-list-data:
   #keycloak-data:
 networks:
   homatesnet:

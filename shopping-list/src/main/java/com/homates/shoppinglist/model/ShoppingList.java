@@ -1,56 +1,30 @@
 package com.homates.shoppinglist.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Entity
-@Table(name = "shoppingList")
+@Table(name = "shoppinglist")
+@Data
+@NoArgsConstructor
 public class ShoppingList {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Column(name = "name")
+    private int idHouse;
+
     private String name;
 
     @OneToMany
-    @JoinColumn(name = "productList")
+    @JoinColumn(name = "id_shopping_list")
     private List<ProductInList> productList;
 
-    public ShoppingList(String name, List<ProductInList> productList) {
-        this.name = name;
-        this.productList = productList;
-    }
-
-    public ShoppingList() {
-
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<ProductInList> getProductList() {
-        return productList;
-    }
-
-    public void setProductList(List<ProductInList> productList) {
-        this.productList = productList;
-    }
-
+    // TODO: use repositoryProductInList JPA, not this func
     public ProductInList findProductByID(long id) {
         ProductInList prod;
         for(int i = 0; i < productList.size(); i++){
@@ -60,14 +34,5 @@ public class ShoppingList {
             }
         }
         return null;
-    }
-
-    @Override
-    public String toString() {
-        return "ShoppingList{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", productList=" + productList +
-                '}';
     }
 }
