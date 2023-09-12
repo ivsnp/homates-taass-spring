@@ -41,7 +41,7 @@ public class ProductController {
     }
 
     @PutMapping(value = "/products/update/{id}")
-    public ResponseEntity<String> updateItem(@PathVariable("id") long id,
+    public ResponseEntity<String> updateItem(@PathVariable("id") int id,
                                              @RequestBody ProductDto productDto) {
         System.out.println("Updating product...");
 
@@ -57,7 +57,7 @@ public class ProductController {
     }
 
     @DeleteMapping(value = "/products/delete/{id}")
-    public ResponseEntity<String> deleteItem(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteItem(@PathVariable("id") int id) {
         System.out.println("Deleting product...");
 
         Optional<Product> product = productRepository.findById(id);

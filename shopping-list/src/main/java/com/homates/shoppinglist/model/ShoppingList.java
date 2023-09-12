@@ -3,6 +3,8 @@ package com.homates.shoppinglist.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.List;
 
@@ -20,19 +22,7 @@ public class ShoppingList {
 
     private String name;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "id_shopping_list")
     private List<ProductInList> productList;
-
-    // TODO: use repositoryProductInList JPA, not this func
-    public ProductInList findProductByID(long id) {
-        ProductInList prod;
-        for(int i = 0; i < productList.size(); i++){
-            prod = productList.get(i);
-            if(prod.getId() == id){
-                return prod;
-            }
-        }
-        return null;
-    }
 }

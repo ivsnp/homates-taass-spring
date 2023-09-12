@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface ShoppingListRepository extends JpaRepository<ShoppingList, Long> {
+public interface ShoppingListRepository extends JpaRepository<ShoppingList, Integer> {
     Optional<ShoppingList> findById(int id);
     List<ShoppingList> findByName(String name);
     List<ShoppingList> findByIdHouse(int idHouse);

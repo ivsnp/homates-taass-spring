@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface ProductInListRepository extends JpaRepository<ProductInList, Long> {
+public interface ProductInListRepository extends JpaRepository<ProductInList, Integer> {
     Optional<ProductInList> findById(int id);
 }

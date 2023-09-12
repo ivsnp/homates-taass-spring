@@ -50,15 +50,13 @@ public class ShoppingListController {
                 ProductInList productInList = new ProductInList();
                 productInList.setProduct(product);
                 productInList.setDescription(productInListDto.getDescription());
-                productInListRepository.save(productInList);
+
                 _currentProductsInList.add(productInList);
             }
         }
 
         _currentShoppingList.setProductList(_currentProductsInList);
-
         shoppingListRepository.save(_currentShoppingList);
-
         return new ResponseEntity<>("Shopping list added.", HttpStatus.OK);
     }
 
@@ -135,33 +133,21 @@ public class ShoppingListController {
 
         ProductInList productInList = new ProductInList();
         productInList.setProduct(product);
-        productInList.setDescription(productInList.getDescription());
+        productInList.setDescription(productInListDto.getDescription());
         _currentShoppingList.getProductList().add(productInList);
         shoppingListRepository.save(_currentShoppingList);
+
+        System.out.println(productInListDto);
+        System.out.println(productInList);
+
         return new ResponseEntity<>("Shopping list updated.", HttpStatus.OK);
     }
 
-    @DeleteMapping(value = "/remove-product/{idHouse}")
-    public ResponseEntity<String> removeProduct(@PathVariable("idHouse") int id,
-                                             @RequestBody ProductInListDto productInListDto) {
+    @DeleteMapping(value = "/remove-product/{id}")
+    public ResponseEntity<String> removeProduct(@PathVariable("id") int id) {
         System.out.println("Removing product to shopping list "+id+" ...");
 
-        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
-        if (shoppingList.isEmpty())
-            return new ResponseEntity<>("Shopping list not found.", HttpStatus.NOT_FOUND);
-
-        Optional<Product> _currentProduct = productRepository.findById(productInListDto.getIdProduct());
-        if (_currentProduct.isEmpty())
-            return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
-
-        ShoppingList _currentShoppingList = shoppingList.get();
-        Product product = _currentProduct.get();
-
-        ProductInList productInList = new ProductInList();
-        productInList.setProduct(product);
-        productInList.setDescription(productInList.getDescription());
-        _currentShoppingList.getProductList().remove(productInList);
-        shoppingListRepository.save(_currentShoppingList);
+        productInListRepository.deleteById(id);
         return new ResponseEntity<>("Shopping list updated.", HttpStatus.OK);
     }
 
