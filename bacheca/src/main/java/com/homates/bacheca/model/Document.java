@@ -16,12 +16,16 @@ public class Document {
         @Column(name = "category")
         private String category;  //if pdf, image or file.
 
+        @Column(name = "path")
+        private String path;
+
         public Document() {
         }
 
-        public Document(String name, String category) {
+        public Document(String name, String category,String path) {
             this.name = name;
             this.category = category;
+            this.path = path;
         }
 
         public long getId() {
@@ -48,12 +52,21 @@ public class Document {
             this.category = category;
         }
 
+        public String getPath() {
+        return path;
+    }
+
+        public void setPath(String path) {
+        this.path = path;
+    }
+
         @Override
         public String toString() {
             return "Document{" +
                     "id=" + id +
                     ", name='" + name + '\'' +
                     ", category='" + category + '\'' +
+                    ", path='" + path + '\'' +
                     '}';
         }
 
