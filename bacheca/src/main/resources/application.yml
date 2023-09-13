@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: bacheca
+
+server:
+  port: 8085
+  forward-headers-strategy: framework
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-service:8761/eureka

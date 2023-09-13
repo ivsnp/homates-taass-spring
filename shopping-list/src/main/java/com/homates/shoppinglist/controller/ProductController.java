@@ -1,5 +1,6 @@
 package com.homates.shoppinglist.controller;
 
+import com.homates.shoppinglist.dto.ProductDto;
 import com.homates.shoppinglist.model.Product;
 import com.homates.shoppinglist.repo.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,45 +17,54 @@ import java.util.Optional;
 @RequestMapping("/api/v1/shoppinglist")
 public class ProductController {
     @Autowired
-    ProductRepository repository;
+    ProductRepository productRepository;
 
     @PostMapping(value = "/products/create")
-    public Product addItem(@RequestBody Product product) {
+    public ResponseEntity<String> addItem(@RequestBody ProductDto productDto) {
         System.out.println("Creating new product...");
-        return repository.save(product);
+
+        Product product = new Product();
+        product.setName(productDto.getName());
+        product.setCategory(productDto.getCategory());
+
+        productRepository.save(product);
+        return new ResponseEntity<>("Product added.", HttpStatus.OK);
     }
 
     @GetMapping("/products")
-    public List<Product> getItems() {
-        System.out.println("Get all products...");
+    public ResponseEntity<List<Product>> getItems() {
+        System.out.println("Getting products...");
+
         List<Product> productList = new ArrayList<>();
-        repository.findAll().forEach(productList::add);
-        return productList;
+        productRepository.findAll().forEach(productList::add);
+        return new ResponseEntity<>(productList, HttpStatus.OK);
     }
 
     @PutMapping(value = "/products/update/{id}")
-    public ResponseEntity<Product> updateItem(@PathVariable("id") long id, @RequestBody Product newProduct) {
+    public ResponseEntity<String> updateItem(@PathVariable("id") int id,
+                                             @RequestBody ProductDto productDto) {
         System.out.println("Updating product...");
 
-        Optional<Product> product = repository.findById(id);
-        if (product.isPresent()) {
-            Product _currentProduct = product.get();
-            _currentProduct.setName(newProduct.getName());
-            _currentProduct.setCategory(newProduct.getCategory());
-            return new ResponseEntity<>(repository.save(_currentProduct), HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isEmpty())
+            return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
+
+        Product _currentProduct = product.get();
+        _currentProduct.setName(productDto.getName());
+        _currentProduct.setCategory(productDto.getCategory());
+        productRepository.save(_currentProduct);
+        return new ResponseEntity<>("Product updated.", HttpStatus.OK);
     }
 
     @DeleteMapping(value = "/products/delete/{id}")
-    public ResponseEntity<String> deleteItem(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteItem(@PathVariable("id") int id) {
         System.out.println("Deleting product...");
 
-        Optional<Product> product = repository.findById(id);
-        if (product.isPresent()) {
-            repository.deleteById(id);
-            return new ResponseEntity<>("Product has been deleted!", HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isEmpty())
+            return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
+
+        productRepository.delete(product.get());
+        return new ResponseEntity<>("Product has been deleted.", HttpStatus.OK);
     }
 }

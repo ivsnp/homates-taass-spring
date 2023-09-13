@@ -1,7 +1,11 @@
 package com.homates.shoppinglist.repo;
 
 import com.homates.shoppinglist.model.ProductInList;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.CrudRepository;
 
-public interface ProductInListRepository extends CrudRepository<ProductInList, Long> {
+import java.util.Optional;
+
+public interface ProductInListRepository extends JpaRepository<ProductInList, Integer> {
+    Optional<ProductInList> findById(int id);
 }

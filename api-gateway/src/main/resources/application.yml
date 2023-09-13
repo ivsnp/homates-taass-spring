@@ -20,6 +20,14 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
+        -   id: user-houses
+            uri: lb://user-houses
+            predicates:
+              - Path=/api/v1/user-houses/**
+        -   id: wallet
+            uri: lb://wallet
+            predicates:
+              - Path=/api/v1/wallet/**
         -   id: shopping-list
             uri: lb://shopping-list
             predicates:
@@ -28,3 +36,7 @@ spring:
           uri: lb://calendar
           predicates:
             - Path=/api/v1/calendar/**
+        -   id: bacheca
+            uri: lb://bacheca
+            predicates:
+              - Path=/api/v1/bacheca/**

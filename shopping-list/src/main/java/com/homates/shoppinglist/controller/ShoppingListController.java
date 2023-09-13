@@ -1,5 +1,8 @@
 package com.homates.shoppinglist.controller;
 
+import com.homates.shoppinglist.dto.ProductInListDto;
+import com.homates.shoppinglist.dto.ShoppingListDto;
+import com.homates.shoppinglist.dto.ShoppingListMetadataDto;
 import com.homates.shoppinglist.model.Product;
 import com.homates.shoppinglist.model.ProductInList;
 import com.homates.shoppinglist.model.ShoppingList;
@@ -17,120 +20,147 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "http://shopping-list:4200")
 @RestController
-@RequestMapping("/api/v1/shopping-list")
+@RequestMapping("/api/v1/shoppinglist")
 public class ShoppingListController {
 
     @Autowired
-    ShoppingListRepository repository;
+    ShoppingListRepository shoppingListRepository;
 
     @Autowired
-    ProductInListRepository repositoryProductInList;
+    ProductInListRepository productInListRepository;
 
     @Autowired
-    ProductRepository repositoryProduct;
+    ProductRepository productRepository;
 
-    @PostMapping(value = "/shopping-lists/create")
-    public ResponseEntity<ShoppingList> createShoppingList(@RequestBody ShoppingList shoppingList) {
-        List<ProductInList> _productInList = new ArrayList<>();
-        // TODO manage transaction, if one fail delete everything
-        for(int i = 0; i < shoppingList.getProductList().size(); i++){
-            Product requestProduct = shoppingList.getProductList().get(i).getProduct();
+    @PostMapping("/create")
+    public ResponseEntity<String> addItem(@RequestBody ShoppingListDto shoppingListDto) {
+        System.out.println("Creating a new shopping list...");
 
-            if(requestProduct.getId() == -1) // NOTE: if new prod, set id = -1
-                requestProduct = repositoryProduct.save(new Product(requestProduct.getName().toLowerCase(), requestProduct.getCategory().toLowerCase()));
+        ShoppingList _currentShoppingList = new ShoppingList();
+        _currentShoppingList.setName(shoppingListDto.getName());
+        _currentShoppingList.setIdHouse(shoppingListDto.getIdHouse());
 
-            Optional<Product> product = repositoryProduct.findById(requestProduct.getId());
-            if (product.isPresent()) // create match between shopping-list and products
-                _productInList.add(repositoryProductInList.save(new ProductInList(product.get(), shoppingList.getProductList().get(i).getDescr())));
-            else
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(repository.save(new ShoppingList(shoppingList.getName(), _productInList)), HttpStatus.OK);
-    }
+        List<ProductInList> _currentProductsInList = new ArrayList<>();
+        for (ProductInListDto productInListDto: shoppingListDto.getProducts()){
+            Optional<Product> _currentProduct = productRepository.findById(productInListDto.getIdProduct());
+            Product product;
 
-    @GetMapping("/shopping-lists")
-    public List<ShoppingList> getAllShoppingLists() {
-        System.out.println("Get all shopping lists...");
+            if (_currentProduct.isPresent()){
+                product = _currentProduct.get();
+                ProductInList productInList = new ProductInList();
+                productInList.setProduct(product);
+                productInList.setDescription(productInListDto.getDescription());
 
-        List<ShoppingList> shoppingList = new ArrayList<>();
-        repository.findAll().forEach(shoppingList::add);
-
-        return shoppingList;
-    }
-
-    @GetMapping(value = "/shopping-lists/name/{name}")
-    public List<ShoppingList> getAllShoppingListsByName(@PathVariable("name") String name) {
-        return repository.findByName(name);
-    }
-
-    @DeleteMapping("/shopping-lists/delete/{id}")
-    public ResponseEntity<String> deleteShoppingList(@PathVariable("id") long id) {
-        System.out.println("Shopping list with ID = " + id + "...");
-
-        Optional<ShoppingList> shopL = repository.findById(id);
-        if (shopL.isPresent()) {
-            ShoppingList _shopL = shopL.get();
-            for(int i = 0; i < _shopL.getProductList().size(); i++){
-                ProductInList _prodInList = _shopL.getProductList().get(i);
-                repositoryProductInList.deleteById(_prodInList.getId());
+                _currentProductsInList.add(productInList);
             }
-            repository.deleteById(id);
-            return new ResponseEntity<>("Shopping list has been deleted!", HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        _currentShoppingList.setProductList(_currentProductsInList);
+        shoppingListRepository.save(_currentShoppingList);
+        return new ResponseEntity<>("Shopping list added.", HttpStatus.OK);
     }
 
-    @PutMapping("/shopping-list/add-item/{id_list}")
-    public ResponseEntity<ShoppingList> addProdInShoppingList(@PathVariable("id_list") long id_list, @RequestBody ProductInList producInList) {
-        System.out.println("Add Item in List with ID = " + id_list + "...");
-        Optional<ShoppingList> shoppingList = repository.findById(id_list);
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<ShoppingList> getItem(@PathVariable("id") int id) {
+        System.out.println("Gettig shopping list "+id+" ...");
+        ShoppingList _currentShoppingList = new ShoppingList();
 
-        // check if product exists, otherwise create product. It doesn't exists if id==-1, otherwise bad data
-        Product requestProduct = producInList.getProduct();
-        if(requestProduct.getId() == -1) { // NOTE: if new prod, set id = -1
-            requestProduct = repositoryProduct.save(new Product(requestProduct.getName().toLowerCase(), requestProduct.getCategory().toLowerCase()));
-            producInList.setProduct(requestProduct);
-        }
-        Optional<Product> product = repositoryProduct.findById(requestProduct.getId());
-        if (product.isEmpty()) // create match between shopping-list and products
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        ProductInList _productInList = repositoryProductInList.save(producInList);
-        if (shoppingList.isPresent()) {
-            ShoppingList _shopL = shoppingList.get();
-            _shopL.getProductList().add(_productInList);
-            return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
+        if (shoppingList.isEmpty())
+            return new ResponseEntity<>(_currentShoppingList, HttpStatus.NOT_FOUND);
+        _currentShoppingList = shoppingList.get();
+        return new ResponseEntity<>(_currentShoppingList, HttpStatus.OK);
     }
 
-    @DeleteMapping("/shopping-list/delete-item/{id_list}/{id_prod}")
-    public ResponseEntity<ShoppingList> deleteProdInShoppingList(@PathVariable("id_list") long id_list, @PathVariable("id_prod") long id_prod) {
-        System.out.println("Delete Item with ID = " + id_prod + " in List with ID = " + id_list + "...");
-        Optional<ShoppingList> shoppingList = repository.findById(id_list);
-        if (shoppingList.isPresent()) {
-            ShoppingList _shopL = shoppingList.get();
-            ProductInList p = _shopL.findProductByID(id_prod);
-            _shopL.getProductList().remove(p);
-            return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    @GetMapping(value = "/house/{id}")
+    public ResponseEntity<List<ShoppingList>> getItems(@PathVariable("id") int id) {
+        System.out.println("Gettig shopping list "+id+" ...");
+        List<ShoppingList> _currentShoppingLists = new ArrayList<>();
+
+        List<ShoppingList> shoppingList = shoppingListRepository.findByIdHouse(id);
+        if (shoppingList.isEmpty())
+            return new ResponseEntity<>(_currentShoppingLists, HttpStatus.NOT_FOUND);
+        _currentShoppingLists = shoppingList;
+        return new ResponseEntity<>(_currentShoppingLists, HttpStatus.OK);
     }
 
-    @PutMapping("/shopping-lists/update-name/{id}/{name}")
-    public ResponseEntity<ShoppingList> updateShoppingList(@PathVariable("id") long id, @PathVariable("name") String name){
-        System.out.println("Update shopping list name with ID = " + id + "...");
+    @PutMapping(value = "/update-metadata/{id}")
+    public ResponseEntity<String> updateItem(@PathVariable("id") int id,
+                                             @RequestBody ShoppingListMetadataDto shoppingListMetadataDto) {
+        System.out.println("Updating shopping list "+id+" ...");
 
-        Optional<ShoppingList> shoppingList = repository.findById(id);
+        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
+        if (shoppingList.isEmpty())
+            return new ResponseEntity<>("Shopping list not found.", HttpStatus.NOT_FOUND);
 
-        if (shoppingList.isPresent()) {
-            ShoppingList _shopL = shoppingList.get();
-            _shopL.setName(name);
-            return new ResponseEntity<>(repository.save(_shopL), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        ShoppingList _currentShoppingList = shoppingList.get();
+        _currentShoppingList.setName(shoppingListMetadataDto.getName());
+        _currentShoppingList.setIdHouse(shoppingListMetadataDto.getIdHouse());
+        shoppingListRepository.save(_currentShoppingList);
+        return new ResponseEntity<>("Shopping list updated.", HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/update-productlist-description/{id}")
+    public ResponseEntity<String> updateProductDescription(@PathVariable("id") int id,
+                                                           @RequestBody String description) {
+        System.out.println("Updating ProductInList description "+id+" ...");
+
+        Optional<ProductInList> productInList = productInListRepository.findById(id);
+        if (productInList.isEmpty())
+            return new ResponseEntity<>("ProductInList not found.", HttpStatus.NOT_FOUND);
+
+        ProductInList _currentProductInList = productInList.get();
+        _currentProductInList.setDescription(description);
+        productInListRepository.save(_currentProductInList);
+        return new ResponseEntity<>("ProductInList updated.", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add-product/{idHouse}")
+    public ResponseEntity<String> addProduct(@PathVariable("idHouse") int id,
+                                             @RequestBody ProductInListDto productInListDto) {
+        System.out.println("Adding product to shopping list "+id+" ...");
+
+        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
+        if (shoppingList.isEmpty())
+            return new ResponseEntity<>("Shopping list not found.", HttpStatus.NOT_FOUND);
+
+        Optional<Product> _currentProduct = productRepository.findById(productInListDto.getIdProduct());
+        if (_currentProduct.isEmpty())
+            return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
+
+        ShoppingList _currentShoppingList = shoppingList.get();
+        Product product = _currentProduct.get();
+
+        ProductInList productInList = new ProductInList();
+        productInList.setProduct(product);
+        productInList.setDescription(productInListDto.getDescription());
+        _currentShoppingList.getProductList().add(productInList);
+        shoppingListRepository.save(_currentShoppingList);
+
+        System.out.println(productInListDto);
+        System.out.println(productInList);
+
+        return new ResponseEntity<>("Shopping list updated.", HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/remove-product/{id}")
+    public ResponseEntity<String> removeProduct(@PathVariable("id") int id) {
+        System.out.println("Removing product to shopping list "+id+" ...");
+
+        productInListRepository.deleteById(id);
+        return new ResponseEntity<>("Shopping list updated.", HttpStatus.OK);
+    }
+
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<String> deleteItem(@PathVariable("id") int id) {
+        System.out.println("Deleting shopping list "+id+" ...");
+
+        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
+        if (shoppingList.isEmpty())
+            return new ResponseEntity<>("Shopping list not found.", HttpStatus.NOT_FOUND);
+
+        ShoppingList _currentShoppingList = shoppingList.get();
+        shoppingListRepository.delete(_currentShoppingList);
+        return new ResponseEntity<>("Shopping list has been deleted.", HttpStatus.OK);
     }
 }
