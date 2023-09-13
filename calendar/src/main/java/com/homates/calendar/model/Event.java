@@ -1,6 +1,5 @@
 package com.homates.calendar.model;
 
-//import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import jakarta.persistence.*;
@@ -11,38 +10,38 @@ import jakarta.persistence.*;
 public class Event {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    Long id;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
 
     @Column(name= "description")
-    String description;
+    private String description;
 
-    @Column(name= "user")//questa sarà una join con l'utenza registrata in accounting
-    String user;
+    @Column(name= "username")//questa sarà una join con l'utenza registrata in accounting
+    private String user;
 
     @Column(name = "start_date")
-    LocalDate start;
+    private LocalDate start;
 
     @Column(name = "end_date")
-    LocalDate end;
+    private LocalDate end;
 
     @Column(name = "time")
-    LocalTime time;
+    private LocalTime time;
 
     @Column(name= "repetition")
-    String repetiton;
+    private String repetition;
 
     @Column(name= "color")
-    String color;
+    private String colors;
 
-    public Event(String description, String user, LocalDate start, LocalDate end, LocalTime time, String repetiton, String color) {
+    public Event(String description, String user, LocalDate start, LocalDate end, LocalTime time, String repetition, String colors) {
         this.description = description;
         this.user = user;
         this.start = start;
         this.end = end;
         this.time = time;
-        this.repetiton = repetiton;
-        this.color = color;
+        this.repetition = repetition;
+        this.colors = colors;
     }
 
     public Event() { }
@@ -83,33 +82,39 @@ public class Event {
         this.end = end;
     }
 
-    public String getRepetiton() {
-        return repetiton;
+    public String getRepetition() {
+        return repetition;
     }
 
-    public void setRepetiton(String repetiton) {
-        this.repetiton = repetiton;
+    public void setRepetition(String repetition) {
+        this.repetition = repetition;
     }
 
     public String getColor() {
-        return color;
+        return colors;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void setColor(String colors) {
+        this.colors = colors;
+    }
+
+    public LocalTime getTime() { return time; }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
     }
 
     @Override
     public String toString() {
         return "Event{" +
-                "id=" + id +
+                "id mamt=" + id +
                 ", description='" + description + '\'' +
                 ", user='" + user + '\'' +
                 ", start=" + start +
                 ", end=" + end +
                 ", time=" + time +
-                ", repetiton='" + repetiton + '\'' +
-                ", color='" + color + '\'' +
+                ", repetition='" + repetition + '\'' +
+                ", color='" + colors + '\'' +
                 '}';
     }
 }

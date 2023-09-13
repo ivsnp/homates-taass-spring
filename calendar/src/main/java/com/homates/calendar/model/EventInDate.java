@@ -2,14 +2,12 @@ package com.homates.calendar.model;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-//import javax.persistence.*;
-import java.time.LocalDate;
-import java.util.List;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "event_in_data")
-public class EventInData {
+@Table(name = "event_in_date")
+public class EventInDate {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
@@ -18,35 +16,34 @@ public class EventInData {
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "event")
-    List<Event> events;
+     private Event event;
 
     @Column(name= "date")
-    LocalDate date;
+    private LocalDate date;
 
-    @ManyToOne
+ /*   @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "calendar")
-    Calendar calendar;
+    Calendar calendar;*/
 
-    public EventInData() {
+    public EventInDate() {
     }
 
-    public EventInData(List<Event> events, LocalDate date, Calendar calendar) {
-        this.events = events;
+    public EventInDate(Event event, LocalDate date) {
+        this.event = event;
         this.date = date;
-        this.calendar = calendar;
     }
 
     public Long getId() {
         return id;
     }
 
-    public List<Event> getEvents() {
-        return events;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setEvents(List<Event> events) {
-        this.events = events;
+    public void setEvents(Event events) {
+        this.event = event;
     }
 
     public LocalDate getDate() {
@@ -57,11 +54,5 @@ public class EventInData {
         this.date = date;
     }
 
-    public Calendar getCalendar() {
-        return calendar;
-    }
 
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
-    }
 }

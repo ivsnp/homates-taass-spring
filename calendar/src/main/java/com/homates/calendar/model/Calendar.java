@@ -1,9 +1,8 @@
 package com.homates.calendar.model;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-//import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
@@ -13,37 +12,26 @@ public class Calendar {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "description")
-    private String name;
-
     //da usare quando si avrà l'user e la casa @neToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Column(name = "house")
     private String house;
 
-    @ManyToOne
+    @OneToMany
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "events")
-    private List<EventInData> events;
+    @JoinColumn(name = "events_list")
+    private List<EventInDate> events;
+
 
     public Calendar() {
     }
 
-    public Calendar(String name, String house, List<EventInData> events) {
-        this.name = name;
+    public Calendar( String house, List<EventInDate> events) {
         this.house = house;
         this.events = events;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getHouse() {
@@ -54,11 +42,24 @@ public class Calendar {
         this.house = house;
     }
 
-    public List<EventInData> getEvents() {
+    public List<EventInDate> getEvents() {
         return events;
     }
 
-    public void setEvents(List<EventInData> events) {
+    public void setEvents(List<EventInDate> events) {
         this.events = events;
+    }
+
+    //eventi nella data specifica
+
+    //lista di eventi di un user
+
+    @Override
+    public String toString() {
+        return "Calendar{" +
+                "id=" + id +
+                ", house='" + house + '\'' +
+                ", events=" + events +
+                '}';
     }
 }
