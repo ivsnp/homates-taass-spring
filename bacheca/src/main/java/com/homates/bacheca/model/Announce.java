@@ -2,6 +2,7 @@ package com.homates.bacheca.model;
 import jakarta.persistence.*;
 
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Announce{
         private String user;
 
         @Column(name="date")
-        private String date;
+        private LocalDate date;
 
 
         @OneToMany(cascade = CascadeType.ALL)
@@ -60,11 +61,11 @@ public class Announce{
             this.user = user;
         }
 
-        public String getDate() {
+        public LocalDate getDate() {
             return date;
         }
 
-        public void setDate(String date) {
+        public void setDate(LocalDate date) {
             this.date = date;
         }
 
@@ -78,7 +79,7 @@ public class Announce{
         public Announce() {
         }
 
-        public Announce(String description, String user, String date, List<Document> documents) {
+        public Announce(String description, String user, LocalDate date, List<Document> documents) {
             this.description = description;
             this.user = user;
             this.date=date;
