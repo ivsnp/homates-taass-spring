@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.homates</groupId>
 	<artifactId>user-houses</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>user-houses</name>
 	<description>user-houses</description>
 	<properties>
