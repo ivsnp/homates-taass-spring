@@ -7,5 +7,5 @@ import java.util.List;
 
 
 public interface DocumentRepository extends CrudRepository<Document, Long>{
-    List<Document> findByName(String name);
+    List<Document> findByCategory(String category);
 }
