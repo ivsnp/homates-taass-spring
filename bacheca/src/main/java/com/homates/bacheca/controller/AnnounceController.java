@@ -4,7 +4,6 @@ import com.homates.bacheca.model.Announce;
 import com.homates.bacheca.model.Document;
 import com.homates.bacheca.repo.AnnounceRepository;
 import com.homates.bacheca.repo.DocumentRepository;
-import com.homates.bacheca.service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -35,8 +34,8 @@ public class AnnounceController {
     AnnounceRepository repository;
     @Autowired
     DocumentRepository documentRepository;
-    @Autowired
-    private DocumentService docService;
+
+
 
     //add announce
     @PostMapping(value = "/announces/create")
@@ -125,22 +124,5 @@ public class AnnounceController {
         } else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
-
-
-    @PostMapping(value = "/announces/upload")
-    public ResponseEntity<String> uploadDocument(@RequestParam("document") MultipartFile file, @RequestParam("category") String category) throws IOException {
-        try {
-            docService.saveFile(file,category);
-
-            return ResponseEntity.status(HttpStatus.OK)
-                    .body(String.format("File uploaded successfully: %s", file.getOriginalFilename()));
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(String.format("Could not upload the file: %s!", file.getOriginalFilename()));
-        }
-    }
-
-
 
 }
