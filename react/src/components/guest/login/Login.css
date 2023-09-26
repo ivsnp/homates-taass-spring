@@ -1,0 +1,19 @@
+.ContentWrapLogin{
+    background-color: #fff;
+    padding: 20px;
+    height: fit-content;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0, 0.1);
+}
+
+.ContentCenterLogin{
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 100px 25px;
+}
+
+.Login img{
+    max-width: 300px;
+    display: block;
+    margin: 25px auto 30px auto;
+}
+
