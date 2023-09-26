@@ -152,6 +152,18 @@ services:
 
   # APP microservices
 
+  react-desktop:
+    build: react-desktop
+    container_name: react-desktop
+    image: react-desktop:latest
+    ports:
+      - 3000:3000
+    networks:
+      - homatesnet
+    deploy:
+      restart_policy:
+        condition: on-failure
+
   user-houses:
     build: user-houses
     container_name: user-houses
