@@ -1,0 +1,57 @@
+.ContentCenter{
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 25px;
+}
+
+.Content{
+    min-height: 50vh;
+    background-color: #f1f1f1;
+}
+
+.HomeSelectionSelect.form-select{
+    width: 300px;
+}
+
+.HomeSelectionSelect.form-select:hover{
+    background-color: #FFBB02;
+    border-color: #FFBB02;
+}
+
+.HomeSelectionSelect.form-select.form-select-sm:focus {
+    border-color: #FFBB02;
+    box-shadow: 0 0 0 0.25rem rgba(255, 187, 2, 0.25);
+}
+
+.HomeSelectionButton.btn,
+.HomeSelectionButton.btn.btn-primary.btn-sm:focus{
+    background-color: #299640;
+    border-color: #299640;
+}
+
+.HomeSelectionButton.btn.btn-primary.btn-sm:hover,
+.HomeSelectionButton.btn.btn-primary.btn-sm:active{
+    background-color: #FFBB02;
+    border-color: #FFBB02;
+}
+
+.HomeSelection .container {
+    margin-left: 0;
+    max-width: 650px;
+}
+
+.HomeSelection .col {
+    padding: 0;
+}
+
+.HomeSelection{
+    margin-bottom: 20px;
+}
+
+.ContentWrap{
+    background-color: #fff;
+    padding: 20px;
+    height: fit-content;
+    box-shadow: 1px 3px 5px rgba(0, 0, 0, 0, 0.1);
+    border-radius: 10px;
+}
