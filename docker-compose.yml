@@ -153,7 +153,7 @@ services:
   # APP microservices
 
   react-desktop:
-    build: react-desktop
+    build: react
     container_name: react-desktop
     image: react-desktop:latest
     ports:
