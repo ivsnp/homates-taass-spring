@@ -20,8 +20,8 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        -   id: react-desktop
-            uri: lb://react-desktop
+        -   id: user-houses
+            uri: lb://user-houses
             predicates:
               - Path=/api/v1/user-houses/**
         -   id: wallet

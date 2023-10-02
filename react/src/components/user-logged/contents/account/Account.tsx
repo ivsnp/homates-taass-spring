@@ -34,7 +34,7 @@ function Account() {
         console.log(user);
         alert(user);
 
-        axios.put("http://api-gateway:8080/api/v1/user-houses/user/update/ivsnp", userdata)
+        axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", userdata)
             .then(function (response) {
                 //event.preventDefault();
                 alert('ok');
@@ -49,7 +49,7 @@ function Account() {
     }
 
     React.useEffect(() => {
-        axios.get("http://api-gateway:8080/api/v1/user-houses/user/ivsnp", {
+        axios.get("http://localhost:8080/api/v1/user-houses/user/ivsnp", {
             headers: {}})
             .then((response: AxiosResponse<UserAttributes>) => {
                 setUserdata(response.data);
