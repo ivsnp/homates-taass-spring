@@ -30,11 +30,14 @@ function Account() {
             email: email,
             bio: bio
         };
-        const headers = {"Content-Type": "application/json"};
+        const headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        };
         console.log(user);
         alert(user);
 
-        axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", userdata)
+        axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", user, {headers})
             .then(function (response) {
                 //event.preventDefault();
                 alert('ok');
