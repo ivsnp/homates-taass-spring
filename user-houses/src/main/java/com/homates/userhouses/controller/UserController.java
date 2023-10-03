@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/user-houses")
 public class UserController {
@@ -73,7 +73,7 @@ public class UserController {
         return new ResponseEntity<>(_currentUser, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/user/update/{username}")
+    @PostMapping(value = "/user/update/{username}")
     public ResponseEntity<String> updateItem(@PathVariable("username") String username,
                                              @RequestBody UserDto newUserDto) {
         System.out.println("Updating user "+username+" data...");
