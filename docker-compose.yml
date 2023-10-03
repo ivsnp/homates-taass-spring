@@ -153,11 +153,13 @@ services:
   # APP microservices
 
   react-desktop:
-    build: react-desktop
+    build: ./react
     container_name: react-desktop
     image: react-desktop:latest
     ports:
       - 3000:3000
+    stdin_open: true
+    tty: true
     networks:
       - homatesnet
     deploy:

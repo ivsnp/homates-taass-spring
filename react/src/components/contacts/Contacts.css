@@ -1,0 +1,15 @@
+.ContentWrapBrand{
+    font-weight: bold;
+}
+
+.Contacts {
+    max-width: fit-content;
+}
+
+.ContentWrap .row {
+    padding: 10px 25px;
+}
+
+.Brand{
+    font-weight: bold;
+}

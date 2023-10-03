@@ -1,0 +1,114 @@
+.App-header {
+    overflow: hidden;
+    padding: 0px 70px;
+    display: flex;
+    align-items: center;
+    font-size: calc(10px + 2vmin);
+    color: #282c34;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.App-header a {
+    float: left;
+    color: black;
+    text-align: center;
+    padding: 12px;
+    text-decoration: none;
+    line-height: 25px;
+    border-radius: 4px;
+}
+
+.App-header a.logo {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.App-header a:hover {
+    background-color: #299640;
+    /*background-color: #ddd;*/
+    color: #FFFEF1;
+}
+
+.App-header a.navbar-brand:hover {
+    background-color: transparent;
+    /*background-color: #ddd;*/
+    color: #FFFEF1;
+}
+
+.App-header .nav-link.active {
+    background-color: #299640;
+    color: #FFFEF1;
+}
+
+.Header-right {
+    display: flex;
+    flex-direction: unset;
+    align-items: center;
+}
+
+.Account {
+    display: flex;
+    flex-direction: unset;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 20px;
+}
+
+.App-header img{
+    /*padding: 0 15px 0 0;*/
+}
+
+.Header-left {
+    display: flex;
+    flex-direction: unset;
+    align-items: center;
+}
+
+.Header-right {
+    display: flex;
+    flex-direction: unset;
+    align-items: center;
+}
+
+.App-header.Guest {
+    padding-top: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
+    padding-bottom: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
+}
+.navbar-brand img{
+    max-height: 108px;
+    /*padding: 0 15px 0 0;*/
+}
+
+/* mobile */
+
+@media screen and (max-width: 500px) {
+    .App-header{
+        flex-direction: column;
+        padding: 0px;
+    }
+
+    .App-header a {
+        float: none;
+        display: block;
+        text-align: left;
+    }
+
+    .Header-right {
+        float: none;
+    }
+
+
+
+    .navbar-brand img{
+        max-width: 100%;
+        max-height: auto;
+        /*padding: 0 15px 0 0;*/
+    }
+
+    .navbar-brand {
+        margin-right: 0px !important;
+    }
+}

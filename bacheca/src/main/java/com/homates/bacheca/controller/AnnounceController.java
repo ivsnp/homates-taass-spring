@@ -16,15 +16,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-/*
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
-import org.springframework.web.multipart.MultipartFile;*/
-@CrossOrigin(origins = "http://bacheca:4200")
+@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/bacheca")
 public class AnnounceController {
@@ -124,5 +117,4 @@ public class AnnounceController {
         } else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-
 }
