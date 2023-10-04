@@ -34,20 +34,13 @@ function Account() {
             "Content-Type": "application/json",
             "Accept": "application/json"
         };
-        console.log(user);
-        alert(user);
 
         axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", user, {headers})
             .then(function (response) {
-                //event.preventDefault();
-                alert('ok');
-                console.log(response);
-                alert('ok');
+                window.location.reload();
             })
             .catch(function (error) {
-                alert('not ok');
                 console.log(error);
-                alert('not ok');
             });
     }
 

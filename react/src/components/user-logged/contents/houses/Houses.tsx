@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import './Houses.css';
 import {Accordion, Button, Card, Col, Container, Form, InputGroup, Row, Spinner, Tab, Tabs} from "react-bootstrap";
 import {BsHouseAdd, BsPersonAdd, BsHouse} from "react-icons/bs";
@@ -18,11 +18,38 @@ function Houses() {
         roomMates: Array<string>
     }
 
+    const username: string = "ivsnp";
     const title: string = "My Houses";
     const [myhomes, setMyhomes] = useState<HousesAttributes[]>();
+    const [newHouseName, setNewHouseName] = useState('');
+    const [newHouseDescription, setNewHouseDescription] = useState('');
+    const [newHouseAddress, setNewHouseAddress] = useState('');
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    };
+
+    const handleSubmitAddHouse = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // reload page after submit
+        const house = {
+            name: newHouseName,
+            description: newHouseDescription,
+            address: newHouseAddress,
+            username_owner: username
+        };
+
+        axios.post("http://localhost:8080/api/v1/user-houses/houses/create", house, {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+    }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/ivsnp", {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+username, {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);
@@ -56,15 +83,15 @@ function Houses() {
                                     </Container>
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <Form>
+                                    <Form onSubmit={handleSubmitAddHouse}>
                                         <Form.Group className="mb-3" controlId="nameHouse">
-                                            <Form.Control required type="text" placeholder="House name" />
+                                            <Form.Control required type="text" placeholder="House name" onChange={e => setNewHouseName(e.target.value)}/>
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="addressHouse">
-                                            <Form.Control required type="text" placeholder="Address" />
+                                            <Form.Control required type="text" placeholder="Address" onChange={e => setNewHouseAddress(e.target.value)}/>
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="descriptionHouse">
-                                            <Form.Control required as="textarea" rows={3} placeholder="Description" />
+                                            <Form.Control required as="textarea" rows={3} placeholder="Description" onChange={e => setNewHouseDescription(e.target.value)}/>
                                         </Form.Group>
 
                                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
