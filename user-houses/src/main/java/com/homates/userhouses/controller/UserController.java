@@ -73,7 +73,7 @@ public class UserController {
         return new ResponseEntity<>(_currentUser, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/user/update/{username}")
+    @PutMapping(value = "/user/update/{username}")
     public ResponseEntity<String> updateItem(@PathVariable("username") String username,
                                              @RequestBody UserDto newUserDto) {
         System.out.println("Updating user "+username+" data...");

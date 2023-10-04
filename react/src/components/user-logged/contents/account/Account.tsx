@@ -37,7 +37,7 @@ function Account() {
         console.log(user);
         alert(user);
 
-        axios.post("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", user, {headers})
+        axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", user, {headers})
             .then(function (response) {
                 //event.preventDefault();
                 alert('ok');
