@@ -19,3 +19,7 @@
     margin-top: -..px; /* half of the elements height */
     margin-right: -..px; /* half of the elements width */
 }
+
+.errorMessage{
+    color: #FF914D;
+}
