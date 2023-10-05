@@ -89,11 +89,6 @@ function Houses() {
             })
             .catch(error => {
                 console.log(error)
-                return (
-                    <Alert variant="danger">
-                        Error during this operation, check the data and try again.
-                    </Alert>
-                );
             });
     }, []);
 
