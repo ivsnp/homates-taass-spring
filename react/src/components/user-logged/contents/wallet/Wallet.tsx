@@ -101,6 +101,18 @@ function Wallet() {
             });
     }
 
+    const handleDeleteTransaction = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        axios.delete("http://localhost:8080/api/v1/wallet/transaction/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
     React.useEffect(() => {
         axios.get("http://localhost:8080/api/v1/wallet/transaction/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
@@ -326,7 +338,12 @@ function Wallet() {
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        <Button className="action-button" onClick={(e) => {
+                                            // @ts-ignore
+                                            handleDeleteTransaction(e, t.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
                                     </Col>
                                 </Row>
                             )}
@@ -353,7 +370,12 @@ function Wallet() {
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        <Button className="action-button" onClick={(e) => {
+                                            // @ts-ignore
+                                            handleDeleteTransaction(e, t.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
                                     </Col>
                                 </Row>
                             )}

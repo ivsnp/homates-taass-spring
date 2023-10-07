@@ -81,6 +81,18 @@ function Houses() {
             });
     }
 
+    const handleDeleteHouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
     React.useEffect(() => {
         axios.get("http://localhost:8080/api/v1/user-houses/houses/"+username, {
             headers: {}})
@@ -216,7 +228,12 @@ function Houses() {
                                 </Col>
                                 <Col xs={2} className="d-flex align-items-center">
                                     <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                    <Button className="action-button" onClick={(e) => {
+                                        // @ts-ignore
+                                        handleDeleteHouse(e, myhome.id);
+                                    }}>
+                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                    </Button>
                                 </Col>
                             </Row>
                         </Container>
