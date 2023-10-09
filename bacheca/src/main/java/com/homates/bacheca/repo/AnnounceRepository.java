@@ -6,8 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 
-public interface AnnounceRepository extends CrudRepository<Announce, Long>{
+public interface AnnounceRepository extends CrudRepository<Announce, Integer>{
 
     List<Announce> findByDate(String date);
-
+    List<Announce> findByIdHouse(int idHouse);
 }

@@ -37,16 +37,16 @@ public class AnnounceController {
         return repository.save(announce);
     }
 
-    @GetMapping("/announces")
-    public List<Announce> getAnnounce() {
+    @GetMapping("/announces/house/{idHouse}")
+    public List<Announce> getAnnounce(@PathVariable("idHouse") int idHouse) {
         System.out.println("Get all announces...");
-        List<Announce> announceList = new ArrayList<>();
+        List<Announce> announceList = repository.findByIdHouse(idHouse);
         repository.findAll().forEach(announceList::add);
         return announceList;
     }
 
     @PutMapping(value = "/announces/update/{id}")
-    public ResponseEntity<Announce> updateAnnounce(@PathVariable("id") long id, @RequestBody Announce newAnnounce) {
+    public ResponseEntity<Announce> updateAnnounce(@PathVariable("id") int id, @RequestBody Announce newAnnounce) {
         System.out.println("Updating announce...");
 
         Optional<Announce> announce = repository.findById(id);
@@ -61,7 +61,7 @@ public class AnnounceController {
     }
 
     @DeleteMapping(value = "/announces/delete/{id}")
-    public ResponseEntity<String> deleteAnnounce(@PathVariable("id") long id) {
+    public ResponseEntity<String> deleteAnnounce(@PathVariable("id") int id) {
         System.out.println("Deleting announce...");
 
         Optional<Announce> announce = repository.findById(id);
@@ -74,7 +74,7 @@ public class AnnounceController {
 
 
     @PutMapping(value = "/announces/add-document/{id}")
-    public ResponseEntity<Announce> addDocument(@PathVariable("id") long id, @RequestBody Document document) {
+    public ResponseEntity<Announce> addDocument(@PathVariable("id") int id, @RequestBody Document document) {
         System.out.println("Add Document in Announce with ID = " + id + "...");
         Optional<Announce> announce = repository.findById(id);
         document = documentRepository.save(document);
@@ -89,7 +89,7 @@ public class AnnounceController {
     }
 
     @DeleteMapping(value = "/announces/delete-document/{id}/{id_doc}")
-    public ResponseEntity<Announce> deleteDocument(@PathVariable("id") long id, @PathVariable("id_doc") long id_doc) {
+    public ResponseEntity<Announce> deleteDocument(@PathVariable("id") int id, @PathVariable("id_doc") long id_doc) {
         System.out.println("Deleting Document in Announce with ID = " + id + "...");
         Optional<Announce> announce = repository.findById(id);
         if (announce.isPresent()) {
@@ -103,7 +103,7 @@ public class AnnounceController {
     }
 
     @PutMapping(value = "/announces/update-document/{id}/{id_doc}")
-    public ResponseEntity<Announce> updateDocument(@PathVariable("id") long id,@PathVariable("id_doc") long id_doc, @RequestBody Document document) {
+    public ResponseEntity<Announce> updateDocument(@PathVariable("id") int id,@PathVariable("id_doc") long id_doc, @RequestBody Document document) {
         System.out.println("Updating document...");
 
         Optional<Announce> announce = repository.findById(id);

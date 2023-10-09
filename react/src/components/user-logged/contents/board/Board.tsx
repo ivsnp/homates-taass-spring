@@ -1,17 +1,46 @@
 import React, {useState} from 'react';
 import './Board.css';
-import {Accordion, Button, Col, Container, Form, Row, Tab, Tabs, InputGroup} from "react-bootstrap";
+import {Accordion, Button, Col, Container, Form, Row, Tab, Tabs, InputGroup, Spinner} from "react-bootstrap";
 import {CgNotes} from "react-icons/cg";
 import {MdNoteAdd} from "react-icons/md";
+import axios, {AxiosResponse} from "axios";
 
 function Board() {
+
+
+    interface Announces{
+        id: number,
+        description: string,
+        user: string,
+        date: string
+    }
     const title: string = "Board";
-    const [announces, setRoommates] = useState([
-        {description: 'Bolletta luce', user : 'Mattia', date : '2022-05-16'},
-        {description: 'Chiusura acqua', user : 'Giorgia', date : '2022-07-30'},
-        {description: 'Orari portineria', user : 'Angelica', date : '2021-10-20'},
-        {description: 'Squadre partita di calcio', user : 'Giorgio', date : '2022-08-14'}
-    ])
+    const [announces, setAnnounces] = useState<Announces[]>();
+
+    React.useEffect(() => {
+        axios.get("http://localhost:8080/api/v1/bacheca/announces/house/"+localStorage.getItem("idHomeSelected"), {
+            headers: {}})
+            .then((response: AxiosResponse<Announces[]>) => {
+                console.log("getting xacts... id:"+localStorage.getItem("idHomeSelected"))
+                setAnnounces(response.data);
+                console.log(response.data);
+                console.log(announces);
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    }, [localStorage.getItem("idHomeSelected")]);
+
+
+
+
+    if (announces === undefined) return (
+        <div>
+            <Spinner animation="border" role="status" className="spinner">
+                <span className="visually-hidden">Loading...</span>
+            </Spinner>
+        </div>
+    );
 
     return (
         <div className="Board">
