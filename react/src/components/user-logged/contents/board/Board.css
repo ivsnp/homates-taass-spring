@@ -1,0 +1,35 @@
+.table-spacing {
+    margin-top: 20px; /* Distanza dall'header della tabella */
+}
+
+.table-spacing th{
+    padding: 20px;
+}
+.table-spacing td {
+    padding: 20px; /* Distanza tra le colonne */
+    width: 420px;
+}
+
+.float-right {
+    padding: 70px;
+    width: 150px;
+}
+
+.icon-row {
+    margin-bottom: 10px; /* Aggiunge una distanza tra le icone e l'head */
+}
+
+.icon-row .col {
+    vertical-align: bottom; /* Centra il contenuto verticalmente */
+}
+
+/*
+.icon-row .col:first-child {
+    margin-right: 10px; /* Aggiunge una distanza tra la prima icona e il bordo sinistro
+}
+
+.icon-row .col:last-child {
+    margin-left: 10px; /* Aggiunge una distanza tra l'ultima icona e il bordo destro
+}
+
+*/

@@ -1,74 +1,29 @@
 package com.homates.bacheca.model;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "document")
-
+@Data
+@NoArgsConstructor
 public class Document {
 
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
-        private long id;
-
-        @Column(name = "name")
-        private String name;
+        private int id;
 
         @Column(name = "category")
-        private String category;  //if pdf, image or file.
+        private String category;
 
         @Column(name = "path")
         private String path;
 
-        public Document() {
-        }
+        @Column(name = "contentType")
+        private String contentType;
 
-        public Document(String name, String category,String path) {
-            this.name = name;
-            this.category = category;
-            this.path = path;
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public void setId(long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getCategory() {
-            return category;
-        }
-
-        public void setCategory(String category) {
-            this.category = category;
-        }
-
-        public String getPath() {
-        return path;
-    }
-
-        public void setPath(String path) {
-        this.path = path;
-    }
-
-        @Override
-        public String toString() {
-            return "Document{" +
-                    "id=" + id +
-                    ", name='" + name + '\'' +
-                    ", category='" + category + '\'' +
-                    ", path='" + path + '\'' +
-                    '}';
-        }
+        @Column(name = "size")
+        private Long size;
 
     }
 

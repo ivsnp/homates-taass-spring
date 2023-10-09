@@ -9,9 +9,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://wallet:4200")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/wallet")
 public class WalletController {
@@ -48,6 +50,27 @@ public class WalletController {
         myWallet.setIdHouse(_currentWallet.getIdHouse());
 
         return new ResponseEntity<>(myWallet, HttpStatus.OK);
+    }
+
+
+    @GetMapping("/balances/{id}")
+    public ResponseEntity<List<WalletBalanceDto>> getItems(@PathVariable("id") int idHouse) {
+        System.out.println("Getting house balances...");
+        ArrayList<WalletBalanceDto> walletBalanceDtos = new ArrayList<>();
+
+        List<Wallet> wallets = walletRepository.findByIdHouse(idHouse);
+        if (wallets.isEmpty())
+            return new ResponseEntity<>(walletBalanceDtos, HttpStatus.NOT_FOUND);
+
+        for (Wallet w: wallets){
+            WalletBalanceDto _currentWallet = new WalletBalanceDto();
+            _currentWallet.setBalance(w.getBalance());
+            _currentWallet.setUsername(w.getUsername());
+            _currentWallet.setIdHouse(w.getIdHouse());
+            walletBalanceDtos.add(_currentWallet);
+        }
+
+        return new ResponseEntity<>(walletBalanceDtos, HttpStatus.OK);
     }
 
     @PutMapping("/update-balance/{amount}")

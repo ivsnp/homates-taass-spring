@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://user-houses:4200")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/user-houses")
 public class UserController {
@@ -51,6 +51,26 @@ public class UserController {
             usersDto.add(_currentUser);
         }
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<UserDto> getItem(@PathVariable("username") String username) {
+        System.out.println("Getting user...");
+
+        Optional<UserEntity> user = userRepository.findByUsername(username);
+        UserDto _currentUser = new UserDto();
+
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(_currentUser, HttpStatus.NOT_FOUND);
+        }
+
+        UserEntity u = user.get();
+        _currentUser.setUsername(u.getUsername());
+        _currentUser.setName(u.getName());
+        _currentUser.setSurname(u.getSurname());
+        _currentUser.setEmail(u.getEmail());
+        _currentUser.setBio(u.getBio());
+        return new ResponseEntity<>(_currentUser, HttpStatus.OK);
     }
 
     @PutMapping(value = "/user/update/{username}")

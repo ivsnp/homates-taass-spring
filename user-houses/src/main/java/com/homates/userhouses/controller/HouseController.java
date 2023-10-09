@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://user-houses:4200")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/user-houses")
 public class HouseController {
@@ -60,30 +60,18 @@ public class HouseController {
         ArrayList<House> houses = new ArrayList<>(houseRepository.findByOwner(userOwner));
         for (House hu: houses){
             UserEntity owner = hu.getOwner();
-            UserDto _currentOwner = new UserDto();
-            _currentOwner.setUsername(owner.getUsername());
-            _currentOwner.setName(owner.getName());
-            _currentOwner.setSurname(owner.getSurname());
-            _currentOwner.setEmail(owner.getEmail());
-            _currentOwner.setBio(owner.getBio());
 
             List<UserEntity> roomMates = hu.getRoomMates();
-            ArrayList<UserDto> _currentRoomMates = new ArrayList<>();
-            for (UserEntity u: roomMates){
-                UserDto _currentUser = new UserDto();
-                _currentUser.setUsername(u.getUsername());
-                _currentUser.setName(u.getName());
-                _currentUser.setSurname(u.getSurname());
-                _currentUser.setEmail(u.getEmail());
-                _currentUser.setBio(u.getBio());
-                _currentRoomMates.add(_currentUser);
-            }
+            ArrayList<String> _currentRoomMates = new ArrayList<>();
+            for (UserEntity u: roomMates)
+                _currentRoomMates.add(u.getUsername());
 
             HouseUsersDto _currentHouse = new HouseUsersDto();
+            _currentHouse.setId(hu.getId());
             _currentHouse.setName(hu.getName());
             _currentHouse.setDescription(hu.getDescription());
             _currentHouse.setAddress(hu.getAddress());
-            _currentHouse.setOwner(_currentOwner);
+            _currentHouse.setOwner(owner.getUsername());
             _currentHouse.setRoomMates(_currentRoomMates);
 
             houseUsersDto.add(_currentHouse);
