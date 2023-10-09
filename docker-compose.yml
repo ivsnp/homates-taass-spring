@@ -117,17 +117,32 @@ services:
       POSTGRES_PASSWORD: admin
       restart: always
 
-  dbhomates-postgres:
-    container_name: dbhomates-postgres
+  board-postgres:
+    container_name: board-postgres
     image: postgres:latest
     ports:
-      - 5432:5432
+      - 5436:5432
     volumes:
-      - homates-db-data:/var/lib/postgresql/data
+      - homates-board-data:/var/lib/postgresql/data
     networks:
       - homatesnet
     environment:
-      POSTGRES_DB: dbhomates
+      POSTGRES_DB: homates-board
+      POSTGRES_USER: homates
+      POSTGRES_PASSWORD: admin
+      restart: always
+
+  calendar-postgres:
+    container_name: calendar-postgres
+    image: postgres:latest
+    ports:
+      - 5437:5432
+    volumes:
+      - homates-calendar-data:/var/lib/postgresql/data
+    networks:
+      - homatesnet
+    environment:
+      POSTGRES_DB: homates-calendar
       POSTGRES_USER: homates
       POSTGRES_PASSWORD: admin
       restart: always
@@ -145,8 +160,11 @@ services:
     volumes:
       - homates-pgadmin-data:/var/lib/pgadmin
     depends_on:
-      - dbhomates-postgres
       - user-houses-postgres
+      - wallet-postgres
+      - shopping-list-postgres
+      - board-postgres
+      - calendar-postgres
     networks:
       - homatesnet
 
@@ -185,6 +203,7 @@ services:
       restart_policy:
         condition: on-failure
     depends_on:
+      - eureka-service
       - user-houses-postgres
 
   wallet:
@@ -206,6 +225,7 @@ services:
       restart_policy:
         condition: on-failure
     depends_on:
+      - eureka-service
       - wallet-postgres
 
   shopping-list:
@@ -230,26 +250,27 @@ services:
       - eureka-service
       - shopping-list-postgres
 
-  bacheca:
+  board:
     build: bacheca
-    container_name: bacheca
-    image: bacheca:latest
+    container_name: board
+    image: board:latest
     ports:
       - 8085:8085
-    depends_on:
-      - eureka-service
     networks:
       - homatesnet
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://board-postgres:5432/homates-board
       - SPRING_DATASOURCE_USERNAME=homates
       - SPRING_DATASOURCE_PASSWORD=admin
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     deploy:
       restart_policy:
         condition: on-failure
+    depends_on:
+      - eureka-service
+      - board-postgres
 
   # user-manager:
   # build: user-manager
@@ -273,11 +294,12 @@ services:
   #     condition: on-failure
 
 volumes:
-  homates-db-data:
   homates-pgadmin-data:
   homates-user-houses-data:
   homates-wallet-data:
   homates-shopping-list-data:
+  homates-board-data:
+  homates-calendar-data:
   #keycloak-data:
 networks:
   homatesnet:
