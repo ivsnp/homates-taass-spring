@@ -1,6 +1,19 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import './Houses.css';
-import {Accordion, Button, Card, Col, Container, Form, InputGroup, Row, Spinner, Tab, Tabs} from "react-bootstrap";
+import {
+    Accordion,
+    Alert,
+    Button,
+    Card,
+    Col,
+    Container,
+    Form,
+    InputGroup,
+    Row,
+    Spinner,
+    Tab,
+    Tabs
+} from "react-bootstrap";
 import {BsHouseAdd, BsPersonAdd, BsHouse} from "react-icons/bs";
 import {MdDeleteForever, MdShoppingCartCheckout} from "react-icons/md";
 import {BiEditAlt} from "react-icons/bi";
@@ -18,11 +31,70 @@ function Houses() {
         roomMates: Array<string>
     }
 
+    const username: string = "ivsnp";
     const title: string = "My Houses";
+    const [errorNewHouse, setErrorNewHouse] = useState('');
+    const [errorNewPerson, setErrorNewPerson] = useState('');
     const [myhomes, setMyhomes] = useState<HousesAttributes[]>();
+    const [newHouseName, setNewHouseName] = useState('');
+    const [newHouseDescription, setNewHouseDescription] = useState('');
+    const [newHouseAddress, setNewHouseAddress] = useState('');
+    const [idHouseNewPerson, setIdHouseNewPerson] = useState('');
+    const [usernameNewPerson, setUsernameNewPerson] = useState('');
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    };
+
+    const handleSubmitAddHouse = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // reload page after submit
+        const house = {
+            name: newHouseName,
+            description: newHouseDescription,
+            address: newHouseAddress,
+            username_owner: username
+        };
+
+        axios.post("http://localhost:8080/api/v1/user-houses/houses/create", house, {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error);
+                setErrorNewPerson("Error adding house, check the data and try again.");
+            });
+    }
+
+    const handleSubmitAddPerson = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // reload page after submit
+        //, idHouse: number, usernameMate: string
+
+        axios.post("http://localhost:8080/api/v1/user-houses/houses/add-roommate/"+idHouseNewPerson+"/"+usernameNewPerson, {},
+            {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error);
+                setErrorNewPerson("Error adding person to house, check the data and try again.");
+            });
+    }
+
+    const handleDeleteHouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/ivsnp", {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+username, {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);
@@ -56,16 +128,20 @@ function Houses() {
                                     </Container>
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <Form>
+                                    <Form onSubmit={handleSubmitAddHouse}>
                                         <Form.Group className="mb-3" controlId="nameHouse">
-                                            <Form.Control required type="text" placeholder="House name" />
+                                            <Form.Control required type="text" placeholder="House name" onChange={e => setNewHouseName(e.target.value)}/>
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="addressHouse">
-                                            <Form.Control required type="text" placeholder="Address" />
+                                            <Form.Control required type="text" placeholder="Address" onChange={e => setNewHouseAddress(e.target.value)}/>
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="descriptionHouse">
-                                            <Form.Control required as="textarea" rows={3} placeholder="Description" />
+                                            <Form.Control required as="textarea" rows={3} placeholder="Description" onChange={e => setNewHouseDescription(e.target.value)}/>
                                         </Form.Group>
+
+                                        <div className="errorMessage">
+                                            {errorNewHouse}
+                                        </div>
 
                                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
                                             Add house
@@ -87,12 +163,12 @@ function Houses() {
                                     </Container>
                                 </Accordion.Header>
                                 <Accordion.Body>
-                                    <Form>
+                                    <Form onSubmit={handleSubmitAddPerson}>
                                         <Form.Group className="mb-3" controlId="usernameMate">
-                                            <Form.Control required type="text" placeholder="username" />
+                                            <Form.Control required type="text" placeholder="username" onChange={e => setUsernameNewPerson(e.target.value)}/>
                                         </Form.Group>
                                         <Form.Group className="mb-3" controlId="houseMate">
-                                            <Form.Select aria-label="Default select example" className="HomeSelectionSelectMyHouse">
+                                            <Form.Select aria-label="Default select example" className="HomeSelectionSelectMyHouse" onChange={e => setIdHouseNewPerson(e.target.value)}>
                                                 <option disabled>Choose your home</option>
 
                                                 {myhomes.map((myhome) => (
@@ -100,6 +176,10 @@ function Houses() {
                                                 ))}
                                             </Form.Select>
                                         </Form.Group>
+
+                                        <div className="errorMessage">
+                                            {errorNewPerson}
+                                        </div>
 
                                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
                                             Add Mate!
@@ -148,7 +228,12 @@ function Houses() {
                                 </Col>
                                 <Col xs={2} className="d-flex align-items-center">
                                     <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                    <Button className="action-button" onClick={(e) => {
+                                        // @ts-ignore
+                                        handleDeleteHouse(e, myhome.id);
+                                    }}>
+                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                    </Button>
                                 </Col>
                             </Row>
                         </Container>

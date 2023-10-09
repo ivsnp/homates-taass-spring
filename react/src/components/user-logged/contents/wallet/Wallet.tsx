@@ -39,19 +39,86 @@ function Wallet() {
         balance: number
     }
 
+    const [errorNewPayment, setErrorNewPayment] = useState('');
+    const [errorNewRefund, setErrorNewRefund] = useState('');
     const [transactions, setTransactions] = useState<(Payment | Refund)[]>();
     const [roommates, setRoommates] = useState<Wallet[]>();
 
-    // "http://localhost:8080/api/v1/wallet/balances/1"+localStorage.getItem("idHomeSelected")
+    const [addPaymentDescription, setAddPaymentDescription] = useState('');
+    const [addPaymentAmount, setAddPaymentAmount] = useState('');
+    const [addPaymentDate, setAddPaymentDate] = useState('');
+    const [addPaymentUsernameBy, setAddPaymentUserameBy] = useState('');
+    const [addPaymentUsernameSplit, setAddPaymentUsernameSplit] = useState([]);
+
+    const [addRefundDescription, setAddRefundDescription] = useState('');
+    const [addRefundAmount, setAddRefundAmount] = useState('');
+    const [addRefundDate, setAddRefundDate] = useState('');
+    const [addRefundUsernameFrom, setAddRefundUserameFrom] = useState('');
+    const [addRefundUsernameTo, setAddRefundUsernameTo] = useState('');
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    };
+
+    const handleSubmitAddPayment = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // reload page after submit
+        const payment = {
+            description: addPaymentDescription,
+            amount: addPaymentAmount,
+            date: addPaymentDate,
+            idHouse: localStorage.getItem("idHomeSelected"),
+            usernamePay: addPaymentUsernameBy,
+            usernameSplit: addPaymentUsernameSplit
+        };
+
+        axios.post("http://localhost:8080/api/v1/wallet/transaction/add-payment", payment, {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                setErrorNewPayment("Error adding payment, check the data and try again.");
+            });
+    }
+
+    const handleSubmitAddRefund = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // reload page after submit
+        const refund = {
+            description: addRefundDescription,
+            amount: addRefundAmount,
+            date: addRefundDate,
+            idHouse: localStorage.getItem("idHomeSelected"),
+            usernameFrom: addRefundUsernameFrom,
+            usernameTo: addRefundUsernameTo
+        };
+
+        axios.post("http://localhost:8080/api/v1/wallet/transaction/add-refund", refund, {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                setErrorNewRefund("Error adding refund, check the data and try again.");
+            });
+    }
+
+    const handleDeleteTransaction = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        axios.delete("http://localhost:8080/api/v1/wallet/transaction/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
 
     React.useEffect(() => {
         axios.get("http://localhost:8080/api/v1/wallet/transaction/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<(Payment | Refund)[]>) => {
-                console.log("getting xacts... id:"+localStorage.getItem("idHomeSelected"))
+                response.data.sort((a, b) => b.date.localeCompare(a.date));
                 setTransactions(response.data);
-                console.log(response.data);
-                console.log(transactions);
             })
             .catch(error => {
                 console.log(error)
@@ -62,15 +129,26 @@ function Wallet() {
         axios.get("http://localhost:8080/api/v1/wallet/balances/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Wallet[]>) => {
-                console.log("getting balances... id:"+localStorage.getItem("idHomeSelected"))
                 setRoommates(response.data);
-                console.log(response.data);
-                console.log(roommates);
+
+                // setting default usernames
+                setAddPaymentUserameBy(response.data[1].username);
+                setAddRefundUsernameTo(response.data[1].username);
+                setAddRefundUserameFrom(response.data[1].username);
             })
             .catch(error => {
                 console.log(error)
             });
     }, [localStorage.getItem("idHomeSelected")]);
+
+    const handleCheckboxChange = (data: any) => {
+        const isChecked = addPaymentUsernameSplit.some(checkedCheckbox => checkedCheckbox === data.username)
+        if (isChecked)
+            setAddPaymentUsernameSplit(
+                addPaymentUsernameSplit.filter((checkedCheckbox) => checkedCheckbox !== data.username));
+        else
+            setAddPaymentUsernameSplit(addPaymentUsernameSplit.concat(data.username));
+    };
 
     if (transactions === undefined || roommates === undefined) return (
         <div>
@@ -80,6 +158,7 @@ function Wallet() {
         </div>
     );
 
+    // @ts-ignore
     return (
         <div className="Wallet">
             <div className="WalletBalances">
@@ -104,7 +183,7 @@ function Wallet() {
                                                     </Col>
                                                     <Col sm={8}>
                                                         <div className="RoomMatesBalance">
-                                                            {roommate.balance}€
+                                                            {roommate.balance.toFixed(2)}€
                                                         </div>
                                                     </Col>
                                                 </Row>
@@ -134,27 +213,41 @@ function Wallet() {
                                             className="mb-3 HoMatesTab"
                                             justify>
                                             <Tab eventKey="payment" title="Payment">
-                                                <Form>
+                                                <Form onSubmit={handleSubmitAddPayment}>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="amountPayment">€</InputGroup.Text>
-                                                        <Form.Control required type="number" step="0.01" placeholder="00.00" />
+                                                        <Form.Control required type="number" step="0.01" placeholder="00.00" onChange={e => setAddPaymentAmount(e.target.value)}/>
                                                     </InputGroup>
                                                     <Form.Group className="mb-3" controlId="datePayment">
-                                                        <Form.Control required type="date" />
+                                                        <Form.Control required type="date" onChange={e => setAddPaymentDate(e.target.value)}/>
                                                     </Form.Group>
                                                     <Form.Group className="mb-3" controlId="descriptionPayment">
-                                                        <Form.Control required type="text" placeholder="Description" />
+                                                        <Form.Control required type="text" placeholder="Description" onChange={e => setAddPaymentDescription(e.target.value)}/>
                                                     </Form.Group>
                                                     <InputGroup className="mb-3">
+                                                        <InputGroup.Text id="fromRefund">Pay:</InputGroup.Text>
+                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm" onChange={e => setAddPaymentUserameBy(e.target.value)}>
+                                                            {roommates.map((roommate) => (
+                                                                <option value={roommate.username} key={roommate.username}>{roommate.username}</option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </InputGroup>
+                                                    <InputGroup className="mb-3" >
                                                         <InputGroup.Text id="splitPayment">Split with:</InputGroup.Text>
                                                         {roommates.map((roommate) => (
                                                             <Form.Check
                                                                 type="checkbox"
                                                                 id={roommate.username}
                                                                 label={roommate.username}
+                                                                checked={addPaymentUsernameSplit.some(checkedCheckbox => checkedCheckbox === roommate.username)}
+                                                                onChange={() => handleCheckboxChange(roommate)}
                                                             />
                                                         ))}
                                                     </InputGroup>
+
+                                                    <div className="errorMessage">
+                                                        {errorNewPayment}
+                                                    </div>
 
                                                     <Button type="submit" className="mb-4 w-100 HoMatesButton">
                                                         Add payment
@@ -162,20 +255,20 @@ function Wallet() {
                                                 </Form>
                                             </Tab>
                                             <Tab eventKey="refund" title="Refund">
-                                                <Form>
+                                                <Form onSubmit={handleSubmitAddRefund}>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="amountRefund">€</InputGroup.Text>
-                                                        <Form.Control required type="number" step="0.01" placeholder="00.00" />
+                                                        <Form.Control required type="number" step="0.01" placeholder="00.00" onChange={e => setAddRefundAmount(e.target.value)}/>
                                                     </InputGroup>
                                                     <Form.Group className="mb-3" controlId="dateRefund">
-                                                        <Form.Control required type="date" />
+                                                        <Form.Control required type="date" onChange={e => setAddRefundDate(e.target.value)}/>
                                                     </Form.Group>
                                                     <Form.Group className="mb-3" controlId="descriptionRefund">
-                                                        <Form.Control required type="text" placeholder="Description" />
+                                                        <Form.Control required type="text" placeholder="Description" onChange={e => setAddRefundDescription(e.target.value)}/>
                                                     </Form.Group>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="fromRefund">From:</InputGroup.Text>
-                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm">
+                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm" onChange={e => setAddRefundUserameFrom(e.target.value)}>
                                                             {roommates.map((roommate) => (
                                                                 <option value={roommate.username} key={roommate.username}>{roommate.username}</option>
                                                             ))}
@@ -183,15 +276,19 @@ function Wallet() {
                                                     </InputGroup>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="ToRefund">To:</InputGroup.Text>
-                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm">
+                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm"onChange={e => setAddRefundUsernameTo(e.target.value)}>
                                                             {roommates.map((roommate) => (
                                                                 <option value={roommate.username} key={roommate.username}>{roommate.username}</option>
                                                             ))}
                                                         </Form.Select>
                                                     </InputGroup>
 
+                                                    <div className="errorMessage">
+                                                        {errorNewRefund}
+                                                    </div>
+
                                                     <Button type="submit" className="mb-4 w-100 HoMatesButton">
-                                                        Add payment
+                                                        Add Refund
                                                     </Button>
                                                 </Form>
                                             </Tab>
@@ -241,7 +338,12 @@ function Wallet() {
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        <Button className="action-button" onClick={(e) => {
+                                            // @ts-ignore
+                                            handleDeleteTransaction(e, t.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
                                     </Col>
                                 </Row>
                             )}
@@ -268,7 +370,12 @@ function Wallet() {
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        <Button className="action-button" onClick={(e) => {
+                                            // @ts-ignore
+                                            handleDeleteTransaction(e, t.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
                                     </Col>
                                 </Row>
                             )}

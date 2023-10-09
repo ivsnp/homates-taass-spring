@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import './Account.css';
-import {Button, Form, Spinner} from "react-bootstrap";
+import {Alert, Button, Form, Spinner} from "react-bootstrap";
 import axios, {AxiosResponse} from "axios";
+import { toast } from 'react-toastify';
 
 function Account() {
 
@@ -14,6 +15,7 @@ function Account() {
     }
 
     const title: string = "Account";
+    const [errorMessage, setErrorMessage] = useState('');
     const [userdata, setUserdata] = useState<UserAttributes>();
     const [username, setUsername] = useState('');
     const [name, setName] = useState('');
@@ -34,20 +36,14 @@ function Account() {
             "Content-Type": "application/json",
             "Accept": "application/json"
         };
-        console.log(user);
-        alert(user);
 
         axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", user, {headers})
             .then(function (response) {
-                //event.preventDefault();
-                alert('ok');
-                console.log(response);
-                alert('ok');
+                window.location.reload();
             })
             .catch(function (error) {
-                alert('not ok');
                 console.log(error);
-                alert('not ok');
+                setErrorMessage("Error updating personal information, check the data and try again.");
             });
     }
 
@@ -109,6 +105,10 @@ function Account() {
                             <Form.Label>Bio</Form.Label>
                             <Form.Control required as="textarea" rows={3} placeholder='Bio' defaultValue={userdata.bio}  onChange={e => setBio(e.target.value)}/>
                         </Form.Group>
+
+                        <div className="errorMessage">
+                            {errorMessage}
+                        </div>
 
                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
                             Save
