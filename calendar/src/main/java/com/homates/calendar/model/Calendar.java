@@ -10,7 +10,7 @@ import java.util.List;
 public class Calendar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     //da usare quando si avrà l'user e la casa @neToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Column(name = "house")
@@ -30,7 +30,7 @@ public class Calendar {
         this.events = events;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
