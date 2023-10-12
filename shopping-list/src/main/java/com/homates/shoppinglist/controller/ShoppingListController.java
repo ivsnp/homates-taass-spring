@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/shoppinglist")
 public class ShoppingListController {
@@ -79,7 +79,7 @@ public class ShoppingListController {
 
         List<ShoppingList> shoppingList = shoppingListRepository.findByIdHouse(id);
         if (shoppingList.isEmpty())
-            return new ResponseEntity<>(_currentShoppingLists, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(_currentShoppingLists, HttpStatus.OK);
         _currentShoppingLists = shoppingList;
         return new ResponseEntity<>(_currentShoppingLists, HttpStatus.OK);
     }
@@ -126,6 +126,7 @@ public class ShoppingListController {
 
         Optional<Product> _currentProduct = productRepository.findById(productInListDto.getIdProduct());
         if (_currentProduct.isEmpty())
+            // TODO: create product amd them add it to list
             return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
 
         ShoppingList _currentShoppingList = shoppingList.get();
