@@ -81,10 +81,10 @@ function Houses() {
             });
     }
 
-    const handleDeleteHouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+    const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
+        axios.delete("http://localhost:8080/api/v1/bacheca/announces/delete/"+id, {})
             .then(function (response) {
                 window.location.reload();
             })
