@@ -26,6 +26,11 @@ function ShoppingList() {
     const [newListName, setNewListName] = useState('');
     const [errorNewList, setErrorList] = useState('');
     const [errorNewProduct, setErrorNewProduct] = useState('');
+    const [selectedShopL, setSelectedShopL] = useState<number>();
+    const [newProductName, setNewProductName] = useState('');
+    const [newProductDescription, setNewProductDescription] = useState('');
+
+
 
     const handleSubmitAddList = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // reload page after submit
@@ -58,11 +63,35 @@ function ShoppingList() {
             });
     }
 
+    const onChangeShopL = (e: any) => {
+        e.preventDefault();
+        setSelectedShopL(e.target.value);
+    };
+
+    const handleSubmitAddProduct = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault(); // reload page after submit
+        const product = {
+            name: newProductName,
+            description: newProductDescription
+        };
+
+        axios.post("http://localhost:8080/api/v1/shoppinglist/add-product/"+selectedShopL, product,
+            {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error);
+                setErrorNewProduct("Error adding product to shopping list, check the data and try again.");
+            });
+    }
+
     React.useEffect(() => {
         axios.get("http://localhost:8080/api/v1/shoppinglist/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<ShoppingList[]>) => {
                 setShoppingList(response.data);
+                setSelectedShopL(response.data[1].id);
             })
             .catch(error => {
                 console.log(error)
@@ -116,15 +145,21 @@ function ShoppingList() {
                             </Container>
                         </Accordion.Header>
                         <Accordion.Body>
-                            <Form>
+                            <Form onSubmit={handleSubmitAddProduct}>
                                 <Form.Group className="mb-3" controlId="nameProduct">
-                                    <Form.Control required type="text" placeholder="Name" />
+                                    <Form.Control required type="text" placeholder="Name" onChange={e => setNewProductName(e.target.value)}/>
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="descriptionProduct">
-                                    <Form.Control required as="textarea" placeholder="Description" />
+                                    <Form.Control required as="textarea" placeholder="Description" onChange={e => setNewProductDescription(e.target.value)}/>
                                 </Form.Group>
                                 <Form.Group className="mb-3" controlId="shoopingList">
-                                    <Form.Select aria-label="Default select example" className="selectShoppingList">
+                                    <Form.Select onChange={(e) => onChangeShopL(e)} className="selectShoppingList">
+                                        <option disabled>Choose your home</option>
+                                        {
+                                            shoppingList.map((shopl) => (
+                                                <option value={shopl.id} key={shopl.id} selected={shopl.id+"" === localStorage.getItem("idHomeSelected")}>{shopl.name}</option>
+                                            ))
+                                        }
                                     </Form.Select>
                                 </Form.Group>
                                 <div className="errorMessage">
@@ -153,7 +188,14 @@ function ShoppingList() {
                                         <strong>Name:</strong>&nbsp;{shopl.name}
                                     </div>
                                     <div className="">
-                                        <strong>Items:</strong>&nbsp;shopl.productList
+                                        <strong>Items:</strong>
+
+                                        {
+                                            shopl.productList.map(item => {
+                                                return <span key={item}>&nbsp;{item}</span>;
+                                            })
+                                        }
+
                                     </div>
                                 </Col>
                                 <Col xs={2} className="d-flex align-items-center">
