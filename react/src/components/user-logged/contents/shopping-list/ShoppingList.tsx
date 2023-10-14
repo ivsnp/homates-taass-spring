@@ -157,7 +157,7 @@ function ShoppingList() {
                                         <option disabled>Choose your home</option>
                                         {
                                             shoppingList.map((shopl) => (
-                                                <option value={shopl.id} key={shopl.id} selected={shopl.id+"" === localStorage.getItem("idHomeSelected")}>{shopl.name}</option>
+                                                <option value={shopl.id} key={shopl.id}>{shopl.name}</option>
                                             ))
                                         }
                                     </Form.Select>
@@ -192,7 +192,8 @@ function ShoppingList() {
 
                                         {
                                             shopl.productList.map(item => {
-                                                return <span key={item}>&nbsp;{item}</span>;
+                                                // @ts-ignore
+                                                return <span key={item.id}>&nbsp;{item.product.name}</span>;
                                             })
                                         }
 

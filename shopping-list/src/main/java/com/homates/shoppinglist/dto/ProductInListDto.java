@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class ProductInListDto {
-    private int idProduct;
+    private String name;
     private String description;
 }
