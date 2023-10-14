@@ -9,11 +9,22 @@ import axios, {AxiosResponse} from "axios";
 
 function ShoppingList() {
 
+    interface Product {
+        id: number,
+        name: string
+    }
+
+    interface ProductInList {
+        id: number,
+        product: Product,
+        description: string
+    }
+
     interface ShoppingList {
         id: number,
         idHouse: string,
         name: string,
-        productList: []
+        productList: Array<ProductInList>
     }
 
     const headers = {
@@ -63,6 +74,18 @@ function ShoppingList() {
             });
     }
 
+    const handleDeleteProduct = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        axios.delete("http://localhost:8080/api/v1/shoppinglist/remove-product/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
     const onChangeShopL = (e: any) => {
         e.preventDefault();
         setSelectedShopL(e.target.value);
@@ -91,7 +114,7 @@ function ShoppingList() {
             headers: {}})
             .then((response: AxiosResponse<ShoppingList[]>) => {
                 setShoppingList(response.data);
-                setSelectedShopL(response.data[1].id);
+                setSelectedShopL(response.data[0].id);
             })
             .catch(error => {
                 console.log(error)
@@ -183,20 +206,9 @@ function ShoppingList() {
                         <Container>
                             <Row>
                                 <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
-                                <Col>
+                                <Col className="d-flex align-items-center">
                                     <div className="">
                                         <strong>Name:</strong>&nbsp;{shopl.name}
-                                    </div>
-                                    <div className="">
-                                        <strong>Items:</strong>
-
-                                        {
-                                            shopl.productList.map(item => {
-                                                // @ts-ignore
-                                                return <span key={item.id}>&nbsp;{item.product.name}</span>;
-                                            })
-                                        }
-
                                     </div>
                                 </Col>
                                 <Col xs={2} className="d-flex align-items-center">
@@ -206,6 +218,36 @@ function ShoppingList() {
                                     }}>
                                         <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
                                     </Button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    {
+                                        shopl.productList.map(item => {
+                                            return <Card body>
+                                                <Container>
+                                                    <Row>
+                                                        <Col>
+                                                            <div className="">
+                                                                <strong>Item:</strong>&nbsp;{item.product.name}
+                                                            </div>
+                                                            <div className="">
+                                                                <strong>Description:</strong>&nbsp;{item.description}
+                                                            </div>
+                                                        </Col>
+                                                        <Col xs={1} className="d-flex align-items-center">
+                                                            <Button className="action-button" onClick={(e) => {
+                                                                handleDeleteProduct(e, item.id);
+                                                            }}>
+                                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                            </Button>
+                                                        </Col>
+                                                    </Row>
+                                                </Container>
+
+                                            </Card>;
+                                        })
+                                    }
                                 </Col>
                             </Row>
                         </Container>
