@@ -17,13 +17,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://calendar:4200")
+//@CrossOrigin(origins = "http://calendar:4200")
 @RestController
 @RequestMapping("/api/v1/calendar")
 public class EventInDateController {
 
     @Autowired
     EventInDateRepository repository;
-
 
 }

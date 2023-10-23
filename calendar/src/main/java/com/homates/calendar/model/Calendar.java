@@ -4,62 +4,29 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.*;
 import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "calendar")
+@Data
+@NoArgsConstructor
 public class Calendar {
+
+    //This class manage the user-houses Calendar in which every user of the specific house can add
+    //their events that can be associated to themselves or to other users of the house, and is shared
+    //with the whole house. Also the event can be recurrent
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     //da usare quando si avrà l'user e la casa @neToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Column(name = "house")
-    private String house;
+    private int idHouse;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "events_list")
     private List<EventInDate> events;
 
-
-    public Calendar() {
-    }
-
-    public Calendar( String house, List<EventInDate> events) {
-        this.house = house;
-        this.events = events;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getHouse() {
-        return house;
-    }
-
-    public void setHouse(String house) {
-        this.house = house;
-    }
-
-    public List<EventInDate> getEvents() {
-        return events;
-    }
-
-    public void setEvents(List<EventInDate> events) {
-        this.events = events;
-    }
-
-    //eventi nella data specifica
-
-    //lista di eventi di un user
-
-    @Override
-    public String toString() {
-        return "Calendar{" +
-                "id=" + id +
-                ", house='" + house + '\'' +
-                ", events=" + events +
-                '}';
-    }
 }

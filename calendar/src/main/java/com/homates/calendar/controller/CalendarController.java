@@ -2,6 +2,10 @@ package com.homates.calendar.controller;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.homates.calendar.dto.AddEventDto;
+import com.homates.calendar.dto.CalendarDto;
+import com.homates.calendar.dto.EventInDateDto;
+import com.homates.calendar.dto.EventsForUserDto;
 import com.homates.calendar.model.Calendar;
 import com.homates.calendar.model.Event;
 import com.homates.calendar.model.EventInDate;
@@ -15,20 +19,19 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 
-@CrossOrigin(origins = "http://calendar:4200")
+//@CrossOrigin(origins = "http://calendar:4200")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/calendar")
 public class CalendarController {
 
     @Autowired
     EventRepository eventRepository;
-
     @Autowired
     CalendarRepository repository;
     @Autowired
@@ -36,144 +39,97 @@ public class CalendarController {
 
     //metodo per creare un calendario
     @PostMapping(value = "/create")
-    public ResponseEntity<Calendar> createCalendar(@RequestBody String house){
+    public ResponseEntity<String> createCalendar(@RequestBody CalendarDto calendarDto){
         System.out.println("Creating new calendar...");
-        Calendar calendar = new Calendar(house, new ArrayList<>());
-        return new ResponseEntity<>(repository.save(calendar), HttpStatus.OK);
+        Calendar _currentCalendar = new Calendar();
+        _currentCalendar.setIdHouse(calendarDto.getIdHouse());
+        _currentCalendar.setEvents(new ArrayList<>());
+        repository.save(_currentCalendar);
+        return new ResponseEntity<>("New Calendar added.", HttpStatus.OK);
     }
 
     //metodo che recupera tutti i calendari presenti
-    @GetMapping("/calendars")
-    public List<Calendar> getAllCalendars() {
+    @GetMapping("/all")
+    public ResponseEntity<List<Calendar>> getAllCalendars() {
         System.out.println("Get all calendars...");
 
         List<Calendar> calendars = new ArrayList<>();
         repository.findAll().forEach(calendars::add);
-
-        return calendars;
+        return new ResponseEntity<>(calendars, HttpStatus.OK);
     }
 
-    //metodo per creare un nuovo evento
-    @PostMapping(value= "/events/create")
-    public Event createEvent(@RequestBody Event e) {
-        System.out.println("Creating new event...");
-        eventRepository.save(e).toString();
-        return  e;
+
+    //metodo che recupera il calendario della casa specifica
+    @GetMapping("/my-calendar")
+    public ResponseEntity<Calendar> getCalendar(@RequestBody CalendarDto calendarDto) {
+        System.out.println("Get calendar of house "+calendarDto.getIdHouse()+"...");
+        Calendar _currentCalendar = new Calendar();
+        Optional<Calendar> calendar = repository.findByIdHouse(calendarDto.getIdHouse());
+        if (calendar.isEmpty())
+            return new ResponseEntity<>(_currentCalendar, HttpStatus.NOT_FOUND);
+        _currentCalendar = calendar.get();
+        return new ResponseEntity<>(_currentCalendar, HttpStatus.OK);
     }
 
-    //metodo per recuperare tutti gli eventi un certo range di date
-    @GetMapping("/events")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    Iterable<Event> events(@RequestParam("start") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate start, @RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate end) {
-        return eventRepository.findBetween(start, end);
-    }
 
     //metodo per aggiungere l'evento nelle varie date !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public List<EventInDate> addEvents(Event e){
+    @PutMapping(value = "/add_events")
+    public ResponseEntity<String> addEvents(AddEventDto addEventDto){
+        System.out.println("Add event in specific date...");
+        Optional<Event> addEvent = eventRepository.findById(addEventDto.getIdEvent());
+        if (addEvent.isEmpty())
+            return new ResponseEntity<>("The event doesn't exists", HttpStatus.NOT_FOUND);
+        Event _currEvent= addEvent.get();
+        EventInDate _currEventInDate = new EventInDate();
+        _currEventInDate.setEvent(_currEvent);
+        _currEventInDate.setDate(addEventDto.getDate());
 
+        eventInDateRepository.save(_currEventInDate);
+        Calendar cal = repository.findByIdHouse(_currEvent.getIdHouse()).get();
+        cal.getEvents().add(_currEventInDate);
+        repository.save(cal);
+        return new ResponseEntity<>("New event in date added.", HttpStatus.OK);
     }
 
-    //metodo per calcolare le date da aggiungere in base alla ricorrenza????
-
-    //metodi per modificare i vari parametri dell'evento
-    @PutMapping("/events/change/color/{id}")
-    Event setColor(@PathVariable("id") long id,@RequestBody String color) {
-        System.out.println("Changing color...");
-        Event e = eventRepository.findById(id).get();
-        e.setColor(color);
-        eventRepository.save(e);
-
-        return e;
-    }
-
-    @PutMapping("/events/change/dates/{id}")
-    Event moveEvent(@PathVariable("id") long id,@RequestBody EventMoveParams params) {
-        System.out.println("Changing dates...");
-        Event e = eventRepository.findById(id).get();
-        if (params.start!= null){
-            e.setStart(LocalDate.from(params.start));
-        }
-        if (params.end != null) {
-            e.setEnd(LocalDate.from(params.end));
-        }
-        eventRepository.save(e);
-        return e;
-    }
-
-    @PutMapping("/events/change/time/{id}")
-    Event changeTimeEvent(@PathVariable("id") long id,@RequestBody LocalTime time) {
-        System.out.println("Changing time...");
-        Event e = eventRepository.findById(id).get();
-        e.setTime(time);
-        eventRepository.save(e);
-        return e;
-    }
-
-    @PutMapping("/events/change/descr/{id}")
-    Event changeDescrEvent(@PathVariable("id") long id, @RequestBody String descr) {
-        System.out.println("Changing description...");
-        Event e = eventRepository.findById(id).get();
-        e.setDescription(descr);
-        eventRepository.save(e);
-        return e;
-    }
-
-    @PutMapping("/events/change/recur/{id}")
-    Event changeRecurEvent(@PathVariable("id") long id, @RequestBody String recur) {
-    //in caso di questa modifica occorre cancellare tutte le occorrenze di questo evento dalla data corrente in poi
-    // presenti nel calendario e ripopolarlo con quelle nuove della ricorrenza
-
-    }
-
-
-    //metodo per cancellare un evento
-    @DeleteMapping("/events/delete/{id}")
-    public ResponseEntity<String> deleteEvent(@PathVariable("id") long id) {
-        System.out.println("Deleting event...");
-
-        Optional<Event> e = eventRepository.findById(id);
-        if (e.isPresent()) {
-            eventRepository.deleteById(id);
-            return new ResponseEntity<>("Event has been deleted!", HttpStatus.OK);
-        } else
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
     //metodo per cancellare una specifica istanza dell'evento per una certa data
-    @DeleteMapping("/events_in_date/delete")
-    public ResponseEntity<Calendar> deleteEventInDate(EventToDelete ev){
+    @DeleteMapping("/events_in_date/delete/{id}")
+    public ResponseEntity<String> deleteEventInDate(@PathVariable("id") int id,EventInDateDto eventInDateDto){
         System.out.println("Deleting event in specific date...");
-        Optional<Calendar> c = repository.findByHouse(ev.house);
+        Optional<Calendar> c = repository.findByIdHouse(eventInDateDto.getIdHouse());
         if(c.isPresent()) {
             Calendar cal = c.get();
-            List<EventInDate> events = eventInDateRepository.findIn(ev.date);
+            List<EventInDate> events = eventInDateRepository.findIn(eventInDateDto.getDate());
             Optional<Event> e = eventRepository.findById(ev.id_event);
             if (events.contains(e)) {
                 EventInDate evd = events.get(events.indexOf(e));
                 cal.getEvents().remove(evd);
-                return new ResponseEntity<>(repository.save(cal), HttpStatus.OK);
+                return new ResponseEntity<>("Calendar updated", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("not found", HttpStatus.NOT_FOUND);
             }
         }else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("not found", HttpStatus.NOT_FOUND);
         }
     }
 
 
     //metodo per recuperare tutti gli eventi in una specifica data
     @GetMapping("/events_in_date")
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
-    Iterable<Event> eventsInDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDate start) {
-        return eventInDateRepository.findEvents(start);
+    public ResponseEntity<> eventsInDate(EventInDateDto eventInDateDto) {
+        return eventInDateRepository.f;
     }
 
 
 
     //metodo per prendere gli eventi associati ad uno specifico user
-    @GetMapping("/events_in_date/user/{id}/{name}")
-    public List<EventInDate> eventsForUser(@PathVariable("id") Long id,@PathVariable("name") String user){
-        Optional<Calendar> c = repository.findById(id);
+    @GetMapping("/events_in_date/user")
+    public ResponseEntity<List<EventInDate>> eventsForUser(@RequestBody EventsForUserDto efuDto){
+        //prendo l'utente e il calendario
+        //prendo tutti gli eventi associati a quell'utente
+        //prendo tutte le ricorrenze di quell'evento
+
+        Optional<Calendar> c = repository.findById(efuDto.getIdCalendar());
         List<EventInDate> events = new ArrayList<>();
         if(c.isPresent()){
             Calendar cal = c.get();
@@ -189,13 +145,12 @@ public class CalendarController {
     }
 
 
-
     //metodo per cancellare un calendario
     @DeleteMapping("/delete/{house}")
-    public ResponseEntity<String> deleteCalendar(@PathVariable("house") String house) {
+    public ResponseEntity<String> deleteCalendar(@PathVariable("house") int house) {
         System.out.println("Deleting calendar of house = " + house + "...");
 
-        Optional<Calendar> c = repository.findByHouse(house);
+        Optional<Calendar> c = repository.findByIdHouse(house);
         if (c.isPresent()) {
             Calendar cal = c.get();
             for(int i = 0; i < cal.getEvents().size(); i++){
@@ -208,17 +163,5 @@ public class CalendarController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
-    public static class EventToDelete {
-        public Long id_event;
-        public String house;
-        public LocalDate date;
-    }
-
-    public static class EventMoveParams {
-        public LocalDate start;
-        public LocalDate end;
-    }
-
-
+    //metodo che verifica se ci sono modifiche nell'evento, cancella tutte le ricorrenze dell'evento e le aggiorna con i nuovi parametri
 }

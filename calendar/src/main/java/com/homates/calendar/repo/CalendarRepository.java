@@ -13,7 +13,9 @@ import java.util.Optional;
 
 public interface CalendarRepository extends JpaRepository<Calendar, Integer> {
     Optional<Calendar> findById(int id);
-    List<Calendar> findByIdHouse(int idHouse);
-    @Query("from Calendar e where e.house = :house ")
-    public Optional<Calendar> findByHouse(@Param("house") String house);
+    Optional<Calendar> findByIdHouse(int idHouse);
+
+    List<Event>
+
+
 }
