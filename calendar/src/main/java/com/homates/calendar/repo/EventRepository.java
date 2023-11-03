@@ -1,5 +1,6 @@
 package com.homates.calendar.repo;
 
+import com.homates.calendar.model.Calendar;
 import com.homates.calendar.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,9 +18,10 @@ import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
+    Optional<Event> findById(int id);
     //metodo per cercare tutti gli eventi nell'intervallo di date indicato
-    @Query("from Event e where not(e.end < :from or e.start > :to)")
-    public Optional<List<Event>> findBetween(@Param("from")  LocalDate start, @Param("to") LocalDate end);
+    @Query("select e from Event e where not(e.end < :from or e.start > :to)")
+    Optional<List<Event>> findBetweenStartAndEnd(@Param("from") LocalDate start,@Param("to") LocalDate end);
 
 }
 

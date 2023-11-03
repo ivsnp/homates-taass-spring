@@ -3,7 +3,6 @@ package com.homates.calendar.controller;
 import com.homates.calendar.dto.ChangeEventDto;
 import com.homates.calendar.dto.EventDatesDto;
 import com.homates.calendar.dto.EventDto;
-import com.homates.calendar.model.Calendar;
 import com.homates.calendar.model.Event;
 import com.homates.calendar.repo.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,7 @@ public class EventController {
     ResponseEntity<Iterable<Event>> getEventsInDates(@RequestBody EventDatesDto eventDatesDto) {
         Iterable<Event> _currentEvents = new ArrayList<>();
 
-        Optional<List<Event>> events = eventRepository.findBetween(eventDatesDto.getStart(),eventDatesDto.getEnd());
+        Optional<List<Event>> events = eventRepository.findBetweenStartAndEnd(eventDatesDto.getStart(),eventDatesDto.getEnd());
         if (events.isEmpty())
             return new ResponseEntity<>(_currentEvents, HttpStatus.NOT_FOUND);
         _currentEvents = events.get();

@@ -12,16 +12,17 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EventInDateRepository extends JpaRepository<EventInDate, Integer> {
-    //@Query("from EventInDate e where e.date = :date ")
-    public List<EventInDate> findIn(@Param("date") LocalDate start);
+    @Query("select e from EventInDate e where e.date = :date ")
+    Optional<List<EventInDate>> findIn(@Param("date") LocalDate date);
 
-    //@Query("from EventInDate e join e.event where e.date = :date ")
-    public List<Event> findEventsFromStart(@Param("date") LocalDate start);
+    @Query("select e from EventInDate e join e.event where e.date = :date ")
+    List<Event> findByStart(@Param("date") LocalDate date);
 
-    //@Query("from Event e where not(e.end < :from or e.start > :to)")
-    public Optional<List<EventInDate>> findBetween(@Param("from") LocalDate start, @Param("to") LocalDate end);
+    @Query("select e from Event e where not(e.end < :from and e.start > :to)")
+    Optional<List<EventInDate>> findBetweenStartAndEnd(@Param("from") LocalDate start,@Param("to") LocalDate end);
 
 }
+
 
 
 

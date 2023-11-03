@@ -24,9 +24,10 @@ public class Calendar {
     @Column(name = "house")
     private int idHouse;
 
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "events_list")
     private List<EventInDate> events;
-
+    //private List<Event> events;
 }

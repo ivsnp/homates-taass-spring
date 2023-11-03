@@ -1,7 +1,5 @@
 package com.homates.calendar.controller;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.homates.calendar.dto.AddEventDto;
 import com.homates.calendar.dto.CalendarDto;
 import com.homates.calendar.dto.EventInDateDto;
@@ -13,7 +11,6 @@ import com.homates.calendar.repo.CalendarRepository;
 import com.homates.calendar.repo.EventInDateRepository;
 import com.homates.calendar.repo.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,11 +57,11 @@ public class CalendarController {
 
 
     //metodo che recupera il calendario della casa specifica
-    @GetMapping("/my-calendar")
-    public ResponseEntity<Calendar> getCalendar(@RequestBody CalendarDto calendarDto) {
-        System.out.println("Get calendar of house "+calendarDto.getIdHouse()+"...");
+    @GetMapping("/my-calendar/{house}")
+    public ResponseEntity<Calendar> getCalendar(@PathVariable("house") int house) {
+        System.out.println("Get calendar of house "+house+"...");
         Calendar _currentCalendar = new Calendar();
-        Optional<Calendar> calendar = repository.findByIdHouse(calendarDto.getIdHouse());
+        Optional<Calendar> calendar = repository.findByIdHouse(house);
         if (calendar.isEmpty())
             return new ResponseEntity<>(_currentCalendar, HttpStatus.NOT_FOUND);
         _currentCalendar = calendar.get();
@@ -73,12 +70,12 @@ public class CalendarController {
 
 
     //metodo per aggiungere l'evento nelle varie date !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    @PutMapping(value = "/add_events")
+    @PostMapping(value = "/add_events")
     public ResponseEntity<String> addEvents(AddEventDto addEventDto){
         System.out.println("Add event in specific date...");
         Optional<Event> addEvent = eventRepository.findById(addEventDto.getIdEvent());
         if (addEvent.isEmpty())
-            return new ResponseEntity<>("The event doesn't exists", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("The event "+addEventDto.getIdEvent()+" doesn't exists", HttpStatus.NOT_FOUND);
         Event _currEvent= addEvent.get();
         EventInDate _currEventInDate = new EventInDate();
         _currEventInDate.setEvent(_currEvent);
@@ -99,8 +96,11 @@ public class CalendarController {
         Optional<Calendar> c = repository.findByIdHouse(eventInDateDto.getIdHouse());
         if(c.isPresent()) {
             Calendar cal = c.get();
-            List<EventInDate> events = eventInDateRepository.findIn(eventInDateDto.getDate());
-            Optional<Event> e = eventRepository.findById(ev.id_event);
+            Optional<List<EventInDate>> _events = eventInDateRepository.findIn(eventInDateDto.getDate());
+            if (_events.isEmpty())
+                return new ResponseEntity<>("events not found", HttpStatus.NOT_FOUND);
+            List<EventInDate> events = _events.get();
+            Optional<Event> e = eventRepository.findById(id);
             if (events.contains(e)) {
                 EventInDate evd = events.get(events.indexOf(e));
                 cal.getEvents().remove(evd);
@@ -115,14 +115,16 @@ public class CalendarController {
 
 
     //metodo per recuperare tutti gli eventi in una specifica data
-    @GetMapping("/events_in_date")
-    public ResponseEntity<> eventsInDate(EventInDateDto eventInDateDto) {
-        return eventInDateRepository.f;
-    }
+  //  @GetMapping("/events_in_date")
+  //  public ResponseEntity<> eventsInDate(EventInDateDto eventInDateDto) {
+  //      return eventInDateRepository.f;
+  //  }
 
 
 
     //metodo per prendere gli eventi associati ad uno specifico user
+
+    //DA RIVEDEREEEEEEEEEE
     @GetMapping("/events_in_date/user")
     public ResponseEntity<List<EventInDate>> eventsForUser(@RequestBody EventsForUserDto efuDto){
         //prendo l'utente e il calendario
@@ -135,12 +137,12 @@ public class CalendarController {
             Calendar cal = c.get();
             for(int i = 0; i < cal.getEvents().size(); i++){
                 EventInDate _evd = cal.getEvents().get(i);
-                if(_evd.getEvent().getUser() == user){
+                if(_evd.getEvent().getUser().equals(efuDto.getIdUser())){
                     events.add(_evd);
                 }
             }
         }
-        return events;
+        return new ResponseEntity<>(events, HttpStatus.NOT_FOUND);
 
     }
 

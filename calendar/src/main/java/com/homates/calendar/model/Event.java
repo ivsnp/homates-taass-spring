@@ -2,9 +2,14 @@ package com.homates.calendar.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import net.logicsquad.recurring.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 
 @Entity
@@ -35,7 +40,7 @@ public class Event {
     @Column(name = "time")
     private LocalTime time;
 
-    @Column(name= "repetition")
+   @Column(name = "repetition")
     private String repetition;
 
     @Column(name= "color")
