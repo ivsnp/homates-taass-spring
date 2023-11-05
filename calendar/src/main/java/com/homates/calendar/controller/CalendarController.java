@@ -15,7 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -70,21 +72,45 @@ public class CalendarController {
 
 
     //metodo per aggiungere l'evento nelle varie date !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    @PostMapping(value = "/add_events")
-    public ResponseEntity<String> addEvents(AddEventDto addEventDto){
-        System.out.println("Add event in specific date...");
-        Optional<Event> addEvent = eventRepository.findById(addEventDto.getIdEvent());
-        if (addEvent.isEmpty())
-            return new ResponseEntity<>("The event "+addEventDto.getIdEvent()+" doesn't exists", HttpStatus.NOT_FOUND);
-        Event _currEvent= addEvent.get();
-        EventInDate _currEventInDate = new EventInDate();
-        _currEventInDate.setEvent(_currEvent);
-        _currEventInDate.setDate(addEventDto.getDate());
+    @PostMapping(value = "/add_event/weekly/{day}/{id}")
+    public ResponseEntity<String> addWeeklyEvents(@PathVariable("day") int day,@PathVariable("id") int id){
+        System.out.println("Add event every recurrence of day in week...");
 
-        eventInDateRepository.save(_currEventInDate);
+        //Optional<Event> addEvent = eventRepository.findById(addEventDto.getIdEvent());
+
+        Optional<Event> addEvent = eventRepository.findById(id);
+        if(addEvent.isEmpty())
+            return new ResponseEntity<>("The event "+id+" doesn't exists", HttpStatus.NOT_FOUND);
+        Event _currEvent= addEvent.get();
         Calendar cal = repository.findByIdHouse(_currEvent.getIdHouse()).get();
-        cal.getEvents().add(_currEventInDate);
+        LocalDate _currDate = _currEvent.getStart().with(TemporalAdjusters.nextOrSame(DayOfWeek.of(day)));
+        while(!_currDate.isAfter(_currEvent.getEnd())){
+            if(_currDate.getDayOfWeek().equals(DayOfWeek.of(day))) {
+                EventInDate _currEventInDate = new EventInDate();
+                _currEventInDate.setEvent(_currEvent);
+                _currEventInDate.setDate(_currDate);
+                eventInDateRepository.save(_currEventInDate);
+                cal.getEvents().add(_currEventInDate);
+            }
+            _currDate = _currEvent.getEnd().plusWeeks(1);
+        }
+
         repository.save(cal);
+        return new ResponseEntity<>("New event in date added.", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add_event/monthly/{month}")
+    public ResponseEntity<String> addMonthlyEvents(@PathVariable("month") int month, AddEventDto addEventDto){
+        return new ResponseEntity<>("New event in date added.", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add_event/yearly")
+    public ResponseEntity<String> addYearlyEvents(AddEventDto addEventDto){
+        return new ResponseEntity<>("New event in date added.", HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/add_event/everyday")
+    public ResponseEntity<String> addEverydayEvents(AddEventDto addEventDto){
         return new ResponseEntity<>("New event in date added.", HttpStatus.OK);
     }
 

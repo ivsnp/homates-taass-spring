@@ -15,7 +15,5 @@ public interface CalendarRepository extends JpaRepository<Calendar, Integer> {
     Optional<Calendar> findById(int id);
     Optional<Calendar> findByIdHouse(int idHouse);
 
-    //List<Event>
-
 
 }

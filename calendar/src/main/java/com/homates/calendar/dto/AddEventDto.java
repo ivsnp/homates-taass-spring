@@ -7,5 +7,6 @@ import java.time.LocalDate;
 public class AddEventDto {
 
     private int idEvent;
-    private LocalDate date;
+    //private LocalDate start;
+    //private LocalDate end;
 }

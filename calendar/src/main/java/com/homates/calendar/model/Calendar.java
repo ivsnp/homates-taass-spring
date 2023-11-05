@@ -29,5 +29,4 @@ public class Calendar {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "events_list")
     private List<EventInDate> events;
-    //private List<Event> events;
 }
