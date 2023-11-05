@@ -33,6 +33,7 @@ function ShoppingList() {
     };
 
     const title: string = "Shopping list";
+    const [editList, setEditList] = useState(false);
     const [shoppingList, setShoppingList] = useState<ShoppingList[]>();
     const [newListName, setNewListName] = useState('');
     const [errorNewList, setErrorList] = useState('');
@@ -40,6 +41,7 @@ function ShoppingList() {
     const [selectedShopL, setSelectedShopL] = useState<number>();
     const [newProductName, setNewProductName] = useState('');
     const [newProductDescription, setNewProductDescription] = useState('');
+    const [nameShopL, setNameShopL] = useState('');
 
 
 
@@ -72,6 +74,11 @@ function ShoppingList() {
             .catch(function (error) {
                 console.log(error)
             });
+    }
+
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+        setEditList(true);
     }
 
     const handleDeleteProduct = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
@@ -204,22 +211,50 @@ function ShoppingList() {
                 {shoppingList.map((shopl) => (
                     <Card body>
                         <Container>
-                            <Row>
-                                <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
-                                <Col className="d-flex align-items-center">
-                                    <div className="">
-                                        <strong>Name:</strong>&nbsp;{shopl.name}
-                                    </div>
-                                </Col>
-                                <Col xs={2} className="d-flex align-items-center">
-                                    <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                    <Button className="action-button" onClick={(e) => {
-                                        handleDeleteList(e, shopl.id);
-                                    }}>
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                    </Button>
-                                </Col>
-                            </Row>
+                            {!editList &&
+                                <Row>
+                                    <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
+                                    <Col className="d-flex align-items-center">
+                                        <div className="">
+                                            <strong>Name:</strong>&nbsp;{shopl.name}
+                                        </div>
+                                    </Col>
+                                    <Col xs={2} className="d-flex align-items-center">
+                                        <Button className="action-button" onClick={(e) => {
+                                            handleEditList(e, shopl.id);
+                                        }}>
+                                            <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                        </Button>&nbsp;
+                                        <Button className="action-button" onClick={(e) => {
+                                            handleDeleteList(e, shopl.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            }
+                            {editList &&
+                                <Form>
+                                    <Row>
+                                        <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
+                                        <Col className="d-flex align-items-center">
+                                            <Form.Group className="" controlId="nameUser">
+                                                <Form.Control required type="text" placeholder='Name' defaultValue={shopl.name}  onChange={e => setNameShopL(e.target.value)}/>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            <Button type="submit" className="HoMatesButton">
+                                                Save
+                                            </Button>&nbsp;
+                                            <Button className="action-button" onClick={(e) => {
+                                                handleDeleteList(e, shopl.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            }
                             <Row>
                                 <Col>
                                     {
