@@ -38,12 +38,13 @@ function Board() {
         let month = date.getMonth() + 1;
         let year = date.getFullYear();
 
+        //("0" + this.getDate()).slice(-2)
+
         const announcement = {
-            description: description,
             idHouse: localStorage.getItem("idHomeSelected"),
+            description: description,
             user: username,
-            date: year+"-"+month+"-"+day,
-            documents: []
+            date: year+"-"+month+"-"+("0" + day).slice(-2)
         };
 
         axios.post("http://localhost:8080/api/v1/bacheca/announces/create", announcement,
@@ -78,8 +79,6 @@ function Board() {
                 console.log(error)
             });
     }, [localStorage.getItem("idHomeSelected")]);
-
-
 
 
     if (announces === undefined) return (

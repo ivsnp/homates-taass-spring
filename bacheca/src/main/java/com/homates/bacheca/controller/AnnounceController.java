@@ -1,5 +1,6 @@
 package com.homates.bacheca.controller;
 
+import com.homates.bacheca.dto.AnnounceDto;
 import com.homates.bacheca.model.Announce;
 import com.homates.bacheca.model.Document;
 import com.homates.bacheca.repo.AnnounceRepository;
@@ -32,8 +33,16 @@ public class AnnounceController {
 
     //add announce
     @PostMapping(value = "/announces/create")
-    public ResponseEntity<String> addAnnounce(@RequestBody Announce announce) {
+    public ResponseEntity<String> addAnnounce(@RequestBody AnnounceDto announceDto) {
         System.out.println("Creating new announce...");
+
+        Announce announce = new Announce();
+        announce.setDate(announceDto.getDate());
+        announce.setDescription(announceDto.getDescription());
+        announce.setUser(announceDto.getUser());
+        announce.setIdHouse(announceDto.getIdHouse());
+        announce.setDocuments(new ArrayList<>());
+
         repository.save(announce);
         return new ResponseEntity<>("Announcement added.", HttpStatus.OK);
     }
@@ -46,15 +55,17 @@ public class AnnounceController {
     }
 
     @PutMapping(value = "/announces/update/{id}")
-    public ResponseEntity<Announce> updateAnnounce(@PathVariable("id") int id, @RequestBody Announce newAnnounce) {
+    public ResponseEntity<Announce> updateAnnounce(@PathVariable("id") int id, @RequestBody AnnounceDto announceDto) {
         System.out.println("Updating announce...");
 
         Optional<Announce> announce = repository.findById(id);
         if (announce.isPresent()) {
             Announce _currentAnnounce = announce.get();
-            _currentAnnounce.setDescription(newAnnounce.getDescription());
-            _currentAnnounce.setDate((newAnnounce.getDate()));
-            _currentAnnounce.setUser((newAnnounce.getUser()));
+            _currentAnnounce.setDescription(announceDto.getDescription());
+            _currentAnnounce.setDate((announceDto.getDate()));
+            _currentAnnounce.setUser((announceDto.getUser()));
+            _currentAnnounce.setIdHouse((announceDto.getIdHouse()));
+            _currentAnnounce.setDocuments(new ArrayList<>());
             return new ResponseEntity<>(repository.save(_currentAnnounce), HttpStatus.OK);
         } else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -73,7 +84,7 @@ public class AnnounceController {
     }
 
 
-    @PutMapping(value = "/announces/add-document/{id}")
+    /*@PutMapping(value = "/announces/add-document/{id}")
     public ResponseEntity<Announce> addDocument(@PathVariable("id") int id, @RequestBody Document document) {
         System.out.println("Add Document in Announce with ID = " + id + "...");
         Optional<Announce> announce = repository.findById(id);
@@ -128,5 +139,5 @@ public class AnnounceController {
             return new ResponseEntity<>(_currentAnnounce, HttpStatus.OK);
         } else
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    }*/
 }
