@@ -81,10 +81,22 @@ function Houses() {
             });
     }
 
-    const handleDeleteHouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+    const handleDeleteRoommate = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idHouse: number, username: string) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
+        axios.delete("http://localhost:8080/api/v1/user-houses/houses/remove-roommate/"+idHouse+"/"+username, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
+    const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        axios.delete("http://localhost:8080/api/v1/bacheca/announces/delete/"+id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -98,6 +110,7 @@ function Houses() {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);
+                setIdHouseNewPerson(""+response.data[0].id);
             })
             .catch(error => {
                 console.log(error)
@@ -234,6 +247,34 @@ function Houses() {
                                     }}>
                                         <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
                                     </Button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <div className="">
+                                        <strong>Roommates:</strong>
+                                    </div>
+                                    {
+                                        myhome.roomMates.map(item => {
+                                            return <Card body>
+                                                <Container>
+                                                    <Row>
+                                                        <Col className="d-flex align-items-center">
+                                                            <strong>Name:</strong>&nbsp;{item}
+                                                        </Col>
+                                                        <Col xs={1} className="d-flex align-items-center">
+                                                            <Button className="action-button" onClick={(e) => {
+                                                                handleDeleteRoommate(e, myhome.id, item);
+                                                            }}>
+                                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                            </Button>
+                                                        </Col>
+                                                    </Row>
+                                                </Container>
+
+                                            </Card>;
+                                        })
+                                    }
                                 </Col>
                             </Row>
                         </Container>

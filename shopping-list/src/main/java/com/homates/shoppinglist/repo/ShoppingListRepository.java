@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface ShoppingListRepository extends JpaRepository<ShoppingList, Integer> {
     Optional<ShoppingList> findById(int id);
-    List<ShoppingList> findByName(String name);
+    Optional<ShoppingList> findByName(String name);
     List<ShoppingList> findByIdHouse(int idHouse);
 }

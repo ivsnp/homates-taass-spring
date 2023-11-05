@@ -32,16 +32,17 @@ public class AnnounceController {
 
     //add announce
     @PostMapping(value = "/announces/create")
-    public Announce addAnnounce(@RequestBody Announce announce) {
+    public ResponseEntity<String> addAnnounce(@RequestBody Announce announce) {
         System.out.println("Creating new announce...");
-        return repository.save(announce);
+        repository.save(announce);
+        return new ResponseEntity<>("Announcement added.", HttpStatus.OK);
     }
 
     @GetMapping("/announces/house/{idHouse}")
-    public List<Announce> getAnnounce(@PathVariable("idHouse") int idHouse) {
+    public ResponseEntity<List<Announce>> getAnnounce(@PathVariable("idHouse") int idHouse) {
         System.out.println("Get all announces...");
         List<Announce> announceList = repository.findByIdHouse(idHouse);
-        return announceList;
+        return new ResponseEntity<>(announceList, HttpStatus.OK);
     }
 
     @PutMapping(value = "/announces/update/{id}")

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
+//@CrossOrigin(origins = "http://localhost:3000", methods = {RequestMethod.OPTIONS, RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}, allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/api/v1/shoppinglist")
 public class ShoppingListController {
@@ -42,7 +42,7 @@ public class ShoppingListController {
 
         List<ProductInList> _currentProductsInList = new ArrayList<>();
         for (ProductInListDto productInListDto: shoppingListDto.getProducts()){
-            Optional<Product> _currentProduct = productRepository.findById(productInListDto.getIdProduct());
+            Optional<Product> _currentProduct = productRepository.findByName(productInListDto.getName().toLowerCase());
             Product product;
 
             if (_currentProduct.isPresent()){
@@ -53,6 +53,7 @@ public class ShoppingListController {
 
                 _currentProductsInList.add(productInList);
             }
+            // TODO: create product if it does not exist
         }
 
         _currentShoppingList.setProductList(_currentProductsInList);
@@ -79,7 +80,7 @@ public class ShoppingListController {
 
         List<ShoppingList> shoppingList = shoppingListRepository.findByIdHouse(id);
         if (shoppingList.isEmpty())
-            return new ResponseEntity<>(_currentShoppingLists, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(_currentShoppingLists, HttpStatus.OK);
         _currentShoppingLists = shoppingList;
         return new ResponseEntity<>(_currentShoppingLists, HttpStatus.OK);
     }
@@ -115,16 +116,26 @@ public class ShoppingListController {
         return new ResponseEntity<>("ProductInList updated.", HttpStatus.OK);
     }
 
-    @PostMapping(value = "/add-product/{idHouse}")
-    public ResponseEntity<String> addProduct(@PathVariable("idHouse") int id,
+    @PostMapping(value = "/add-product/{idShopList}")
+    public ResponseEntity<String> addProduct(@PathVariable("idShopList") int idShopL,
                                              @RequestBody ProductInListDto productInListDto) {
-        System.out.println("Adding product to shopping list "+id+" ...");
+        System.out.println("Adding product to shopping list "+idShopL+" ...");
 
-        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(id);
+        productInListDto.setName(productInListDto.getName().toLowerCase());
+
+        Optional<ShoppingList> shoppingList = shoppingListRepository.findById(idShopL);
         if (shoppingList.isEmpty())
             return new ResponseEntity<>("Shopping list not found.", HttpStatus.NOT_FOUND);
 
-        Optional<Product> _currentProduct = productRepository.findById(productInListDto.getIdProduct());
+        Optional<Product> _currentProduct = productRepository.findByName(productInListDto.getName());
+        Product productToAdd = new Product();
+        if (_currentProduct.isEmpty()) {
+            productToAdd.setName(productInListDto.getName());
+            productToAdd.setCategory("");
+            productRepository.save(productToAdd);
+        }
+        _currentProduct = productRepository.findByName(productInListDto.getName());
+
         if (_currentProduct.isEmpty())
             return new ResponseEntity<>("Product not found.", HttpStatus.NOT_FOUND);
 

@@ -20,6 +20,7 @@ public class ShoppingList {
 
     private int idHouse;
 
+    @Column(unique=true)
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
