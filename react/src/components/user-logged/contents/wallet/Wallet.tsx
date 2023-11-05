@@ -42,7 +42,8 @@ function Wallet() {
     const [errorNewPayment, setErrorNewPayment] = useState('');
     const [errorNewRefund, setErrorNewRefund] = useState('');
     const [transactions, setTransactions] = useState<(Payment | Refund)[]>();
-    const [roommates, setRoommates] = useState<Wallet[]>();
+    const [roommatesBalances, setRoommatesBalances] = useState<Wallet[]>();
+    const [roommates, setRoommates] = useState<String[]>();
 
     const [addPaymentDescription, setAddPaymentDescription] = useState('');
     const [addPaymentAmount, setAddPaymentAmount] = useState('');
@@ -117,8 +118,12 @@ function Wallet() {
         axios.get("http://localhost:8080/api/v1/wallet/transaction/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<(Payment | Refund)[]>) => {
-                response.data.sort((a, b) => b.date.localeCompare(a.date));
-                setTransactions(response.data);
+                if (response.data === undefined || response.data.length == 0) {
+                    setTransactions([]);
+                } else {
+                    response.data.sort((a, b) => b.date.localeCompare(a.date));
+                    setTransactions(response.data);
+                }
             })
             .catch(error => {
                 console.log(error)
@@ -129,12 +134,39 @@ function Wallet() {
         axios.get("http://localhost:8080/api/v1/wallet/balances/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Wallet[]>) => {
-                setRoommates(response.data);
+                if (response.data === undefined || response.data.length == 0){
+                    // if there are no roommates
+                    setRoommatesBalances([]);
+                } else {
+                    setRoommatesBalances(response.data);
 
-                // setting default usernames
-                setAddPaymentUserameBy(response.data[1].username);
-                setAddRefundUsernameTo(response.data[1].username);
-                setAddRefundUserameFrom(response.data[1].username);
+                    // setting default usernames
+                    /*setAddPaymentUserameBy(response.data[1].username);
+                    setAddRefundUsernameTo(response.data[1].username);
+                    setAddRefundUserameFrom(response.data[1].username);*/
+                }
+            })
+            .catch(error => {
+                console.log(error)
+            });
+    }, [localStorage.getItem("idHomeSelected")]);
+
+    React.useEffect(() => {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/rommates/"+localStorage.getItem("idHomeSelected"), {
+            headers: {}})
+            .then((response: AxiosResponse<string[]>) => {
+                console.log(response.data)
+                if (response.data === undefined || response.data.length == 0){
+                    // if there are no roommates
+                    setRoommates([]);
+                } else {
+                    setRoommates(response.data);
+
+                    // setting default usernames
+                    setAddPaymentUserameBy(response.data[0]);
+                    setAddRefundUsernameTo(response.data[0]);
+                    setAddRefundUserameFrom(response.data[0]);
+                }
             })
             .catch(error => {
                 console.log(error)
@@ -142,15 +174,15 @@ function Wallet() {
     }, [localStorage.getItem("idHomeSelected")]);
 
     const handleCheckboxChange = (data: any) => {
-        const isChecked = addPaymentUsernameSplit.some(checkedCheckbox => checkedCheckbox === data.username)
+        const isChecked = addPaymentUsernameSplit.some(checkedCheckbox => checkedCheckbox === data)
         if (isChecked)
             setAddPaymentUsernameSplit(
-                addPaymentUsernameSplit.filter((checkedCheckbox) => checkedCheckbox !== data.username));
+                addPaymentUsernameSplit.filter((checkedCheckbox) => checkedCheckbox !== data));
         else
-            setAddPaymentUsernameSplit(addPaymentUsernameSplit.concat(data.username));
+            setAddPaymentUsernameSplit(addPaymentUsernameSplit.concat(data));
     };
 
-    if (transactions === undefined || roommates === undefined) return (
+    if (transactions === undefined || roommatesBalances === undefined || roommates === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -158,6 +190,8 @@ function Wallet() {
         </div>
     );
 
+    // @ts-ignore
+    // @ts-ignore
     // @ts-ignore
     return (
         <div className="Wallet">
@@ -174,7 +208,7 @@ function Wallet() {
                                             </h3>
                                         </Col>
                                         <Col>
-                                            {roommates.map((roommate) => (
+                                            {roommatesBalances.map((roommate) => (
                                                 <Row>
                                                     <Col sm={4}>
                                                         <div className="RoomMateName">
@@ -228,7 +262,8 @@ function Wallet() {
                                                         <InputGroup.Text id="fromRefund">Pay:</InputGroup.Text>
                                                         <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm" onChange={e => setAddPaymentUserameBy(e.target.value)}>
                                                             {roommates.map((roommate) => (
-                                                                <option value={roommate.username} key={roommate.username}>{roommate.username}</option>
+                                                                //@ts-ignore
+                                                                <option value={roommate} key={roommate}>{roommate}</option>
                                                             ))}
                                                         </Form.Select>
                                                     </InputGroup>
@@ -237,9 +272,10 @@ function Wallet() {
                                                         {roommates.map((roommate) => (
                                                             <Form.Check
                                                                 type="checkbox"
-                                                                id={roommate.username}
-                                                                label={roommate.username}
-                                                                checked={addPaymentUsernameSplit.some(checkedCheckbox => checkedCheckbox === roommate.username)}
+                                                                //@ts-ignore
+                                                                id={roommate}
+                                                                label={roommate}
+                                                                checked={addPaymentUsernameSplit.some(checkedCheckbox => checkedCheckbox === roommate)}
                                                                 onChange={() => handleCheckboxChange(roommate)}
                                                             />
                                                         ))}
@@ -270,7 +306,8 @@ function Wallet() {
                                                         <InputGroup.Text id="fromRefund">From:</InputGroup.Text>
                                                         <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm" onChange={e => setAddRefundUserameFrom(e.target.value)}>
                                                             {roommates.map((roommate) => (
-                                                                <option value={roommate.username} key={roommate.username}>{roommate.username}</option>
+                                                                //@ts-ignore
+                                                                <option value={roommate} key={roommate}>{roommate}</option>
                                                             ))}
                                                         </Form.Select>
                                                     </InputGroup>
@@ -278,7 +315,8 @@ function Wallet() {
                                                         <InputGroup.Text id="ToRefund">To:</InputGroup.Text>
                                                         <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm"onChange={e => setAddRefundUsernameTo(e.target.value)}>
                                                             {roommates.map((roommate) => (
-                                                                <option value={roommate.username} key={roommate.username}>{roommate.username}</option>
+                                                                //@ts-ignore
+                                                                <option value={roommate} key={roommate}>{roommate}</option>
                                                             ))}
                                                         </Form.Select>
                                                     </InputGroup>

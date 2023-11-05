@@ -79,6 +79,23 @@ public class HouseController {
         return new ResponseEntity<>(houseUsersDto, HttpStatus.OK);
     }
 
+    @GetMapping("/houses/rommates/{idHouse}")
+    public ResponseEntity<List<String>> getItem(@PathVariable("idHouse") int idHouse) {
+        System.out.println("Getting house...");
+
+        Optional<House> house = houseRepository.findById(idHouse);
+        if (house.isEmpty())
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+
+        House _currentHouse = house.get();
+
+        List<UserEntity> roomMates = _currentHouse.getRoomMates();
+        ArrayList<String> _currentRoomMates = new ArrayList<>();
+        for (UserEntity u: roomMates)
+            _currentRoomMates.add(u.getUsername());
+        return new ResponseEntity<>(_currentRoomMates, HttpStatus.OK);
+    }
+
     @PutMapping(value = "/houses/update/{id}")
     public ResponseEntity<String> updateItem(@PathVariable("id") int id, @RequestBody HouseDto newHouseDto) {
         System.out.println("Updating house "+id+" data...");

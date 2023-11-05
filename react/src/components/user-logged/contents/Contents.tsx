@@ -33,6 +33,11 @@ function Houses() {
         axios.get("http://localhost:8080/api/v1/user-houses/houses/ivsnp", {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
+                if (response.data === undefined || response.data.length == 0){
+                    // if there are no homes
+                    window.location.assign("/user/houses");
+                }
+
                 setMyhomes(response.data);
                 setSelectedHome(response.data[0].id);
                 if (localStorage.getItem("idHomeSelected") === null)
