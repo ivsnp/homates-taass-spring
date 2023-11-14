@@ -178,11 +178,11 @@ services:
  #     - 3000:3000
  #   stdin_open: true
  #   tty: true
- #   networks:
- #     - homatesnet
- #   deploy:
- #     restart_policy:
- #       condition: on-failure
+  #  networks:
+  #    - homatesnet
+  #  deploy:
+  #    restart_policy:
+  #      condition: on-failure
 
   user-houses:
     build: user-houses

@@ -8,6 +8,7 @@ import NotFound from "../../notFound/NotFound";
 import axios, {AxiosResponse} from "axios";
 import Board from "./board/Board";
 import ShoppingList from "./shopping-list/ShoppingList";
+import Calendar from "./calendar/Calendar";
 
 function Houses() {
 
@@ -84,6 +85,10 @@ function Houses() {
                     </Route>
                     <Route exact path = "/user/task/shopping-list">
                         <ShoppingList />
+                    </Route>
+                    <Route exact path = "/user/task/calendar">
+                        <Calendar />
+
                     </Route>
                     <Route exact path="/user">
                         <Wallet />

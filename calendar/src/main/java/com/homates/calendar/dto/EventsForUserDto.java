@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class EventsForUserDto {
 
-    private int idCalendar;
-    private int idUser;
+    private int idHouse;
+    private String user;
 }

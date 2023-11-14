@@ -18,6 +18,7 @@ import java.util.Optional;
 
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
+    List<Event> findByIdHouse(int idHouse);
     Optional<Event> findById(int id);
     //metodo per cercare tutti gli eventi nell'intervallo di date indicato
     @Query("select e from Event e where not(e.end < :from or e.start > :to)")
