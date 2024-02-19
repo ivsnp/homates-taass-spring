@@ -41,7 +41,7 @@ function ShoppingList() {
     const [selectedShopL, setSelectedShopL] = useState<number>();
     const [newProductName, setNewProductName] = useState('');
     const [newProductDescription, setNewProductDescription] = useState('');
-    const [nameShopL, setNameShopL] = useState('');
+    const [nameShopL, setNameShopL] = useState<{[idItem: string]: boolean}>({});
 
 
 
@@ -86,7 +86,7 @@ function ShoppingList() {
 
         const shopl = {
             idHouse: localStorage.getItem("idHomeSelected"),
-            name: nameShopL
+            name: nameShopL[id]
         };
         console.log(shopl)
 
@@ -264,7 +264,8 @@ function ShoppingList() {
                                         <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
                                         <Col className="d-flex align-items-center">
                                             <Form.Group className="" controlId="nameUser">
-                                                <Form.Control required type="text" placeholder='Name' defaultValue={shopl.name}  onChange={e => setNameShopL(e.target.value)}/>
+                                                <Form.Control required type="text" placeholder='Name' defaultValue={shopl.name}  onChange={e =>
+                                                    setNameShopL(nameShopL => ({...nameShopL, [shopl.id]: e.target.value}))}/>
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} className="d-flex align-items-center">
