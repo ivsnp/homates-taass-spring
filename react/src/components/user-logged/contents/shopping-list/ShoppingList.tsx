@@ -33,7 +33,7 @@ function ShoppingList() {
     };
 
     const title: string = "Shopping list";
-    const [editList, setEditList] = useState(false);
+    const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
     const [shoppingList, setShoppingList] = useState<ShoppingList[]>();
     const [newListName, setNewListName] = useState('');
     const [errorNewList, setErrorList] = useState('');
@@ -76,21 +76,27 @@ function ShoppingList() {
             });
     }
 
-    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number) => {
         event.preventDefault(); // reload page after submit
-        setEditList(true);
+        setEditList(editList => ({...editList, [key]: true}))
     }
 
     const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        /*axios.post("http://localhost:8080/api/v1/shoppinglist/delete/"+id, {})
+        const shopl = {
+            idHouse: localStorage.getItem("idHomeSelected"),
+            name: nameShopL
+        };
+        console.log(shopl)
+
+        axios.put("http://localhost:8080/api/v1/shoppinglist/update-metadata/"+id, shopl)
             .then(function (response) {
                 window.location.reload();
             })
             .catch(function (error) {
                 console.log(error)
-            });*/
+            });
     }
 
     const handleDeleteProduct = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
@@ -134,13 +140,20 @@ function ShoppingList() {
             .then((response: AxiosResponse<ShoppingList[]>) => {
                 setShoppingList(response.data);
                 setSelectedShopL(response.data[0].id);
+
+                const eList: {[idItem: number]: boolean} = {}
+                for (const key in response.data){
+                    eList[key] = false;
+                }
+
+                setEditList(eList);
             })
             .catch(error => {
                 console.log(error)
             });
     }, [localStorage.getItem("idHomeSelected")]);
 
-    if (shoppingList === undefined) return (
+    if (shoppingList === undefined || Object.keys(editList).length == 0) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -223,7 +236,7 @@ function ShoppingList() {
                 {shoppingList.map((shopl) => (
                     <Card body>
                         <Container>
-                            {!editList &&
+                            {!editList[shopl.id] &&
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
                                     <Col className="d-flex align-items-center">
@@ -245,7 +258,7 @@ function ShoppingList() {
                                     </Col>
                                 </Row>
                             }
-                            {editList &&
+                            {editList[shopl.id] &&
                                 <Form>
                                     <Row>
                                         <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
