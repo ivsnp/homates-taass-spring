@@ -5,13 +5,21 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import {FcGoogle} from "react-icons/fc";
 import {Button, Container, Nav, Navbar, Tab, Tabs} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
+import {GoogleLogin} from 'react-google-login';
 
 
+const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
 function Login() {
     const title: string = "Login HoMates";
 
     const [justifyActive, setJustifyActive] = useState('tab1');;
 
+    const onSuccess = (res: any) => {
+        console.log("LOGIN SUCCESS! Current user ", res.profileObj)
+    }
+    const onFailure = (res: any) => {
+        console.log("LOGIN FAILED! res: ", res);
+    }
     const handleJustifyClick = (value: string) => {
         if (value === justifyActive) {
             return;
@@ -38,6 +46,13 @@ function Login() {
 
                             <MDBBtn tag='a' color='none' className='m-1'>
                                 <FcGoogle style={{fontSize: '30px'}}/>
+                                <GoogleLogin
+                                    clientId={clientId}
+                                    buttonText="Login"
+                                    onSuccess={onSuccess}
+                                    onFailure={onFailure}
+                                    cookiePolicy={'single_host_origin'}
+                                    isSignedIn={true} />
                             </MDBBtn>
                         </div>
 
