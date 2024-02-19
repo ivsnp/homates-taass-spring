@@ -65,6 +65,11 @@
     column-gap: 20px;
 }
 
+.subAccount{
+    display: flex;
+    align-items: center;
+}
+
 .navbar-brand img{
     max-height: 537px;
     /*padding: 0 15px 0 0;*/
@@ -83,6 +88,10 @@
 }
 .navbar-brand a:hover, .navbar-brand a:focus-visible{
     background-color: transparent !important;
+}
+
+.iconHeader{
+    color: #fff;
 }
 
 
