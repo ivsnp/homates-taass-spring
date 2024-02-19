@@ -81,6 +81,18 @@ function ShoppingList() {
         setEditList(true);
     }
 
+    const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        /*axios.post("http://localhost:8080/api/v1/shoppinglist/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });*/
+    }
+
     const handleDeleteProduct = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
@@ -243,7 +255,9 @@ function ShoppingList() {
                                             </Form.Group>
                                         </Col>
                                         <Col xs={2} className="d-flex align-items-center">
-                                            <Button type="submit" className="HoMatesButton">
+                                            <Button className="HoMatesButton" onClick={(e) => {
+                                                handleSaveEditList(e, shopl.id);
+                                            }}>
                                                 Save
                                             </Button>&nbsp;
                                             <Button className="action-button" onClick={(e) => {
