@@ -6,6 +6,7 @@ import {MdDeleteForever, MdNoteAdd} from "react-icons/md";
 import axios, {AxiosResponse} from "axios";
 import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";
+import {Console} from "inspector";
 
 function Board() {
 
@@ -44,8 +45,12 @@ function Board() {
             idHouse: localStorage.getItem("idHomeSelected"),
             description: description,
             user: username,
-            date: year+"-"+month+"-"+("0" + day).slice(-2)
+            date: year+"-"+("0" + month).slice(-2)+"-"+("0" + day).slice(-2)
         };
+        console.log(announcement.idHouse+"");
+        console.log(announcement.description+"");
+        console.log(announcement.user+"");
+        console.log(announcement.date+"");
 
         axios.post("http://localhost:8080/api/v1/bacheca/announces/create", announcement,
             {headers})
