@@ -12,6 +12,7 @@ import axios, {AxiosResponse} from "axios";
 
 
 function Wallet() {
+    const username: string = "ivsnp";
 
     interface Payment {
         id: number,
@@ -374,15 +375,18 @@ function Wallet() {
                                             </Row>
                                         </Container>
                                     </Col>
-                                    <Col xs={2} className="d-flex align-items-center">
-                                        <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                        <Button className="action-button" onClick={(e) => {
-                                            // @ts-ignore
-                                            handleDeleteTransaction(e, t.id);
-                                        }}>
-                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                        </Button>
-                                    </Col>
+
+                                    {username == t.usernamePay &&
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
+                                            <Button className="action-button" onClick={(e) => {
+                                                // @ts-ignore
+                                                handleDeleteTransaction(e, t.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    }
                                 </Row>
                             )}
                             {'usernameTo' in t && (
