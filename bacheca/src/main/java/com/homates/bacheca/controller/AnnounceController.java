@@ -1,6 +1,7 @@
 package com.homates.bacheca.controller;
 
 import com.homates.bacheca.dto.AnnounceDto;
+import com.homates.bacheca.dto.AnnounceDtoEdit;
 import com.homates.bacheca.model.Announce;
 import com.homates.bacheca.model.Document;
 import com.homates.bacheca.repo.AnnounceRepository;
@@ -54,17 +55,14 @@ public class AnnounceController {
         return new ResponseEntity<>(announceList, HttpStatus.OK);
     }
 
-    @PutMapping(value = "/announces/update/{id}")
-    public ResponseEntity<Announce> updateAnnounce(@PathVariable("id") int id, @RequestBody AnnounceDto announceDto) {
+    @PutMapping(value = "/announces/update")
+    public ResponseEntity<Announce> updateAnnounce( @RequestBody AnnounceDtoEdit announceDto) {
         System.out.println("Updating announce...");
 
-        Optional<Announce> announce = repository.findById(id);
+        Optional<Announce> announce = repository.findById(announceDto.getIdAnnounce());
         if (announce.isPresent()) {
             Announce _currentAnnounce = announce.get();
             _currentAnnounce.setDescription(announceDto.getDescription());
-            _currentAnnounce.setDate((announceDto.getDate()));
-            _currentAnnounce.setUser((announceDto.getUser()));
-            _currentAnnounce.setIdHouse((announceDto.getIdHouse()));
             _currentAnnounce.setDocuments(new ArrayList<>());
             return new ResponseEntity<>(repository.save(_currentAnnounce), HttpStatus.OK);
         } else
