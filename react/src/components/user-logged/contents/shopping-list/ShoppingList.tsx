@@ -33,7 +33,10 @@ function ShoppingList() {
     };
 
     const title: string = "Shopping list";
+
     const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
+    const [nameShopL, setNameShopL] = useState<{[idItem: string]: boolean}>({});
+
     const [shoppingList, setShoppingList] = useState<ShoppingList[]>();
     const [newListName, setNewListName] = useState('');
     const [errorNewList, setErrorList] = useState('');
@@ -41,7 +44,6 @@ function ShoppingList() {
     const [selectedShopL, setSelectedShopL] = useState<number>();
     const [newProductName, setNewProductName] = useState('');
     const [newProductDescription, setNewProductDescription] = useState('');
-    const [nameShopL, setNameShopL] = useState<{[idItem: string]: boolean}>({});
 
 
 
@@ -76,9 +78,10 @@ function ShoppingList() {
             });
     }
 
-    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number) => {
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, value:string) => {
         event.preventDefault(); // reload page after submit
-        setEditList(editList => ({...editList, [key]: true}))
+        setEditList(editList => ({...editList, [key]: true}));
+        setNameShopL(nameShopL => ({...nameShopL, [key]: value}));
     }
 
     const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
@@ -88,7 +91,6 @@ function ShoppingList() {
             idHouse: localStorage.getItem("idHomeSelected"),
             name: nameShopL[id]
         };
-        console.log(shopl)
 
         axios.put("http://localhost:8080/api/v1/shoppinglist/update-metadata/"+id, shopl)
             .then(function (response) {
@@ -246,7 +248,7 @@ function ShoppingList() {
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         <Button className="action-button" onClick={(e) => {
-                                            handleEditList(e, shopl.id);
+                                            handleEditList(e, shopl.id, shopl.name);
                                         }}>
                                             <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
                                         </Button>&nbsp;
