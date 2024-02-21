@@ -155,7 +155,7 @@ function ShoppingList() {
             });
     }, [localStorage.getItem("idHomeSelected")]);
 
-    if (shoppingList === undefined || Object.keys(editList).length == 0) return (
+    if (shoppingList === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>

@@ -126,7 +126,7 @@ function Board() {
     }, [localStorage.getItem("idHomeSelected")]);
 
 
-    if (announces === undefined || Object.keys(editList).length == 0) return (
+    if (announces === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>

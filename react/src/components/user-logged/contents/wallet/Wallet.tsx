@@ -10,12 +10,11 @@ import {BsHouse} from "react-icons/bs";
 import axios, {AxiosResponse} from "axios";
 
 
-
 function Wallet() {
 
     interface Payment {
         id: number,
-        description: String,
+        description: string,
         amount: number,
         date: string,
         idHouse: number,
@@ -41,9 +40,20 @@ function Wallet() {
 
     const username: string = "ivsnp";
 
-    const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
-    const [dateEdit, setDateEdit] = useState<{[idItem: string]: boolean}>({});
-    const [descriptionHouseEdit, setDescriptionHouseEdit] = useState<{[idItem: string]: boolean}>({});
+    const [editList, setEditList] = useState<{ [idItem: string]: boolean }>({});
+
+    // edit: payment and refund
+    const [dateEdit, setDateEdit] = useState<{ [idItem: string]: boolean }>({});
+    const [amountEdit, setAmountEdit] = useState<{ [idItem: string]: boolean }>({});
+    const [descriptionEdit, setDescriptionEdit] = useState<{ [idItem: string]: boolean }>({});
+
+    // edit: payment
+    const [usernamePayEdit, setUsernamePayEdit] = useState<{ [idItem: string]: boolean }>({});
+    const [usernameSplitEdit, setUsernameSplitEdit] = useState<{ [idItem: string]: []}>({});
+
+    // edit: refund
+    const [usernameFromEdit, setUsernameFromEdit] = useState<{ [idItem: string]: boolean }>({});
+    const [usernameToEdit, setUsernameToEdit] = useState<{ [idItem: string]: boolean }>({});
 
 
     const [errorNewPayment, setErrorNewPayment] = useState('');
@@ -112,7 +122,7 @@ function Wallet() {
     const handleDeleteTransaction = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/wallet/transaction/delete/"+id, {})
+        axios.delete("http://localhost:8080/api/v1/wallet/transaction/delete/" + id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -121,23 +131,62 @@ function Wallet() {
             });
     }
 
-    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, houseName:string,
-                            address:string, description:string) => {
+    const handleEditListPayment = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, date: string, amount: number, description: string, usernamePay: string, usernameSplit: string[]) => {
         event.preventDefault(); // reload page after submit
         setEditList(editList => ({...editList, [key]: true}));
-        setDescriptionHouseEdit(items => ({...items, [key]: description}));
+        setDateEdit(items => ({...items, [key]: date}));
+        setAmountEdit(items => ({...items, [key]: amount}));
+        setDescriptionEdit(items => ({...items, [key]: description}));
+
+        setUsernamePayEdit(items => ({...items, [key]: usernamePay}));
+        setUsernameSplitEdit(items => ({...items, [key]: usernameSplit}));
     }
 
-    const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+    const handleEditListRefund = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, date: string, amount: number, description: string, usernameFrom: string, usernameTo: string) => {
+        event.preventDefault(); // reload page after submit
+        setEditList(editList => ({...editList, [key]: true}));
+        setDateEdit(items => ({...items, [key]: date}));
+        setAmountEdit(items => ({...items, [key]: amount}));
+        setDescriptionEdit(items => ({...items, [key]: description}));
+
+        setUsernameFromEdit(items => ({...items, [key]: usernameFrom}));
+        setUsernameToEdit(items => ({...items, [key]: usernameTo}));
+    }
+
+    const handleSaveEditListPayment = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
         const itemEdit = {
-            name: nameHouseEdit[id],
-            description: descriptionHouseEdit[id],
-            address: addressHouseEdit[id]
+            description: descriptionEdit[id],
+            amount: amountEdit[id],
+            date: dateEdit[id],
+            idHouse: localStorage.getItem("idHomeSelected"),
+            usernamePay: usernamePayEdit[id],
+            usernameSplit: usernameSplitEdit[id]
         };
 
-        axios.put("http://localhost:8080/api/v1/user-houses/houses/update/"+id, itemEdit)
+        axios.put("http://localhost:8080/api/v1/wallet/transaction/update-payment/" + id, itemEdit)
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
+    const handleSaveEditListRefund = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        const itemEdit = {
+            description: descriptionEdit[id],
+            amount: amountEdit[id],
+            date: dateEdit[id],
+            idHouse: localStorage.getItem("idHomeSelected"),
+            usernameFrom: usernameFromEdit[id],
+            usernameTo: usernameToEdit[id]
+        };
+
+        axios.put("http://localhost:8080/api/v1/wallet/transaction/update-refund/" + id, itemEdit)
             .then(function (response) {
                 window.location.reload();
             })
@@ -147,8 +196,9 @@ function Wallet() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/wallet/transaction/house/"+localStorage.getItem("idHomeSelected"), {
-            headers: {}})
+        axios.get("http://localhost:8080/api/v1/wallet/transaction/house/" + localStorage.getItem("idHomeSelected"), {
+            headers: {}
+        })
             .then((response: AxiosResponse<(Payment | Refund)[]>) => {
                 if (response.data === undefined || response.data.length == 0) {
                     setTransactions([]);
@@ -156,6 +206,13 @@ function Wallet() {
                     response.data.sort((a, b) => b.date.localeCompare(a.date));
                     setTransactions(response.data);
                 }
+
+                const eList: { [idItem: number]: boolean } = {}
+                for (const key in response.data) {
+                    eList[key] = false;
+                }
+
+                setEditList(eList);
             })
             .catch(error => {
                 console.log(error)
@@ -163,10 +220,11 @@ function Wallet() {
     }, [localStorage.getItem("idHomeSelected")]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/wallet/balances/"+localStorage.getItem("idHomeSelected"), {
-            headers: {}})
+        axios.get("http://localhost:8080/api/v1/wallet/balances/" + localStorage.getItem("idHomeSelected"), {
+            headers: {}
+        })
             .then((response: AxiosResponse<Wallet[]>) => {
-                if (response.data === undefined || response.data.length == 0){
+                if (response.data === undefined || response.data.length == 0) {
                     // if there are no roommates
                     setRoommatesBalances([]);
                 } else {
@@ -184,11 +242,11 @@ function Wallet() {
     }, [localStorage.getItem("idHomeSelected")]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/rommates/"+localStorage.getItem("idHomeSelected"), {
-            headers: {}})
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/rommates/" + localStorage.getItem("idHomeSelected"), {
+            headers: {}
+        })
             .then((response: AxiosResponse<string[]>) => {
-                console.log(response.data)
-                if (response.data === undefined || response.data.length == 0){
+                if (response.data === undefined || response.data.length == 0) {
                     // if there are no roommates
                     setRoommates([]);
                 } else {
@@ -212,6 +270,17 @@ function Wallet() {
                 addPaymentUsernameSplit.filter((checkedCheckbox) => checkedCheckbox !== data));
         else
             setAddPaymentUsernameSplit(addPaymentUsernameSplit.concat(data));
+    };
+
+    const handleCheckboxChangeEdit = (id: number, data: any) => {
+        const isChecked = usernameSplitEdit[id].some(checkedCheckbox => checkedCheckbox === data)
+        console.log(usernameSplitEdit[id]);
+        console.log(isChecked);
+        if (isChecked)
+            setUsernameSplitEdit(items => ({...items, [id]:
+                    usernameSplitEdit[id].filter((checkedCheckbox) => checkedCheckbox !== data)}));
+        else
+            setUsernameSplitEdit(items => ({...items, [id]: usernameSplitEdit[id].concat(data)}));
     };
 
     if (transactions === undefined || roommatesBalances === undefined || roommates === undefined) return (
@@ -282,24 +351,30 @@ function Wallet() {
                                                 <Form onSubmit={handleSubmitAddPayment}>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="amountPayment">€</InputGroup.Text>
-                                                        <Form.Control required type="number" step="0.01" placeholder="00.00" onChange={e => setAddPaymentAmount(e.target.value)}/>
+                                                        <Form.Control required type="number" step="0.01"
+                                                                      placeholder="00.00"
+                                                                      onChange={e => setAddPaymentAmount(e.target.value)}/>
                                                     </InputGroup>
                                                     <Form.Group className="mb-3" controlId="datePayment">
-                                                        <Form.Control required type="date" onChange={e => setAddPaymentDate(e.target.value)}/>
+                                                        <Form.Control required type="date"
+                                                                      onChange={e => setAddPaymentDate(e.target.value)}/>
                                                     </Form.Group>
                                                     <Form.Group className="mb-3" controlId="descriptionPayment">
-                                                        <Form.Control required type="text" placeholder="Description" onChange={e => setAddPaymentDescription(e.target.value)}/>
+                                                        <Form.Control required type="text" placeholder="Description"
+                                                                      onChange={e => setAddPaymentDescription(e.target.value)}/>
                                                     </Form.Group>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="fromRefund">Pay:</InputGroup.Text>
-                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm" onChange={e => setAddPaymentUserameBy(e.target.value)}>
+                                                        <Form.Select required aria-label="Selection"
+                                                                     className="Selection" size="sm"
+                                                                     onChange={e => setAddPaymentUserameBy(e.target.value)}>
                                                             {roommates.map((roommate) => (
                                                                 //@ts-ignore
                                                                 <option value={roommate} key={roommate}>{roommate}</option>
                                                             ))}
                                                         </Form.Select>
                                                     </InputGroup>
-                                                    <InputGroup className="mb-3" >
+                                                    <InputGroup className="mb-3">
                                                         <InputGroup.Text id="splitPayment">Split with:</InputGroup.Text>
                                                         {roommates.map((roommate) => (
                                                             <Form.Check
@@ -326,17 +401,23 @@ function Wallet() {
                                                 <Form onSubmit={handleSubmitAddRefund}>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="amountRefund">€</InputGroup.Text>
-                                                        <Form.Control required type="number" step="0.01" placeholder="00.00" onChange={e => setAddRefundAmount(e.target.value)}/>
+                                                        <Form.Control required type="number" step="0.01"
+                                                                      placeholder="00.00"
+                                                                      onChange={e => setAddRefundAmount(e.target.value)}/>
                                                     </InputGroup>
                                                     <Form.Group className="mb-3" controlId="dateRefund">
-                                                        <Form.Control required type="date" onChange={e => setAddRefundDate(e.target.value)}/>
+                                                        <Form.Control required type="date"
+                                                                      onChange={e => setAddRefundDate(e.target.value)}/>
                                                     </Form.Group>
                                                     <Form.Group className="mb-3" controlId="descriptionRefund">
-                                                        <Form.Control required type="text" placeholder="Description" onChange={e => setAddRefundDescription(e.target.value)}/>
+                                                        <Form.Control required type="text" placeholder="Description"
+                                                                      onChange={e => setAddRefundDescription(e.target.value)}/>
                                                     </Form.Group>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="fromRefund">From:</InputGroup.Text>
-                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm" onChange={e => setAddRefundUserameFrom(e.target.value)}>
+                                                        <Form.Select required aria-label="Selection"
+                                                                     className="HomeSelectionSelect" size="sm"
+                                                                     onChange={e => setAddRefundUserameFrom(e.target.value)}>
                                                             {roommates.map((roommate) => (
                                                                 //@ts-ignore
                                                                 <option value={roommate} key={roommate}>{roommate}</option>
@@ -345,7 +426,9 @@ function Wallet() {
                                                     </InputGroup>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="ToRefund">To:</InputGroup.Text>
-                                                        <Form.Select required aria-label="Default select example" className="HomeSelectionSelect" size="sm"onChange={e => setAddRefundUsernameTo(e.target.value)}>
+                                                        <Form.Select required aria-label="Selection"
+                                                                     className="HomeSelectionSelect" size="sm"
+                                                                     onChange={e => setAddRefundUsernameTo(e.target.value)}>
                                                             {roommates.map((roommate) => (
                                                                 //@ts-ignore
                                                                 <option value={roommate} key={roommate}>{roommate}</option>
@@ -379,9 +462,10 @@ function Wallet() {
                 {transactions.map((t) => (
                     <Card body>
                         <Container>
-                            {'usernameSplit' in t && (
+                            {'usernameSplit' in t && !editList[t.id] && (
                                 <Row>
-                                    <Col xs={1} className="d-flex align-items-center"><MdShoppingCartCheckout style={{fontSize: '30px'}}/></Col>
+                                    <Col xs={1} className="d-flex align-items-center"><MdShoppingCartCheckout
+                                        style={{fontSize: '30px'}}/></Col>
                                     <Col>
                                         <Container>
                                             <Row>
@@ -409,8 +493,12 @@ function Wallet() {
 
                                     <Col xs={2} className="d-flex align-items-center">
                                         {username == t.usernamePay &&
-                                            <div>
-                                                <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
+                                            <div className="d-flex align-items-center">
+                                                <Button className="action-button" onClick={(e) => {
+                                                    handleEditListPayment(e, t.id, t.date, t.amount, t.description, t.usernamePay, t.usernameSplit);
+                                                }}>
+                                                    <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                                </Button>&nbsp;
                                                 <Button className="action-button" onClick={(e) => {
                                                     // @ts-ignore
                                                     handleDeleteTransaction(e, t.id);
@@ -422,9 +510,110 @@ function Wallet() {
                                     </Col>
                                 </Row>
                             )}
-                            {'usernameTo' in t && (
+                            {'usernameSplit' in t && editList[t.id] && (
+                                <Form>
+                                    <Row>
+                                        <Col xs={1} className="d-flex align-items-center"><MdShoppingCartCheckout
+                                            style={{fontSize: '30px'}}/></Col>
+                                        <Col>
+                                            <Container>
+                                                <Row>
+                                                    <Col>
+                                                        <strong>Date:</strong>&nbsp;
+                                                        <Form.Group className="" controlId="dateEdit">
+                                                            <Form.Control required type="date" placeholder='Name'
+                                                                          defaultValue={t.date} onChange={e =>
+                                                                setDateEdit(items => ({
+                                                                    ...items,
+                                                                    [t.id]: e.target.value
+                                                                }))}/>
+                                                        </Form.Group>
+                                                    </Col>
+
+                                                    <Col>
+                                                        <strong>Amount:</strong>&nbsp;
+                                                        <InputGroup className="mb-3">
+                                                            <InputGroup.Text id="amountEdit">€</InputGroup.Text>
+                                                            <Form.Control required type="number" step="0.01"
+                                                                          placeholder="00.00" defaultValue={t.amount}
+                                                                          onChange={e =>
+                                                                              setAmountEdit(items => ({
+                                                                                  ...items,
+                                                                                  [t.id]: e.target.value
+                                                                              }))}/>
+                                                        </InputGroup>
+                                                    </Col>
+                                                </Row>
+                                                <Row>
+                                                    <InputGroup className="mb-3">
+                                                        <InputGroup.Text id="payPayment">Pay:</InputGroup.Text>
+                                                        <Form.Select required aria-label="Selection"
+                                                                     className="Selection" size="sm"
+                                                                     defaultValue={t.usernamePay}
+                                                                     onChange={e =>
+                                                                         setUsernamePayEdit(items => ({...items, [t.id]: e.target.value}))}>
+                                                            {roommates.map((roommate) => (
+                                                                //@ts-ignore
+                                                                <option value={roommate} key={roommate}>{roommate}</option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </InputGroup>
+                                                </Row>
+                                                <Row>
+                                                    <InputGroup className="mb-3">
+                                                        <InputGroup.Text id="splitPayment">Split with:</InputGroup.Text>
+                                                        {roommates.map((roommate) => (
+                                                            <Form.Check
+                                                                type="checkbox"
+                                                                //@ts-ignore
+                                                                id={roommate}
+                                                                label={roommate}
+                                                                checked={usernameSplitEdit[t.id].some(checkedCheckbox => checkedCheckbox === roommate)}
+                                                                onChange={() => handleCheckboxChangeEdit(t.id, roommate)}
+                                                            />
+                                                        ))}
+                                                    </InputGroup>
+                                                </Row>
+                                                <Row>
+                                                    <Col>
+                                                        <strong>Description:</strong>&nbsp;
+                                                        <Form.Group className="" controlId="descriptionEdit">
+                                                            <Form.Control required type="text" placeholder='Name'
+                                                                          defaultValue={t.description} onChange={e =>
+                                                                setDescriptionEdit(items => ({
+                                                                    ...items,
+                                                                    [t.id]: e.target.value
+                                                                }))}/>
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </Col>
+
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            {username == t.usernamePay &&
+                                                <div className="d-flex align-items-center">
+                                                    <Button className="HoMatesButton" onClick={(e) => {
+                                                        handleSaveEditListPayment(e, t.id);
+                                                    }}>
+                                                        Save
+                                                    </Button>&nbsp;
+                                                    <Button className="action-button" onClick={(e) => {
+                                                        // @ts-ignore
+                                                        handleDeleteTransaction(e, t.id);
+                                                    }}>
+                                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                    </Button>
+                                                </div>
+                                            }
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            )}
+                            {'usernameTo' in t && !editList[t.id] && (
                                 <Row>
-                                    <Col xs={1} className="d-flex align-items-center"><RiRefund2Line style={{fontSize: '30px'}}/></Col>
+                                    <Col xs={1} className="d-flex align-items-center"><RiRefund2Line
+                                        style={{fontSize: '30px'}}/></Col>
                                     <Col>
                                         <Container>
                                             <Row>
@@ -444,15 +633,126 @@ function Wallet() {
                                         </Container>
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
-                                        <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                        <Button className="action-button" onClick={(e) => {
-                                            // @ts-ignore
-                                            handleDeleteTransaction(e, t.id);
-                                        }}>
-                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                        </Button>
+                                        {username == t.usernameFrom &&
+                                            <div className="d-flex align-items-center">
+                                                <Button className="action-button" onClick={(e) => {
+                                                    handleEditListRefund(e, t.id, t.date, t.amount, t.description, t.usernameFrom, t.usernameTo);
+                                                }}>
+                                                    <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                                </Button>&nbsp;
+                                                <Button className="action-button" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteTransaction(e, t.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </div>
+                                        }
                                     </Col>
                                 </Row>
+                            )}
+                            {'usernameTo' in t && editList[t.id] && (
+                                <Form>
+                                    <Row>
+                                        <Col xs={1} className="d-flex align-items-center"><RiRefund2Line
+                                            style={{fontSize: '30px'}}/></Col>
+                                        <Col>
+                                            <Container>
+                                                <Row>
+                                                    <Col>
+                                                        <strong>Date:</strong>&nbsp;
+                                                        <Form.Group className="" controlId="dateEdit">
+                                                            <Form.Control required type="date" placeholder='Name'
+                                                                          defaultValue={t.date} onChange={e =>
+                                                                setDateEdit(items => ({
+                                                                    ...items,
+                                                                    [t.id]: e.target.value
+                                                                }))}/>
+                                                        </Form.Group>
+                                                    </Col>
+
+                                                    <Col>
+                                                        <strong>Amount:</strong>&nbsp;
+                                                        <InputGroup className="mb-3">
+                                                            <InputGroup.Text id="amountEdit">€</InputGroup.Text>
+                                                            <Form.Control required type="number" step="0.01"
+                                                                          placeholder="00.00" defaultValue={t.amount}
+                                                                          onChange={e =>
+                                                                              setAmountEdit(items => ({
+                                                                                  ...items,
+                                                                                  [t.id]: e.target.value
+                                                                              }))}/>
+                                                        </InputGroup>
+                                                    </Col>
+                                                </Row>
+
+                                                <Row>
+                                                    <InputGroup className="mb-3">
+                                                        <InputGroup.Text id="fromRefund">From:</InputGroup.Text>
+                                                        <Form.Select required aria-label="Selection"
+                                                                     className="Selection" size="sm"
+                                                                     defaultValue={t.usernameFrom}
+                                                                     onChange={e =>
+                                                                         setUsernameFromEdit(items => ({...items, [t.id]: e.target.value}))}>
+                                                            {roommates.map((roommate) => (
+                                                                //@ts-ignore
+                                                                <option value={roommate} key={roommate}>{roommate}</option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </InputGroup>
+                                                </Row>
+
+
+                                                <Row>
+                                                    <InputGroup className="mb-3">
+                                                        <InputGroup.Text id="toRefund">To:</InputGroup.Text>
+                                                        <Form.Select required aria-label="Selection"
+                                                                     className="Selection" size="sm"
+                                                                     defaultValue={t.usernameTo}
+                                                                     onChange={e =>
+                                                                         setUsernameToEdit(items => ({...items, [t.id]: e.target.value}))}>
+                                                            {roommates.map((roommate) => (
+                                                                //@ts-ignore
+                                                                <option value={roommate} key={roommate}>{roommate}</option>
+                                                            ))}
+                                                        </Form.Select>
+                                                    </InputGroup>
+                                                </Row>
+
+                                                <Row>
+                                                    <Col>
+                                                        <strong>Description:</strong>&nbsp;
+                                                        <Form.Group className="" controlId="descriptionEdit">
+                                                            <Form.Control required type="text" placeholder='Name'
+                                                                          defaultValue={t.description} onChange={e =>
+                                                                setDescriptionEdit(items => ({
+                                                                    ...items,
+                                                                    [t.id]: e.target.value
+                                                                }))}/>
+                                                        </Form.Group>
+                                                    </Col>
+                                                </Row>
+                                            </Container>
+                                        </Col>
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            {username == t.usernameFrom &&
+                                                <div className="d-flex align-items-center">
+                                                    <Button className="HoMatesButton" onClick={(e) => {
+                                                        handleSaveEditListRefund(e, t.id);
+                                                    }}>
+                                                        Save
+                                                    </Button>&nbsp;
+                                                    <Button className="action-button" onClick={(e) => {
+                                                        // @ts-ignore
+                                                        handleDeleteTransaction(e, t.id);
+                                                    }}>
+                                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                    </Button>
+                                                </div>
+                                            }
+                                        </Col>
+                                    </Row>
+                                </Form>
                             )}
                         </Container>
                     </Card>
