@@ -1,8 +1,10 @@
 import React from 'react';
 import './Header.css';
 import {FaRegQuestionCircle, FaRegUserCircle} from "react-icons/fa";
+import { GrLogout } from "react-icons/gr";
 import {Button, Col, Container, Dropdown, Nav, Row, NavDropdown, Navbar} from "react-bootstrap";
 import { Link } from "react-router-dom";
+import {CiStickyNote} from "react-icons/ci";
 
 function Header() {
     const title: string = "Mates";
@@ -34,8 +36,17 @@ function Header() {
             <div className="Header-right">
 
                 <div className="Account">
-                    <img src="/img/users/user_image_default.png" alt="User icon"  style={{width: '30px', borderRadius: '100%'}}/>
-                    <a href="/user/account">Hi, Sheldon!</a>
+                    <div className="subAccount">
+                        <img src="/img/users/user_image_default.png" alt="User icon"  style={{width: '30px', borderRadius: '100%'}}/>
+                        <a href="/user/account">Hi, Sheldon!</a>
+                    </div>
+
+                    <div className="subAccount">
+                        <GrLogout className="iconHeader" color="white" style={{fontSize: '30px'}}/>
+                        <a href="#">
+                            Logout
+                        </a>
+                    </div>
                 </div>
             </div>
         </header>

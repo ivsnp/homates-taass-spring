@@ -6,6 +6,7 @@ import {MdDeleteForever, MdNoteAdd} from "react-icons/md";
 import axios, {AxiosResponse} from "axios";
 import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";
+import {Console} from "inspector";
 
 function Board() {
 
@@ -20,6 +21,10 @@ function Board() {
     }
     const username: string = "ivsnp";
     const title: string = "Announcements";
+
+    const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
+    const [descriptionEdit, setDescriptionEdit] = useState<{[idItem: string]: boolean}>({});
+
     const [errorNewAnnoucement, setErrorNewAnnoucement] = useState('');
     const [description, setDescription] = useState('');
     const [announces, setAnnounces] = useState<Announcement[]>();
@@ -38,13 +43,18 @@ function Board() {
         let month = date.getMonth() + 1;
         let year = date.getFullYear();
 
+        //("0" + this.getDate()).slice(-2)
+
         const announcement = {
-            description: description,
             idHouse: localStorage.getItem("idHomeSelected"),
+            description: description,
             user: username,
-            date: year+"-"+month+"-"+day,
-            documents: []
+            date: year+"-"+("0" + month).slice(-2)+"-"+("0" + day).slice(-2)
         };
+        console.log(announcement.idHouse+"");
+        console.log(announcement.description+"");
+        console.log(announcement.user+"");
+        console.log(announcement.date+"");
 
         axios.post("http://localhost:8080/api/v1/bacheca/announces/create", announcement,
             {headers})
@@ -68,11 +78,47 @@ function Board() {
             });
     }
 
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, value:string) => {
+        event.preventDefault(); // reload page after submit
+        setEditList(editList => ({...editList, [key]: true}));
+        setDescriptionEdit(items => ({...items, [key]: value}));
+    }
+
+    const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        const item = {
+            idAnnounce: id,
+            description: descriptionEdit[id]
+        };
+
+        axios.put("http://localhost:8080/api/v1/bacheca/announces/update", item)
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
     React.useEffect(() => {
         axios.get("http://localhost:8080/api/v1/bacheca/announces/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Announcement[]>) => {
-                setAnnounces(response.data);
+
+                if (response.data === undefined || response.data.length == 0) {
+                    setAnnounces([]);
+                } else {
+                    response.data.sort((a, b) => b.date.localeCompare(a.date));
+                    setAnnounces(response.data);
+                }
+
+                const eList: {[idItem: number]: boolean} = {}
+                for (const key in response.data){
+                    eList[key] = false;
+                }
+
+                setEditList(eList);
             })
             .catch(error => {
                 console.log(error)
@@ -80,9 +126,7 @@ function Board() {
     }, [localStorage.getItem("idHomeSelected")]);
 
 
-
-
-    if (announces === undefined) return (
+    if (announces === undefined || Object.keys(editList).length == 0) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -113,29 +157,72 @@ function Board() {
                 {announces.map((announce) => (
                     <Card body>
                         <Container>
-                            <Row>
-                                <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
-                                <Col>
-                                    <div className="">
-                                        <strong>User:</strong>&nbsp;{announce.user}
-                                    </div>
-                                    <div className="">
-                                        <strong>Description:</strong>&nbsp;{announce.description}
-                                    </div>
-                                    <div className="descrHouse">
-                                        <strong>Date:</strong>&nbsp;{announce.date}
-                                    </div>
-                                </Col>
-                                <Col xs={2} className="d-flex align-items-center">
-                                    <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                    <Button className="action-button" onClick={(e) => {
-                                        // @ts-ignore
-                                        handleDelete(e, announce.id);
-                                    }}>
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                    </Button>
-                                </Col>
-                            </Row>
+                            {!editList[announce.id] &&
+                                <Row>
+                                    <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
+                                    <Col>
+                                        <div className="">
+                                            <strong>User:</strong>&nbsp;{announce.user}
+                                        </div>
+                                        <div className="">
+                                            <strong>Description:</strong>&nbsp;{announce.description}
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Date:</strong>&nbsp;{announce.date}
+                                        </div>
+                                    </Col>
+                                    {username == announce.user &&
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            <Button className="action-button" onClick={(e) => {
+                                                handleEditList(e, announce.id, announce.description);
+                                            }}>
+                                                <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                            </Button>&nbsp;
+                                            <Button className="action-button" onClick={(e) => {
+                                                // @ts-ignore
+                                                handleDelete(e, announce.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    }
+                                </Row>
+                            }
+                            {editList[announce.id] &&
+                                <Form>
+                                    <Row>
+                                        <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
+                                        <Col>
+                                            <div className="">
+                                                <strong>User:</strong>&nbsp;{announce.user}
+                                            </div>
+                                            <div className="">
+                                                <strong>Description:</strong>&nbsp;
+                                                <Form.Group className="" controlId="descriptionEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={announce.description}  onChange={e =>
+                                                        setDescriptionEdit(items => ({...items, [announce.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <div className="descrHouse">
+                                                <strong>Date:</strong>&nbsp;{announce.date}
+                                            </div>
+                                        </Col>
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            <Button className="HoMatesButton" onClick={(e) => {
+                                                handleSaveEditList(e, announce.id);
+                                            }}>
+                                                Save
+                                            </Button>&nbsp;
+                                            <Button className="action-button" onClick={(e) => {
+                                                // @ts-ignore
+                                                handleDelete(e, announce.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            }
                         </Container>
                     </Card>
                 ))}

@@ -18,6 +18,7 @@ import {BsHouseAdd, BsPersonAdd, BsHouse} from "react-icons/bs";
 import {MdDeleteForever, MdShoppingCartCheckout} from "react-icons/md";
 import {BiEditAlt} from "react-icons/bi";
 import axios, {AxiosResponse} from "axios";
+import {CiStickyNote} from "react-icons/ci";
 
 
 function Houses() {
@@ -33,6 +34,12 @@ function Houses() {
 
     const username: string = "ivsnp";
     const title: string = "My Houses";
+
+    const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
+    const [nameHouseEdit, setNameHouseEdit] = useState<{[idItem: string]: boolean}>({});
+    const [addressHouseEdit, setAddressHouseEdit] = useState<{[idItem: string]: boolean}>({});
+    const [descriptionHouseEdit, setDescriptionHouseEdit] = useState<{[idItem: string]: boolean}>({});
+
     const [errorNewHouse, setErrorNewHouse] = useState('');
     const [errorNewPerson, setErrorNewPerson] = useState('');
     const [myhomes, setMyhomes] = useState<HousesAttributes[]>();
@@ -93,10 +100,37 @@ function Houses() {
             });
     }
 
-    const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+    const handleDeleteHouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/bacheca/announces/delete/"+id, {})
+        axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, houseName:string,
+                            address:string, description:string) => {
+        event.preventDefault(); // reload page after submit
+        setEditList(editList => ({...editList, [key]: true}));
+        setNameHouseEdit(items => ({...items, [key]: houseName}));
+        setAddressHouseEdit(items => ({...items, [key]: address}));
+        setDescriptionHouseEdit(items => ({...items, [key]: description}));
+    }
+
+    const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        const itemEdit = {
+            name: nameHouseEdit[id],
+            description: descriptionHouseEdit[id],
+            address: addressHouseEdit[id]
+        };
+
+        axios.put("http://localhost:8080/api/v1/user-houses/houses/update/"+id, itemEdit)
             .then(function (response) {
                 window.location.reload();
             })
@@ -111,13 +145,20 @@ function Houses() {
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);
                 setIdHouseNewPerson(""+response.data[0].id);
+
+                const eList: {[idItem: number]: boolean} = {}
+                for (const key in response.data){
+                    eList[key] = false;
+                }
+
+                setEditList(eList);
             })
             .catch(error => {
                 console.log(error)
             });
     }, []);
 
-    if (myhomes === undefined) return (
+    if (myhomes === undefined || Object.keys(editList).length == 0) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -125,6 +166,7 @@ function Houses() {
         </div>
     );
 
+    // @ts-ignore
     return (
         <div className="Houses">
             <Container>
@@ -214,41 +256,101 @@ function Houses() {
                 {myhomes.map((myhome) => (
                     <Card body>
                         <Container>
-                            <Row>
-                                <Col xs={1} className="d-flex align-items-center"><BsHouse style={{fontSize: '30px'}}/></Col>
-                                <Col>
-                                    <div className="nameHouse">
-                                        {myhome.name}
-                                    </div>
-                                    <br/>
-                                    <div className="addressHouse">
-                                        <strong>Address:</strong>&nbsp;{myhome.address}
-                                    </div>
-                                    <div className="descrHouse">
-                                        <strong>Description:</strong>&nbsp;{myhome.description}
-                                    </div>
-                                    <div className="descrHouse">
-                                        <strong>Owner:</strong>&nbsp;{myhome.owner}
-                                    </div>
-                                    <div className="matesHouse">
-                                        <strong>Roommates:</strong>
-                                        {
-                                            myhome.roomMates.map(item => {
-                                                return <span key={item}>&nbsp;{item}</span>;
-                                            })
-                                        }
-                                    </div>
-                                </Col>
-                                <Col xs={2} className="d-flex align-items-center">
-                                    <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                    <Button className="action-button" onClick={(e) => {
-                                        // @ts-ignore
-                                        handleDeleteHouse(e, myhome.id);
-                                    }}>
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                    </Button>
-                                </Col>
-                            </Row>
+                            {!editList[myhome.id] &&
+                                <Row>
+                                    <Col xs={1} className="d-flex align-items-center"><BsHouse style={{fontSize: '30px'}}/></Col>
+                                    <Col>
+                                        <div className="nameHouse">
+                                            {myhome.name}
+                                        </div>
+                                        <br/>
+                                        <div className="addressHouse">
+                                            <strong>Address:</strong>&nbsp;{myhome.address}
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Description:</strong>&nbsp;{myhome.description}
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Owner:</strong>&nbsp;{myhome.owner}
+                                        </div>
+                                        <div className="matesHouse">
+                                            <strong>Roommates:</strong>
+                                            {
+                                                myhome.roomMates.map(item => {
+                                                    return <span key={item}>&nbsp;{item}</span>;
+                                                })
+                                            }
+                                        </div>
+                                    </Col>
+                                    <Col xs={2} className="d-flex align-items-center">
+                                        <Button className="action-button" onClick={(e) => {
+                                            handleEditList(e, myhome.id, myhome.name, myhome.address, myhome.description);
+                                        }}>
+                                            <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                        </Button>&nbsp;
+                                        <Button className="action-button" onClick={(e) => {
+                                            // @ts-ignore
+                                            handleDeleteHouse(e, myhome.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            }
+                            {editList[myhome.id] &&
+                                <Form>
+                                    <Row>
+                                        <Col xs={1} className="d-flex align-items-center"><BsHouse style={{fontSize: '30px'}}/></Col>
+                                        <Col>
+                                            <div className="nameHouse">
+                                                <Form.Group className="" controlId="nameHouseEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={myhome.name}  onChange={e =>
+                                                        setNameHouseEdit(items => ({...items, [myhome.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <br/>
+                                            <div className="addressHouse">
+                                                <strong>Address:</strong>&nbsp;
+                                                <Form.Group className="" controlId="addressHouseEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={myhome.address}  onChange={e =>
+                                                        setAddressHouseEdit(items => ({...items, [myhome.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <div className="descrHouse">
+                                                <strong>Description:</strong>&nbsp;
+                                                <Form.Group className="" controlId="descriptionHouseEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={myhome.description}  onChange={e =>
+                                                        setDescriptionHouseEdit(items => ({...items, [myhome.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <div className="descrHouse">
+                                                <strong>Owner:</strong>&nbsp;{myhome.owner}
+                                            </div>
+                                            <div className="matesHouse">
+                                                <strong>Roommates:</strong>
+                                                {
+                                                    myhome.roomMates.map(item => {
+                                                        return <span key={item}>&nbsp;{item}</span>;
+                                                    })
+                                                }
+                                            </div>
+                                        </Col>
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            <Button className="HoMatesButton" onClick={(e) => {
+                                                handleSaveEditList(e, myhome.id);
+                                            }}>
+                                                Save
+                                            </Button>&nbsp;
+                                            <Button className="action-button" onClick={(e) => {
+                                                // @ts-ignore
+                                                handleDeleteHouse(e, myhome.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            }
                             <Row>
                                 <Col>
                                     <div className="">

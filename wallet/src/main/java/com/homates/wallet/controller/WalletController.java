@@ -60,7 +60,7 @@ public class WalletController {
 
         List<Wallet> wallets = walletRepository.findByIdHouse(idHouse);
         if (wallets.isEmpty())
-            return new ResponseEntity<>(walletBalanceDtos, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(walletBalanceDtos, HttpStatus.OK);
 
         for (Wallet w: wallets){
             WalletBalanceDto _currentWallet = new WalletBalanceDto();

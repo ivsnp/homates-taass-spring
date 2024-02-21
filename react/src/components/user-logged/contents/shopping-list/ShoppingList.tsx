@@ -33,6 +33,10 @@ function ShoppingList() {
     };
 
     const title: string = "Shopping list";
+
+    const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
+    const [nameShopL, setNameShopL] = useState<{[idItem: string]: boolean}>({});
+
     const [shoppingList, setShoppingList] = useState<ShoppingList[]>();
     const [newListName, setNewListName] = useState('');
     const [errorNewList, setErrorList] = useState('');
@@ -66,6 +70,29 @@ function ShoppingList() {
         event.preventDefault(); // reload page after submit
 
         axios.delete("http://localhost:8080/api/v1/shoppinglist/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, value:string) => {
+        event.preventDefault(); // reload page after submit
+        setEditList(editList => ({...editList, [key]: true}));
+        setNameShopL(nameShopL => ({...nameShopL, [key]: value}));
+    }
+
+    const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        const shopl = {
+            idHouse: localStorage.getItem("idHomeSelected"),
+            name: nameShopL[id]
+        };
+
+        axios.put("http://localhost:8080/api/v1/shoppinglist/update-metadata/"+id, shopl)
             .then(function (response) {
                 window.location.reload();
             })
@@ -115,13 +142,20 @@ function ShoppingList() {
             .then((response: AxiosResponse<ShoppingList[]>) => {
                 setShoppingList(response.data);
                 setSelectedShopL(response.data[0].id);
+
+                const eList: {[idItem: number]: boolean} = {}
+                for (const key in response.data){
+                    eList[key] = false;
+                }
+
+                setEditList(eList);
             })
             .catch(error => {
                 console.log(error)
             });
     }, [localStorage.getItem("idHomeSelected")]);
 
-    if (shoppingList === undefined) return (
+    if (shoppingList === undefined || Object.keys(editList).length == 0) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -204,22 +238,53 @@ function ShoppingList() {
                 {shoppingList.map((shopl) => (
                     <Card body>
                         <Container>
-                            <Row>
-                                <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
-                                <Col className="d-flex align-items-center">
-                                    <div className="">
-                                        <strong>Name:</strong>&nbsp;{shopl.name}
-                                    </div>
-                                </Col>
-                                <Col xs={2} className="d-flex align-items-center">
-                                    <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                    <Button className="action-button" onClick={(e) => {
-                                        handleDeleteList(e, shopl.id);
-                                    }}>
-                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                    </Button>
-                                </Col>
-                            </Row>
+                            {!editList[shopl.id] &&
+                                <Row>
+                                    <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
+                                    <Col className="d-flex align-items-center">
+                                        <div className="">
+                                            <strong>Name:</strong>&nbsp;{shopl.name}
+                                        </div>
+                                    </Col>
+                                    <Col xs={2} className="d-flex align-items-center">
+                                        <Button className="action-button" onClick={(e) => {
+                                            handleEditList(e, shopl.id, shopl.name);
+                                        }}>
+                                            <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                        </Button>&nbsp;
+                                        <Button className="action-button" onClick={(e) => {
+                                            handleDeleteList(e, shopl.id);
+                                        }}>
+                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                        </Button>
+                                    </Col>
+                                </Row>
+                            }
+                            {editList[shopl.id] &&
+                                <Form>
+                                    <Row>
+                                        <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
+                                        <Col className="d-flex align-items-center">
+                                            <Form.Group className="" controlId="nameUser">
+                                                <Form.Control required type="text" placeholder='Name' defaultValue={shopl.name}  onChange={e =>
+                                                    setNameShopL(nameShopL => ({...nameShopL, [shopl.id]: e.target.value}))}/>
+                                            </Form.Group>
+                                        </Col>
+                                        <Col xs={2} className="d-flex align-items-center">
+                                            <Button className="HoMatesButton" onClick={(e) => {
+                                                handleSaveEditList(e, shopl.id);
+                                            }}>
+                                                Save
+                                            </Button>&nbsp;
+                                            <Button className="action-button" onClick={(e) => {
+                                                handleDeleteList(e, shopl.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            }
                             <Row>
                                 <Col>
                                     {
