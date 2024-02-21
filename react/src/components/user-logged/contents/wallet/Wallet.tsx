@@ -12,7 +12,6 @@ import axios, {AxiosResponse} from "axios";
 
 
 function Wallet() {
-    const username: string = "ivsnp";
 
     interface Payment {
         id: number,
@@ -39,6 +38,13 @@ function Wallet() {
         idHouse: number,
         balance: number
     }
+
+    const username: string = "ivsnp";
+
+    const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
+    const [dateEdit, setDateEdit] = useState<{[idItem: string]: boolean}>({});
+    const [descriptionHouseEdit, setDescriptionHouseEdit] = useState<{[idItem: string]: boolean}>({});
+
 
     const [errorNewPayment, setErrorNewPayment] = useState('');
     const [errorNewRefund, setErrorNewRefund] = useState('');
@@ -107,6 +113,31 @@ function Wallet() {
         event.preventDefault(); // reload page after submit
 
         axios.delete("http://localhost:8080/api/v1/wallet/transaction/delete/"+id, {})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                console.log(error)
+            });
+    }
+
+    const handleEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, key: number, houseName:string,
+                            address:string, description:string) => {
+        event.preventDefault(); // reload page after submit
+        setEditList(editList => ({...editList, [key]: true}));
+        setDescriptionHouseEdit(items => ({...items, [key]: description}));
+    }
+
+    const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
+        event.preventDefault(); // reload page after submit
+
+        const itemEdit = {
+            name: nameHouseEdit[id],
+            description: descriptionHouseEdit[id],
+            address: addressHouseEdit[id]
+        };
+
+        axios.put("http://localhost:8080/api/v1/user-houses/houses/update/"+id, itemEdit)
             .then(function (response) {
                 window.location.reload();
             })
@@ -376,17 +407,19 @@ function Wallet() {
                                         </Container>
                                     </Col>
 
-                                    {username == t.usernamePay &&
-                                        <Col xs={2} className="d-flex align-items-center">
-                                            <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
-                                            <Button className="action-button" onClick={(e) => {
-                                                // @ts-ignore
-                                                handleDeleteTransaction(e, t.id);
-                                            }}>
-                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                            </Button>
-                                        </Col>
-                                    }
+                                    <Col xs={2} className="d-flex align-items-center">
+                                        {username == t.usernamePay &&
+                                            <div>
+                                                <BiEditAlt style={{fontSize: '30px'}}/>&nbsp;
+                                                <Button className="action-button" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteTransaction(e, t.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </div>
+                                        }
+                                    </Col>
                                 </Row>
                             )}
                             {'usernameTo' in t && (

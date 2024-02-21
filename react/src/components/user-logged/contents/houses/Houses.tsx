@@ -273,14 +273,6 @@ function Houses() {
                                         <div className="descrHouse">
                                             <strong>Owner:</strong>&nbsp;{myhome.owner}
                                         </div>
-                                        <div className="matesHouse">
-                                            <strong>Roommates:</strong>
-                                            {
-                                                myhome.roomMates.map(item => {
-                                                    return <span key={item}>&nbsp;{item}</span>;
-                                                })
-                                            }
-                                        </div>
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         <Button className="action-button" onClick={(e) => {
@@ -326,28 +318,22 @@ function Houses() {
                                             <div className="descrHouse">
                                                 <strong>Owner:</strong>&nbsp;{myhome.owner}
                                             </div>
-                                            <div className="matesHouse">
-                                                <strong>Roommates:</strong>
-                                                {
-                                                    myhome.roomMates.map(item => {
-                                                        return <span key={item}>&nbsp;{item}</span>;
-                                                    })
-                                                }
-                                            </div>
                                         </Col>
-                                        <Col xs={2} className="d-flex align-items-center">
-                                            <Button className="HoMatesButton" onClick={(e) => {
-                                                handleSaveEditList(e, myhome.id);
-                                            }}>
-                                                Save
-                                            </Button>&nbsp;
-                                            <Button className="action-button" onClick={(e) => {
-                                                // @ts-ignore
-                                                handleDeleteHouse(e, myhome.id);
-                                            }}>
-                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                            </Button>
-                                        </Col>
+                                        {username == myhome.owner &&
+                                            <Col xs={2} className="d-flex align-items-center">
+                                                <Button className="HoMatesButton" onClick={(e) => {
+                                                    handleSaveEditList(e, myhome.id);
+                                                }}>
+                                                    Save
+                                                </Button>&nbsp;
+                                                <Button className="action-button" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteHouse(e, myhome.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        }
                                     </Row>
                                 </Form>
                             }
@@ -364,13 +350,15 @@ function Houses() {
                                                         <Col className="d-flex align-items-center">
                                                             <strong>Name:</strong>&nbsp;{item}
                                                         </Col>
-                                                        <Col xs={1} className="d-flex align-items-center">
-                                                            <Button className="action-button" onClick={(e) => {
-                                                                handleDeleteRoommate(e, myhome.id, item);
-                                                            }}>
-                                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                                            </Button>
-                                                        </Col>
+                                                        {username == myhome.owner &&
+                                                            <Col xs={1} className="d-flex align-items-center">
+                                                                <Button className="action-button" onClick={(e) => {
+                                                                    handleDeleteRoommate(e, myhome.id, item);
+                                                                }}>
+                                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                                </Button>
+                                                            </Col>
+                                                        }
                                                     </Row>
                                                 </Container>
 
