@@ -6,16 +6,31 @@ import {FcGoogle} from "react-icons/fc";
 import {Button, Container, Nav, Navbar, Tab, Tabs} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import {GoogleLogin} from 'react-google-login';
+import { Redirect } from 'react-router-dom';
 
 
 const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
 function Login() {
-    const title: string = "Login HoMates";
 
+    const title: string = "Login HoMates";
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userName, setUserName] = useState("");
     const [justifyActive, setJustifyActive] = useState('tab1');;
 
     const onSuccess = (res: any) => {
-        console.log("LOGIN SUCCESS! Current user ", res.profileObj)
+        console.log("LOGIN SUCCESS! Current user ", res.profileObj);
+        const firstName = res.profileObj.givenName; //di tutto prendo solo il nome che viene visualizzato dall'alert
+        localStorage.setItem('username', firstName); //prende le info che alert mostra
+        setUserName(firstName);
+        alert(localStorage.getItem("username"));
+
+        console.log(res.profileObj.name)
+        setIsLoggedIn(true); // Set isLoggedIn to true upon successful login
+    }
+
+
+    if (isLoggedIn) {
+        return <Redirect to="/user" />;
     }
     const onFailure = (res: any) => {
         console.log("LOGIN FAILED! res: ", res);
@@ -45,7 +60,7 @@ function Login() {
                         <div className='d-flex justify-content-between mx-auto' style={{width: 'fit-content'}}>
 
                             <MDBBtn tag='a' color='none' className='m-1'>
-                                <FcGoogle style={{fontSize: '30px'}}/>
+                                {/* <FcGoogle style={{fontSize: '30px'}}/>*/}
                                 <GoogleLogin
                                     clientId={clientId}
                                     buttonText="Login"
@@ -56,10 +71,10 @@ function Login() {
                             </MDBBtn>
                         </div>
 
-                        <p className="text-center mt-3">or:</p>
+                        {/* <p className="text-center mt-3">or:</p> */}
                     </div>
 
-                    <Form>
+                    {/*  <Form>
                         <Form.Group className="mb-3" controlId="loginUsername">
                             <Form.Control required type="text" placeholder="Username" />
                         </Form.Group>
@@ -75,7 +90,7 @@ function Login() {
                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
                             Sign in
                         </Button>
-                    </Form>
+                    </Form>*/}
                 </Tab>
                 <Tab eventKey="register" title="Register">
                     <div className="text-center mb-3">
@@ -84,13 +99,21 @@ function Login() {
                         <div className='d-flex justify-content-between mx-auto' style={{width: 'fit-content'}}>
 
                             <MDBBtn tag='a' color='none' className='m-1'>
-                                <FcGoogle style={{fontSize: '30px'}}/>
+                                {/* <FcGoogle style={{fontSize: '30px'}}/>*/}
+                                <GoogleLogin
+                                    clientId={clientId}
+                                    buttonText="Login"
+                                    onSuccess={onSuccess}
+                                    onFailure={onFailure}
+                                    cookiePolicy={'single_host_origin'}
+                                    isSignedIn={true} />
                             </MDBBtn>
                         </div>
 
-                        <p className="text-center mt-3">or:</p>
+                        {/* <p className="text-center mt-3">or:</p>*/}
                     </div>
 
+                    {/*
                     <Form>
                         <Form.Group className="mb-3" controlId="registerName">
                             <Form.Control required type="text" placeholder="Name" />
@@ -115,7 +138,7 @@ function Login() {
                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
                             Sign up
                         </Button>
-                    </Form>
+                    </Form> */}
                 </Tab>
             </Tabs>
         </div>
