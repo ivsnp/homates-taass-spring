@@ -35,9 +35,14 @@ function Header() {
         setIsLoggedOut(true);
     }
 
+
     if (isLoggedOut) {
-        return <Redirect to="/home-guest" />;
+        window.location.assign("/");
+        //return <Redirect to="/user/houses" />;
     }
+
+
+
     // @ts-ignore
     return (
         <header className="App-header">
@@ -75,11 +80,13 @@ function Header() {
                     </div>
 
                     <div className="subAccount">
-                        <GoogleLogout
-                            clientId={clientId}
-                            buttonText={"Logout"}
-                            onLogoutSuccess={onSuccess}
-                        />
+                        {localStorage.getItem("username") != null && (
+                            <GoogleLogout
+                                clientId={clientId}
+                                buttonText={"Logout"}
+                                onLogoutSuccess={onSuccess}
+                            />
+                        )}
                     </div>
                 </div>
             </div>

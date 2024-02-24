@@ -22,7 +22,7 @@ function Login() {
         const firstName = res.profileObj.givenName; //di tutto prendo solo il nome che viene visualizzato dall'alert
         localStorage.setItem('username', firstName); //prende le info che alert mostra
         setUserName(firstName);
-        alert(localStorage.getItem("username"));
+        //alert(localStorage.getItem("username"));
 
         console.log(res.profileObj.name)
         setIsLoggedIn(true); // Set isLoggedIn to true upon successful login

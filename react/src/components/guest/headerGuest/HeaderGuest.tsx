@@ -26,7 +26,7 @@ function HeaderGuest() {
 
                 <div className="Account">
                     <FaRegUserCircle style={{fontSize: '30px'}}/>
-                    <a href="/login">Sign in | sign up</a>
+                    <a href="/login">Sign in | Sign up</a>
                 </div>
             </div>
         </header>
