@@ -81,8 +81,8 @@ function Header() {
 
                         {userName ? (
                             <span>
-                                 <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} />
-                                {`Hi, ${userName} `}<a href= "/user/account"></a>{'!'}
+
+                                <a href= "/user/account">{`Hi, ${userName} `} <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} /></a>{'!'}
 
                             </span>
                             // Visualizza il nome dell'utente loggato con il link
