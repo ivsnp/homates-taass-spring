@@ -15,16 +15,22 @@ function Login() {
     const title: string = "Login HoMates";
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("");
-    const [justifyActive, setJustifyActive] = useState('tab1');;
+    const [justifyActive, setJustifyActive] = useState('tab1');
+    const [userImage, setUserImage] = useState("");
 
     const onSuccess = (res: any) => {
         console.log("LOGIN SUCCESS! Current user ", res.profileObj);
-        const firstName = res.profileObj.givenName; //di tutto prendo solo il nome che viene visualizzato dall'alert
-        localStorage.setItem('username', firstName); //prende le info che alert mostra
+        const firstName = res.profileObj.givenName;
+        const mail = res.profileObj.email;//di tutto prendo solo il nome che viene visualizzato dall'alert
+        const profileImage = res.profileObj.imageUrl;
+        localStorage.setItem('username', mail); //prende le info che alert mostra
+        localStorage.setItem('firstname', firstName);
+        localStorage.setItem('userImage', profileImage);
         setUserName(firstName);
+        setUserImage(profileImage);
         //alert(localStorage.getItem("username"));
 
-        console.log(res.profileObj.name)
+        console.log(firstName)
         setIsLoggedIn(true); // Set isLoggedIn to true upon successful login
     }
 

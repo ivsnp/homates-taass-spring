@@ -13,11 +13,11 @@ const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleuserc
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("");
-    //const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     //non so se sta cosa va fatta o meno
     useEffect(() => {
-        const logged = localStorage.getItem("username");
+    const logged = localStorage.getItem("username");
         if (logged != null) {
             setUserName(logged);
             setIsLoggedIn(true);
@@ -35,6 +35,7 @@ function App() {
             })
         }
         gapi.load('client:auth2', start)
+
     });
 
 return (

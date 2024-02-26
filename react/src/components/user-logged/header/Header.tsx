@@ -18,20 +18,27 @@ function Header() {
     const title: string = "Mates";
     const [isLoggedOut, setIsLoggedOut] = useState(false);
     const [userName, setUserName] = useState<string | null>(null);
+    const [userImage, setUserImage] = useState<string | null>(null);
     //var userName = localStorage.getItem("username")?.split(" ")[0] || ""; // Ottieni solo il nome dell'utente memorizzato in localStorage
 
 
     useEffect(() => {
-        const storedUserName = localStorage.getItem("username");
-        if (storedUserName) {
-            const name = storedUserName.split(" ")[0];
-            setUserName(name);
+        const storedName = localStorage.getItem("firstname");
+        const storedImage = localStorage.getItem("userImage")
+        if (storedName) {
+            //const name = storedName.split(" ")[0];
+            setUserName(storedName);
+            setUserImage(storedImage);
         }
+
+
+
     }, []);
 
     const onSuccess = () => {
         console.log("Log out successfull!");
         localStorage.removeItem('username');
+        localStorage.removeItem('userImage');
         setIsLoggedOut(true);
     }
 
@@ -43,7 +50,7 @@ function Header() {
 
 
 
-    // @ts-ignore
+    // @ts-ignore <img src="/img/users/user_image_default.png" alt="User icon"  style={{width: '30px', borderRadius: '100%'}}/> <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" referrerPolicy="no-referrer" style={{ width: '30px', borderRadius: '100%' }} />
     return (
         <header className="App-header">
             <div className="Header-left">
@@ -71,9 +78,14 @@ function Header() {
 
                 <div className="Account">
                     <div className="subAccount">
-                        <img src="/img/users/user_image_default.png" alt="User icon"  style={{width: '30px', borderRadius: '100%'}}/>
+
                         {userName ? (
-                            <span>{`Hi, ${userName} `}<a href= "/user/account"></a>{'!'}</span> // Visualizza il nome dell'utente loggato con il link
+                            <span>
+                                 <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} />
+                                {`Hi, ${userName} `}<a href= "/user/account"></a>{'!'}
+
+                            </span>
+                            // Visualizza il nome dell'utente loggato con il link
                         ) : (
                         <span> Welcome! </span> // Mostra "Loading..." mentre il nome dell'utente viene caricato
                         )}
