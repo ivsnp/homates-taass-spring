@@ -30,7 +30,7 @@ function Houses() {
     const [selectedHome, setSelectedHome] = useState<number>();
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/ivsnp", {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+localStorage.getItem("username"), {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 if (response.data === undefined || response.data.length == 0){
@@ -40,8 +40,9 @@ function Houses() {
 
                 setMyhomes(response.data);
                 setSelectedHome(response.data[0].id);
-                if (localStorage.getItem("idHomeSelected") === null)
-                    localStorage.setItem('idHomeSelected', ""+response.data[0].id);
+                if (localStorage.getItem("idHomeSelected") === null) {
+                    localStorage.setItem('idHomeSelected', "" + response.data[0].id);
+                }
             })
             .catch(error => {
                 console.log(error)

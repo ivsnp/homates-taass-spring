@@ -38,7 +38,10 @@ function Wallet() {
         balance: number
     }
 
-    const username: string = "ivsnp";
+    const usernameLogged: string | null = localStorage.getItem("username");
+    if (usernameLogged == null) {
+        window.location.assign("/");
+    }
 
     const [editList, setEditList] = useState<{ [idItem: string]: boolean }>({});
 
@@ -492,7 +495,7 @@ function Wallet() {
                                     </Col>
 
                                     <Col xs={2} className="d-flex align-items-center">
-                                        {username == t.usernamePay &&
+                                        {usernameLogged == t.usernamePay &&
                                             <div className="d-flex align-items-center">
                                                 <Button className="action-button" onClick={(e) => {
                                                     handleEditListPayment(e, t.id, t.date, t.amount, t.description, t.usernamePay, t.usernameSplit);
@@ -591,7 +594,7 @@ function Wallet() {
                                         </Col>
 
                                         <Col xs={2} className="d-flex align-items-center">
-                                            {username == t.usernamePay &&
+                                            {usernameLogged == t.usernamePay &&
                                                 <div className="d-flex align-items-center">
                                                     <Button className="HoMatesButton" onClick={(e) => {
                                                         handleSaveEditListPayment(e, t.id);
@@ -633,7 +636,7 @@ function Wallet() {
                                         </Container>
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
-                                        {username == t.usernameFrom &&
+                                        {usernameLogged == t.usernameFrom &&
                                             <div className="d-flex align-items-center">
                                                 <Button className="action-button" onClick={(e) => {
                                                     handleEditListRefund(e, t.id, t.date, t.amount, t.description, t.usernameFrom, t.usernameTo);
@@ -735,7 +738,7 @@ function Wallet() {
                                             </Container>
                                         </Col>
                                         <Col xs={2} className="d-flex align-items-center">
-                                            {username == t.usernameFrom &&
+                                            {usernameLogged == t.usernameFrom &&
                                                 <div className="d-flex align-items-center">
                                                     <Button className="HoMatesButton" onClick={(e) => {
                                                         handleSaveEditListRefund(e, t.id);

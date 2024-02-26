@@ -32,6 +32,11 @@ function ShoppingList() {
         "Accept": "application/json"
     };
 
+    const usernameLogged: string | null = localStorage.getItem("username");
+    if (usernameLogged == null) {
+        window.location.assign("/");
+    }
+
     const title: string = "Shopping list";
 
     const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});

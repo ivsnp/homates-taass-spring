@@ -22,7 +22,6 @@ function App() {
             setUserName(logged);
             setIsLoggedIn(true);
         }
-        console.log(logged);
     }, []);
 
 

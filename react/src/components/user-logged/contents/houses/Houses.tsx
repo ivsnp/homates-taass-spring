@@ -32,7 +32,11 @@ function Houses() {
         roomMates: Array<string>
     }
 
-    const username: string = "ivsnp";
+    const usernameLogged: string | null = localStorage.getItem("username");
+    if (usernameLogged == null) {
+        window.location.assign("/");
+    }
+
     const title: string = "My Houses";
 
     const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
@@ -60,7 +64,7 @@ function Houses() {
             name: newHouseName,
             description: newHouseDescription,
             address: newHouseAddress,
-            username_owner: username
+            username_owner: usernameLogged
         };
 
         axios.post("http://localhost:8080/api/v1/user-houses/houses/create", house, {headers})
@@ -140,7 +144,7 @@ function Houses() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+username, {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+usernameLogged, {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);
@@ -158,7 +162,7 @@ function Houses() {
             });
     }, []);
 
-    if (myhomes === undefined || Object.keys(editList).length == 0) return (
+    if (myhomes === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -319,7 +323,7 @@ function Houses() {
                                                 <strong>Owner:</strong>&nbsp;{myhome.owner}
                                             </div>
                                         </Col>
-                                        {username == myhome.owner &&
+                                        {usernameLogged == myhome.owner &&
                                             <Col xs={2} className="d-flex align-items-center">
                                                 <Button className="HoMatesButton" onClick={(e) => {
                                                     handleSaveEditList(e, myhome.id);
@@ -350,7 +354,7 @@ function Houses() {
                                                         <Col className="d-flex align-items-center">
                                                             <strong>Name:</strong>&nbsp;{item}
                                                         </Col>
-                                                        {username == myhome.owner &&
+                                                        {usernameLogged == myhome.owner &&
                                                             <Col xs={1} className="d-flex align-items-center">
                                                                 <Button className="action-button" onClick={(e) => {
                                                                     handleDeleteRoommate(e, myhome.id, item);

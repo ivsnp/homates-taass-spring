@@ -30,7 +30,7 @@ public class UserController {
         user.setName(userDto.getName());
         user.setSurname(userDto.getSurname());
         user.setEmail(userDto.getEmail());
-        user.setBio(userDto.getBio());
+        //user.setBio(userDto.getBio());
 
         userRepository.save(user);
         return new ResponseEntity<>("User created with success.", HttpStatus.OK);
@@ -47,7 +47,7 @@ public class UserController {
             _currentUser.setName(u.getName());
             _currentUser.setSurname(u.getSurname());
             _currentUser.setEmail(u.getEmail());
-            _currentUser.setBio(u.getBio());
+            //_currentUser.setBio(u.getBio());
             usersDto.add(_currentUser);
         }
         return new ResponseEntity<>(usersDto, HttpStatus.OK);
@@ -69,7 +69,7 @@ public class UserController {
         _currentUser.setName(u.getName());
         _currentUser.setSurname(u.getSurname());
         _currentUser.setEmail(u.getEmail());
-        _currentUser.setBio(u.getBio());
+        //_currentUser.setBio(u.getBio());
         return new ResponseEntity<>(_currentUser, HttpStatus.OK);
     }
 
@@ -85,7 +85,7 @@ public class UserController {
             _currentUser.setName(newUserDto.getName());
             _currentUser.setSurname(newUserDto.getSurname());
             _currentUser.setEmail(newUserDto.getEmail());
-            _currentUser.setBio(newUserDto.getBio());
+            //_currentUser.setBio(newUserDto.getBio());
 
             userRepository.save(_currentUser);
             return new ResponseEntity<>("User updated.", HttpStatus.OK);
