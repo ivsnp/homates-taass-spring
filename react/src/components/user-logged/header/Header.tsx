@@ -50,7 +50,7 @@ function Header() {
 
 
 
-    // @ts-ignore <img src="/img/users/user_image_default.png" alt="User icon"  style={{width: '30px', borderRadius: '100%'}}/> <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" referrerPolicy="no-referrer" style={{ width: '30px', borderRadius: '100%' }} />
+    // @ts-ignore className="small-image" className="welcome-button"
     return (
         <header className="App-header">
             <div className="Header-left">
@@ -59,16 +59,16 @@ function Header() {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Brand>
                             <a href="/user/">
-                                <img src="/img/logo/logo.svg" alt="HoMates logo"/>
+                                <img src="/img/logo/logo.svg" alt="HoMates logo" />
                             </a>
                         </Navbar.Brand>
-                        <Navbar.Collapse id="basic-navbar-nav">
+                        <Navbar.Collapse id="basic-navbar-nav" className="navbar-style">
                             <Nav className="me-auto">
-                                <a href="/user/task/wallet">Wallet</a>
-                                <a href="/user/task/calendar">Calendar</a>
-                                <a href="/user/task/board">Board</a>
-                                <a href="/user/task/shopping-list">Shopping list</a>
-                                <a href="/user/houses">Your homes</a>
+                                <Nav.Link href="/user/task/wallet">Wallet</Nav.Link>
+                                <Nav.Link href="/user/task/calendar">Calendar</Nav.Link>
+                                <Nav.Link href="/user/task/board">Board</Nav.Link>
+                                <Nav.Link href="/user/task/shopping-list">Shopping list</Nav.Link>
+                                <Nav.Link href="/user/houses">Your homes</Nav.Link>
                             </Nav>
                         </Navbar.Collapse>
                     </Container>
@@ -82,7 +82,7 @@ function Header() {
                         {userName ? (
                             <span>
 
-                                <a href= "/user/account">{`Hi, ${userName} `} <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} /></a>{'!'}
+                                <a href= "/user/account">{`Hi, ${userName} `} <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" /></a>
 
                             </span>
                             // Visualizza il nome dell'utente loggato con il link
@@ -97,6 +97,7 @@ function Header() {
                                 clientId={clientId}
                                 buttonText={"Logout"}
                                 onLogoutSuccess={onSuccess}
+                                className="logoutButton"
                             />
                         )}
                     </div>

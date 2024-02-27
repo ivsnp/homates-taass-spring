@@ -52,6 +52,7 @@
 }
 
 .Header-right {
+    margin-left: auto;
     display: flex;
     flex-direction: unset;
     align-items: center;
@@ -94,10 +95,13 @@
     color: #fff;
 }
 
-
+.navbar-brand img{
+    max-width: 50px;
+    /*padding: 0 15px 0 0;*/
+}
 /* mobile */
 
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 896px) {
     .App-header{
         flex-direction: column;
         padding: 0px;
@@ -114,9 +118,24 @@
     }
 
 
+   .welcome-button{
+       width:30px;
+       border-radius: 100%;
+       margin-right:105px
+   }
 
-    .navbar-brand img{
-        max-width: 50px;
-        /*padding: 0 15px 0 0;*/
+
+   .small-image{
+       margin-left:170px;
+       width:20px;
+       height:20px;
+   }
+
+    .subAccount .logoutButton {
+        margin-right: 20px; /* Aggiungi questo margine solo al bottone di logout */
     }
+    .navbar-style{
+        margin-right:120px;
+    }
+
 }
