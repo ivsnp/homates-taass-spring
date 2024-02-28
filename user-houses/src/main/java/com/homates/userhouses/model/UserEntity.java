@@ -26,5 +26,5 @@ public class UserEntity {
 
     private String email;
 
-    private String bio;
+    //private String bio;
 }

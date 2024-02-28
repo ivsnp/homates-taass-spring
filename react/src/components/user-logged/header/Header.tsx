@@ -50,7 +50,7 @@ function Header() {
 
 
 
-    // @ts-ignore className="small-image" className="welcome-button"
+    // @ts-ignore <img src="/img/users/user_image_default.png" alt="User icon"  style={{width: '30px', borderRadius: '100%'}}/> <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" referrerPolicy="no-referrer" style={{ width: '30px', borderRadius: '100%' }} />
     return (
         <header className="App-header">
             <div className="Header-left">
@@ -59,10 +59,10 @@ function Header() {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Brand>
                             <a href="/user/">
-                                <img src="/img/logo/logo.svg" alt="HoMates logo" />
+                                <img src="/img/logo/logo.svg" alt="HoMates logo"/>
                             </a>
                         </Navbar.Brand>
-                        <Navbar.Collapse id="basic-navbar-nav" className="navbar-style">
+                        <Navbar.Collapse id="basic-navbar-nav">
                             <Nav className="me-auto">
                                 <Nav.Link href="/user/task/wallet">Wallet</Nav.Link>
                                 <Nav.Link href="/user/task/calendar">Calendar</Nav.Link>

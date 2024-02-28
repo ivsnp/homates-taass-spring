@@ -10,8 +10,12 @@ function Account() {
         username: string,
         name: string,
         surname: string,
-        email: string,
-        bio: string
+        email: string
+    }
+
+    const usernameLogged: string | null = localStorage.getItem("username");
+    if (usernameLogged == null) {
+        window.location.assign("/");
     }
 
     const title: string = "Account";
@@ -21,7 +25,6 @@ function Account() {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
-    const [bio, setBio] = useState('');
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // reload page after submit
@@ -29,15 +32,14 @@ function Account() {
             username: username,
             name: name,
             surname: surname,
-            email: email,
-            bio: bio
+            email: email
         };
         const headers = {
             "Content-Type": "application/json",
             "Accept": "application/json"
         };
 
-        axios.put("http://localhost:8080/api/v1/user-houses/user/update/ivsnp", user, {headers})
+        axios.put("http://localhost:8080/api/v1/user-houses/user/update/"+usernameLogged, user, {headers})
             .then(function (response) {
                 window.location.reload();
             })
@@ -48,7 +50,7 @@ function Account() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/user/ivsnp", {
+        axios.get("http://localhost:8080/api/v1/user-houses/user/"+usernameLogged, {
             headers: {}})
             .then((response: AxiosResponse<UserAttributes>) => {
                 setUserdata(response.data);
@@ -57,7 +59,6 @@ function Account() {
                 setName(response.data.name);
                 setSurname(response.data.surname);
                 setEmail(response.data.email);
-                setBio(response.data.bio);
             })
             .catch(error => {
                 console.log(error)
@@ -76,7 +77,7 @@ function Account() {
     return (
         <div className="UserAccount">
             <div className="UserImage">
-                <img src="/img/users/user_image_default.png" alt="User icon"/>
+                <img src={localStorage.getItem('userImage') || "/img/users/user_image_default.png"} alt="User icon"/>
             </div>
 
             <div className="ContentWrap">
@@ -100,10 +101,6 @@ function Account() {
                         <Form.Group className="mb-3" controlId="emailUser">
                             <Form.Label>Email</Form.Label>
                             <Form.Control required type="email" placeholder='Email' defaultValue={userdata.email}  onChange={e => setEmail(e.target.value)}/>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="bioUser">
-                            <Form.Label>Bio</Form.Label>
-                            <Form.Control required as="textarea" rows={3} placeholder='Bio' defaultValue={userdata.bio}  onChange={e => setBio(e.target.value)}/>
                         </Form.Group>
 
                         <div className="errorMessage">

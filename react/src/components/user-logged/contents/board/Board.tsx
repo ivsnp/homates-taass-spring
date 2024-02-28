@@ -19,7 +19,7 @@ function Board() {
         date: string,
         documents: []
     }
-    const username: string = "ivsnp";
+    const username: string | null = localStorage.getItem("username");
     const title: string = "Announcements";
 
     const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
