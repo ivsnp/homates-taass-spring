@@ -77,30 +77,23 @@ function Header() {
             <div className="Header-right">
 
                 <div className="Account">
-                    <div className="subAccount">
+                    {userName &&
+                        <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} referrerPolicy="no-referrer"/>
+                    }
+                    {userName &&
+                        <a href= "/user/account">
+                            {`Hi, ${userName} !`}
+                        </a>
+                    }
+                    {userName &&
+                        <GoogleLogout
+                            clientId={clientId}
+                            buttonText={"Logout"}
+                            onLogoutSuccess={onSuccess}
+                            className="logoutButton"
+                        />
+                    }
 
-                        {userName ? (
-                            <span>
-
-                                <a href= "/user/account">{`Hi, ${userName} `} <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" /></a>
-
-                            </span>
-                            // Visualizza il nome dell'utente loggato con il link
-                        ) : (
-                        <span> Welcome! </span> // Mostra "Loading..." mentre il nome dell'utente viene caricato
-                        )}
-                    </div>
-
-                    <div className="subAccount">
-                        {localStorage.getItem("username") != null && (
-                            <GoogleLogout
-                                clientId={clientId}
-                                buttonText={"Logout"}
-                                onLogoutSuccess={onSuccess}
-                                className="logoutButton"
-                            />
-                        )}
-                    </div>
                 </div>
             </div>
         </header>
