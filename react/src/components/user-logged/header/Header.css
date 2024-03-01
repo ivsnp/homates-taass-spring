@@ -96,46 +96,53 @@
 }
 
 .navbar-brand img{
-    max-width: 50px;
+    width: 50px;
     /*padding: 0 15px 0 0;*/
 }
 /* mobile */
 
-@media screen and (max-width: 896px) {
-    .App-header{
-        flex-direction: column;
-        padding: 0px;
+@media screen and (max-width: 500px) {
+    .App-header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0;
     }
 
-    .App-header a {
-        float: none;
-        display: block;
-        text-align: left;
+    .Header-left {
+        margin-right: 20px;
     }
 
     .Header-right {
-        float: none;
+        display: flex;
+        align-items: center;
     }
 
-
-   .welcome-button{
-       width:30px;
-       border-radius: 100%;
-       margin-right:105px
-   }
-
-
-   .small-image{
-       margin-left:170px;
-       width:20px;
-       height:20px;
-   }
-
-    .subAccount .logoutButton {
-        margin-right: 20px; /* Aggiungi questo margine solo al bottone di logout */
-    }
-    .navbar-style{
-        margin-right:120px;
+    .Account {
+        display: flex;
+        align-items: center;
     }
 
+    .Account .user-image {
+        margin-right: 10px;
+        height: 30px;
+        width: 30px;
+        border-radius: 50%;
+    }
+
+    .Account .welcome-user {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 10px;
+        display: none; /* Hide the greeting on smaller screens */
+    }
+
+    .navbar-collapse {
+        margin-right: 10px;
+    }
+
+    .logoutButton {
+        margin-right: 10px;
+    }
 }

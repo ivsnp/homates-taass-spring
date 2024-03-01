@@ -285,7 +285,7 @@ function Houses() {
                                             <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
                                         </Button>&nbsp;
                                         <Button className="action-button" onClick={(e) => {
-                                            // @ts-ignore
+                                             // @ts-ignore
                                             handleDeleteHouse(e, myhome.id);
                                         }}>
                                             <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>

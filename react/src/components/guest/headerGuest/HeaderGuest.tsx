@@ -15,7 +15,7 @@ function HeaderGuest() {
                     <Container>
                         <Navbar.Brand>
                             <Link to="/">
-                                <img src="/img/logo/logo_guest.svg" alt="HoMates logo"/>
+                                <img src="/img/logo/logo_guest.svg" alt="HoMates logo" style={{ width: '350px',height:'144px'}} className="logo-home"/>
                             </Link>
                         </Navbar.Brand>
                     </Container>
@@ -26,7 +26,7 @@ function HeaderGuest() {
 
                 <div className="Account">
                     <FaRegUserCircle style={{fontSize: '30px'}}/>
-                    <a href="/login">Sign in | Sign up</a>
+                    <a href="/login">Sign in | Sign up </a>
                 </div>
             </div>
         </header>

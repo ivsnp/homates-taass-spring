@@ -17,3 +17,16 @@
     margin: 25px auto 30px auto;
 }
 
+@media screen and (max-width: 850px){
+    .Login {
+        padding-bottom: 70px;
+    }
+
+    .ContentCenterLogin{
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 200px 25px;
+    }
+
+}
+

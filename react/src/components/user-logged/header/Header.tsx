@@ -59,10 +59,10 @@ function Header() {
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Brand>
                             <a href="/user/">
-                                <img src="/img/logo/logo.svg" alt="HoMates logo"/>
+                                <img src="/img/logo/logo.svg" alt="HoMates logo" />
                             </a>
                         </Navbar.Brand>
-                        <Navbar.Collapse id="basic-navbar-nav">
+                        <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse">
                             <Nav className="me-auto">
                                 <Nav.Link href="/user/task/wallet">Wallet</Nav.Link>
                                 <Nav.Link href="/user/task/calendar">Calendar</Nav.Link>
@@ -78,10 +78,10 @@ function Header() {
 
                 <div className="Account">
                     {userName &&
-                        <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} referrerPolicy="no-referrer"/>
+                        <img src={userImage || "/img/users/user_image_default.png"} alt="User icon" style={{ width: '30px', borderRadius: '100%' }} referrerPolicy="no-referrer" className="user-image"/>
                     }
                     {userName &&
-                        <a href= "/user/account">
+                        <a href= "/user/account" className="welcome-user">
                             {`Hi, ${userName} !`}
                         </a>
                     }
