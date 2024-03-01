@@ -3,6 +3,7 @@ import './Account.css';
 import {Alert, Button, Form, Spinner} from "react-bootstrap";
 import axios, {AxiosResponse} from "axios";
 import { toast } from 'react-toastify';
+import {GoogleLogout} from "react-google-login";
 
 function Account() {
 
@@ -25,6 +26,15 @@ function Account() {
     const [name, setName] = useState('');
     const [surname, setSurname] = useState('');
     const [email, setEmail] = useState('');
+    const [isLoggedOut, setIsLoggedOut] = useState(false);
+
+    const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
+    const onSuccess = () => {
+        console.log("Log out successfull!");
+        localStorage.removeItem('username');
+        localStorage.removeItem('userImage');
+        setIsLoggedOut(true);
+    }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault(); // reload page after submit
@@ -78,6 +88,14 @@ function Account() {
         <div className="UserAccount">
             <div className="UserImage">
                 <img src={localStorage.getItem('userImage') || "/img/users/user_image_default.png"} alt="User icon"/>
+            </div>
+            <div className="UserAccountLogout">
+                <GoogleLogout
+                    clientId={clientId}
+                    buttonText={"Logout"}
+                    onLogoutSuccess={onSuccess}
+                    className="logoutButton"
+                />
             </div>
 
             <div className="ContentWrap">

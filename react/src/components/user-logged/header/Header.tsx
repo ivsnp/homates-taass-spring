@@ -2,11 +2,12 @@
 import './Header.css';
 import {FaRegQuestionCircle, FaRegUserCircle} from "react-icons/fa";
 import { GrLogout } from "react-icons/gr";
-import {Button, Col, Container, Dropdown, Nav, Row, NavDropdown, Navbar} from "react-bootstrap";
+import {Button, Col, Container, Dropdown, Nav, Row, NavDropdown, Navbar, Offcanvas} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {CiStickyNote} from "react-icons/ci";
 import {GoogleLogout} from 'react-google-login';
 import { Redirect } from 'react-router-dom';
+ import { isMobile } from "react-device-detect";
 
 
 const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
@@ -56,21 +57,34 @@ function Header() {
             <div className="Header-left">
                 <Navbar expand="lg">
                     <Container>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Brand>
                             <a href="/user/">
                                 <img src="/img/logo/logo.svg" alt="HoMates logo" />
                             </a>
                         </Navbar.Brand>
-                        <Navbar.Collapse id="basic-navbar-nav" className="navbar-collapse">
-                            <Nav className="me-auto">
-                                <Nav.Link href="/user/task/wallet">Wallet</Nav.Link>
-                                <Nav.Link href="/user/task/calendar">Calendar</Nav.Link>
-                                <Nav.Link href="/user/task/board">Board</Nav.Link>
-                                <Nav.Link href="/user/task/shopping-list">Shopping list</Nav.Link>
-                                <Nav.Link href="/user/houses">Your homes</Nav.Link>
-                            </Nav>
-                        </Navbar.Collapse>
+
+                        <Navbar.Toggle aria-controls={`offcanvasNavbar-expand-false`} />
+                        <Navbar.Offcanvas
+                            id={`offcanvasNavbar-expand-false`}
+                            aria-labelledby={`offcanvasNavbarLabel-expand-false`}
+                            placement="start"
+                        >
+                            <Offcanvas.Header closeButton>
+                                <Offcanvas.Title id={`offcanvasNavbarLabel-expand-false`}>
+                                    Homates
+                                </Offcanvas.Title>
+                            </Offcanvas.Header>
+                            <Offcanvas.Body>
+                                <Nav className="me-auto">
+                                    <Nav.Link href="/user/task/wallet">Wallet</Nav.Link>
+                                    <Nav.Link href="/user/task/calendar">Calendar</Nav.Link>
+                                    <Nav.Link href="/user/task/board">Board</Nav.Link>
+                                    <Nav.Link href="/user/task/shopping-list">Shopping list</Nav.Link>
+                                    <Nav.Link href="/user/houses">Your homes</Nav.Link>
+                                </Nav>
+                            </Offcanvas.Body>
+                        </Navbar.Offcanvas>
+
                     </Container>
                 </Navbar>
             </div>
@@ -85,13 +99,13 @@ function Header() {
                             {`Hi, ${userName} !`}
                         </a>
                     }
-                    {userName &&
+                    {/*userName &&
                         <GoogleLogout
                             clientId={clientId}
                             buttonText={"Logout"}
                             onLogoutSuccess={onSuccess}
                             className="logoutButton"
-                        />
+                        />*/
                     }
 
                 </div>

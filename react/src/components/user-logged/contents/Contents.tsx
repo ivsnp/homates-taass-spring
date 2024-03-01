@@ -8,6 +8,7 @@ import NotFound from "../../notFound/NotFound";
 import axios, {AxiosResponse} from "axios";
 import Board from "./board/Board";
 import ShoppingList from "./shopping-list/ShoppingList";
+import { isMobile } from "react-device-detect";
 
 function Houses() {
 
@@ -60,9 +61,29 @@ function Houses() {
     return (
         <div className="Contents">
             <div className="HomeSelection">
-                <Container>
-                    <Row>
-                        <Col>
+                {!isMobile ?
+                    <Container>
+                        <Row>
+                            <Col>
+                                <Form.Select onChange={(e) => onChangeHome(e)} aria-label="Default select example" className="HomeSelectionSelect" size="sm">
+                                    <option disabled>Choose your home</option>
+                                    {
+                                        myhomes.map((myhome) => (
+                                            <option value={myhome.id} key={myhome.id} selected={myhome.id+"" === localStorage.getItem("idHomeSelected")}>{myhome.name}</option>
+                                        ))
+                                    }
+                                </Form.Select>
+                            </Col>
+                            <Col>
+                                <Button className="HoMatesButton" size="sm" href="/user/houses">
+                                    <FiSettings style={{fontSize: '20px'}}/> Manage your homes
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Container>
+                :
+                    <Container>
+                        <Row>
                             <Form.Select onChange={(e) => onChangeHome(e)} aria-label="Default select example" className="HomeSelectionSelect" size="sm">
                                 <option disabled>Choose your home</option>
                                 {
@@ -71,14 +92,15 @@ function Houses() {
                                     ))
                                 }
                             </Form.Select>
-                        </Col>
-                        <Col>
+                        </Row>
+                        <Row>
                             <Button className="HoMatesButton" size="sm" href="/user/houses">
                                 <FiSettings style={{fontSize: '20px'}}/> Manage your homes
                             </Button>
-                        </Col>
-                    </Row>
-                </Container>
+                        </Row>
+                    </Container>
+                }
+
             </div>
             <div className="ContentWrap">
                 <Switch>

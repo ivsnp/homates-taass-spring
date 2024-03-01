@@ -99,6 +99,7 @@
     width: 50px;
     /*padding: 0 15px 0 0;*/
 }
+
 /* mobile */
 
 @media screen and (max-width: 500px) {
@@ -107,10 +108,6 @@
         justify-content: space-between;
         align-items: center;
         padding: 0;
-    }
-
-    .Header-left {
-        margin-right: 20px;
     }
 
     .Header-right {
@@ -128,14 +125,6 @@
         height: 30px;
         width: 30px;
         border-radius: 50%;
-    }
-
-    .Account .welcome-user {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        margin-right: 10px;
-        display: none; /* Hide the greeting on smaller screens */
     }
 
     .navbar-collapse {

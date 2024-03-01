@@ -42,7 +42,7 @@
 @media screen and (max-width: 500px) {
     .Footer a{
         float: none;
-        padding-top: 70px;
+        padding-top: 20px;
         text-align: left;
     }
 }
@@ -52,7 +52,7 @@
         float: none;
         line-height: 1;
         margin:0;
-        padding-top: 70px;
+        padding-top: 20px;
         text-align: left;
     }
 }

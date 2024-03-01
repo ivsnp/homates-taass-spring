@@ -1,4 +1,4 @@
-.UserImage img {
+.UserImage img, .UserAccountLogout {
     max-width: 100px;
     border-radius: 100%;
     margin-bottom: 25px;

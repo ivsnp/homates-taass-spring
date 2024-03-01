@@ -63,3 +63,13 @@ button.action-button:focus,
     background-color: transparent;
     border-color: transparent;
 }
+
+@media screen and (max-width: 850px) {
+    .HomeSelection .HoMatesButton.btn.btn-primary.btn-sm, .HomeSelection .HomeSelectionSelect.form-select {
+        width: 100%;
+    }
+    .HomeSelection .container {
+        margin-left: 0;
+        max-width: 100% !important;
+    }
+}

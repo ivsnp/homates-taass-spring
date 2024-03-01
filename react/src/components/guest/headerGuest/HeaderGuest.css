@@ -75,6 +75,7 @@
     display: flex;
     flex-direction: unset;
     align-items: center;
+    padding-right: 20px;
 }
 
 .App-header.Guest {
@@ -84,6 +85,10 @@
 .navbar-brand img{
     max-height: 200px;
     /*padding: 0 15px 0 0;*/
+}
+
+.brand-icon-logged {
+    width: 300px !important;
 }
 
 /* mobile */
@@ -104,17 +109,21 @@
 
     .Header-right {
         float: none;
+        padding-right: 20px;
     }
 
     .navbar-brand img {
         /*max-width: 100%;*/
+        /*width: 200px;*/
         margin-left: 15px;
-        width: 40px; /* Reduce the width of the logo image */
-        max-height: auto;
     }
 
     .navbar-brand {
         margin-right: 0px !important;
+    }
+
+    .Account {
+        column-gap: 0px;
     }
 }
 

@@ -2,6 +2,7 @@ import React from 'react';
 import './HomeGuest.css';
 import {FiSettings} from "react-icons/fi";
 import {Button} from "react-bootstrap";
+import { isMobile } from "react-device-detect";
 
 function HomeGuest() {
     const title: string = "Guest component";

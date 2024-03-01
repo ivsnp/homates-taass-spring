@@ -3,6 +3,7 @@ import './HeaderGuest.css';
 import {FaRegQuestionCircle, FaRegUserCircle} from "react-icons/fa";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { isMobile } from "react-device-detect";
 
 function HeaderGuest() {
     const title: string = "Mates";
@@ -15,7 +16,7 @@ function HeaderGuest() {
                     <Container>
                         <Navbar.Brand>
                             <Link to="/">
-                                <img src="/img/logo/logo_guest.svg" alt="HoMates logo" style={{ width: '350px',height:'144px'}} className="logo-home"/>
+                                <img className="brand-icon-logged" src="/img/logo/logo_guest.svg" alt="HoMates logo"/>
                             </Link>
                         </Navbar.Brand>
                     </Container>
@@ -25,8 +26,8 @@ function HeaderGuest() {
             <div className="Header-right">
 
                 <div className="Account">
-                    <FaRegUserCircle style={{fontSize: '30px'}}/>
-                    <a href="/login">Sign in | Sign up </a>
+                    {!isMobile && <FaRegUserCircle style={{fontSize: '30px'}}/>}
+                    <a href="/login">Login</a>
                 </div>
             </div>
         </header>
