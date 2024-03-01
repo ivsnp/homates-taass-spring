@@ -173,9 +173,10 @@ function Houses() {
     // @ts-ignore
     return (
         <div className="Houses">
-            <Container>
-                <Row>
-                    <Col>
+
+            <div className="ContentWrap">
+                <Container>
+                    <Row>
                         <Accordion>
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>
@@ -209,8 +210,8 @@ function Houses() {
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
-                    </Col>
-                    <Col>
+                    </Row>
+                    <Row>
                         <Accordion>
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>
@@ -247,11 +248,8 @@ function Houses() {
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
-                    </Col>
-                </Row>
-            </Container>
-            <br/>
-            <div className="ContentWrap">
+                    </Row>
+                </Container>
                 <div className="TitleContent">
                     <h3>
                         {title}
