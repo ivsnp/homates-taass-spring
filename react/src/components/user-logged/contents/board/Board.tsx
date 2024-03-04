@@ -87,13 +87,17 @@ function Board() {
     const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
+        console.log("Saving edited description for ID:", id);
+        console.log("Edited description:", descriptionEdit[id]);
         const item = {
             idAnnounce: id,
             description: descriptionEdit[id]
         };
 
+        console.log("Item:", item);
         axios.put("http://localhost:8080/api/v1/bacheca/announces/update", item)
             .then(function (response) {
+                console.log("Update successful");
                 window.location.reload();
             })
             .catch(function (error) {

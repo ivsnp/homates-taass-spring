@@ -33,6 +33,7 @@ function Account() {
         console.log("Log out successfull!");
         localStorage.removeItem('username');
         localStorage.removeItem('userImage');
+        localStorage.clear();
         setIsLoggedOut(true);
     }
 

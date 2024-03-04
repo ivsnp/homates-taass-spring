@@ -160,6 +160,7 @@ function ShoppingList() {
             });
     }, [localStorage.getItem("idHomeSelected")]);
 
+
     if (shoppingList === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
@@ -242,12 +243,12 @@ function ShoppingList() {
 
                 {shoppingList.map((shopl) => (
                     <Card body>
-                        <Container>
+                        <Container className="custom-container">
                             {!editList[shopl.id] &&
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
                                     <Col className="d-flex align-items-center">
-                                        <div className="">
+                                        <div className="name-list" style={{marginRight: '10px'}}>
                                             <strong>Name:</strong>&nbsp;{shopl.name}
                                         </div>
                                     </Col>
@@ -255,12 +256,12 @@ function ShoppingList() {
                                         <Button className="action-button" onClick={(e) => {
                                             handleEditList(e, shopl.id, shopl.name);
                                         }}>
-                                            <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                            <BiEditAlt className="edit-icon" style={{fontSize: '30px', color: '#000'}}/>
                                         </Button>&nbsp;
                                         <Button className="action-button" onClick={(e) => {
                                             handleDeleteList(e, shopl.id);
                                         }}>
-                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            <MdDeleteForever className="delete-icon" style={{fontSize: '30px', color: '#FF914D'}}/>
                                         </Button>
                                     </Col>
                                 </Row>
@@ -294,7 +295,7 @@ function ShoppingList() {
                                 <Col>
                                     {
                                         shopl.productList.map(item => {
-                                            return <Card body>
+                                            return (
                                                 <Container>
                                                     <Row>
                                                         <Col>
@@ -315,7 +316,7 @@ function ShoppingList() {
                                                     </Row>
                                                 </Container>
 
-                                            </Card>;
+                                            );
                                         })
                                     }
                                 </Col>
