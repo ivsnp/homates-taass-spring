@@ -1,16 +1,6 @@
  import React, {useEffect, useState} from 'react';
 import './Header.css';
-import {FaRegQuestionCircle, FaRegUserCircle} from "react-icons/fa";
-import { GrLogout } from "react-icons/gr";
-import {Button, Col, Container, Dropdown, Nav, Row, NavDropdown, Navbar, Offcanvas} from "react-bootstrap";
-import { Link } from "react-router-dom";
-import {CiStickyNote} from "react-icons/ci";
-import {GoogleLogout} from 'react-google-login';
-import { Redirect } from 'react-router-dom';
- import { isMobile } from "react-device-detect";
-
-
-const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
+import {Container, Nav, Navbar, Offcanvas} from "react-bootstrap";
 
 
 
