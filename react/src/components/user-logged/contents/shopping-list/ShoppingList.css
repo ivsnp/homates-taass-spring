@@ -1,0 +1,17 @@
+@media screen and (max-width: 500px){
+    .name-list{
+        margin-right: 10px;
+    }
+    /* ShoppingList.css */
+
+    /* Media query for iPhone sizes */
+        /* Reduce button dimensions for iPhone */
+
+
+        .custom-container{
+            padding-right: 20px;
+        }
+
+    }
+
+

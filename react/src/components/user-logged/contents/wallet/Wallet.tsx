@@ -315,8 +315,8 @@ function Wallet() {
                                             {roommatesBalances.map((roommate) => (
                                                 <Row>
                                                     <Col sm={4}>
-                                                        <div className="RoomMateName">
-                                                            {roommate.username}
+                                                        <div className="RoomMateName" style = {{marginRight: '10px'}}>
+                                                            {roommate.username.split('@')[0].substring(0, 7)}
                                                         </div>
                                                     </Col>
                                                     <Col sm={8}>
@@ -339,8 +339,8 @@ function Wallet() {
                                     <Accordion.Header>
                                         <Container>
                                             <Row>
-                                                <Col xs={1}><MdOutlineAddCard style={{fontSize: '30px'}}/></Col>
-                                                <Col className="d-flex align-items-center">New transaction</Col>
+                                                <Col xs={1}><MdOutlineAddCard style={{fontSize: '30px', marginRight: '1px'}}/></Col>
+                                                <Col className="d-flex align-items-center"> New transaction</Col>
                                             </Row>
                                         </Container>
                                     </Accordion.Header>

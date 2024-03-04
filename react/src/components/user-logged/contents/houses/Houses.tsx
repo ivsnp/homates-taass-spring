@@ -346,7 +346,7 @@ function Houses() {
                                     </div>
                                     {
                                         myhome.roomMates.map(item => {
-                                            return <Card body>
+                                            return (
                                                 <Container>
                                                     <Row>
                                                         <Col className="d-flex align-items-center">
@@ -363,8 +363,7 @@ function Houses() {
                                                         }
                                                     </Row>
                                                 </Container>
-
-                                            </Card>;
+                                            );
                                         })
                                     }
                                 </Col>
