@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Contents.css';
 import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {FiSettings} from "react-icons/fi";
@@ -8,9 +8,22 @@ import NotFound from "../../notFound/NotFound";
 import axios, {AxiosResponse} from "axios";
 import Board from "./board/Board";
 import ShoppingList from "./shopping-list/ShoppingList";
-import { isMobile } from "react-device-detect";
 
 function Houses() {
+
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
 
     interface HousesAttributes {
         id: number,

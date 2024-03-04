@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Wallet.css';
 import {Accordion, Button, Col, Container, Form, Row, Tab, Tabs, InputGroup, Card, Spinner} from "react-bootstrap";
 import {MdOutlineAddCard, MdShoppingCartCheckout, MdDeleteForever} from "react-icons/md";
@@ -11,6 +11,20 @@ import axios, {AxiosResponse} from "axios";
 
 
 function Wallet() {
+
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
 
     interface Payment {
         id: number,
@@ -305,29 +319,54 @@ function Wallet() {
                         <Col>
                             <div className="WalletBalance MyBalance">
                                 <Container>
-                                    <Row>
-                                        <Col className="d-flex align-content-center flex-wrap">
-                                            <h3>
-                                                House balances
-                                            </h3>
-                                        </Col>
-                                        <Col>
+                                    {!isMobile &&
+                                        <Row>
+                                            <Col  xs={4} className="d-flex align-content-center flex-wrap">
+                                                <h3>
+                                                    House balances
+                                                </h3>
+                                            </Col>
+                                            <Col>
+                                                {roommatesBalances.map((roommate) => (
+                                                    <Row>
+                                                        <Col>
+                                                            <div className="RoomMateName">
+                                                                {roommate.username}
+                                                            </div>
+                                                        </Col>
+                                                        <Col>
+                                                            <div className="RoomMatesBalance">
+                                                                {roommate.balance.toFixed(2)}€
+                                                            </div>
+                                                        </Col>
+                                                    </Row>
+                                                ))}
+                                            </Col>
+                                        </Row>
+                                    }
+                                    {isMobile &&
+                                        <Row>
+                                            <Col className="d-flex align-content-center flex-wrap">
+                                                <h3>
+                                                    House balances
+                                                </h3>
+                                            </Col>
                                             {roommatesBalances.map((roommate) => (
-                                                <Row>
-                                                    <Col sm={4}>
+                                                <Col>
+                                                    <Row>
                                                         <div className="RoomMateName">
                                                             {roommate.username}
                                                         </div>
-                                                    </Col>
-                                                    <Col sm={8}>
+                                                    </Row>
+                                                    <Row>
                                                         <div className="RoomMatesBalance">
                                                             {roommate.balance.toFixed(2)}€
                                                         </div>
-                                                    </Col>
-                                                </Row>
+                                                    </Row>
+                                                </Col>
                                             ))}
-                                        </Col>
-                                    </Row>
+                                        </Row>
+                                    }
                                 </Container>
                             </div>
                         </Col>
@@ -339,7 +378,7 @@ function Wallet() {
                                     <Accordion.Header>
                                         <Container>
                                             <Row>
-                                                <Col xs={1}><MdOutlineAddCard style={{fontSize: '30px'}}/></Col>
+                                                <Col xs={2}><MdOutlineAddCard style={{fontSize: '30px'}}/></Col>
                                                 <Col className="d-flex align-items-center">New transaction</Col>
                                             </Row>
                                         </Container>
@@ -465,33 +504,31 @@ function Wallet() {
                 {transactions.map((t) => (
                     <Card body>
                         <Container>
-                            {'usernameSplit' in t && !editList[t.id] && (
+                            {'usernameSplit' in t && !editList[t.id] && !isMobile && (
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><MdShoppingCartCheckout
                                         style={{fontSize: '30px'}}/></Col>
                                     <Col>
-                                        <Container>
-                                            <Row>
-                                                <Col xs={4}>{t.date}</Col>
-                                                <Col xs={4}>{t.amount}€</Col>
+                                        <Row>
+                                            <Col xs={4}><strong>Date:</strong>&nbsp;{t.date}</Col>
+                                            <Col xs={4}><strong>Amount:</strong>&nbsp;{t.amount}€</Col>
+                                        </Row>
+                                        <Row>
+                                            <strong>Pay:</strong><span>{t.usernamePay}</span>
+                                        </Row>
+                                        <Row>
+                                            <strong>Split with:</strong>
+                                                {
+                                                    t.usernameSplit.map(item => {
+                                                        return <span key={item}>{item}</span>;
+                                                    })
+                                                }
+                                        </Row>
+                                        <Row>
+                                            <Col>
+                                                <strong>Description:</strong>&nbsp;{t.description}
+                                            </Col>
                                             </Row>
-                                            <Row>
-                                                <Col xs={4}><strong>Pay:</strong>&nbsp;{t.usernamePay}</Col>
-                                                <Col xs={1}><TbArrowsSplit style={{fontSize: '30px'}}/></Col>
-                                                <Col xs={5}>
-                                                    {
-                                                        t.usernameSplit.map(item => {
-                                                            return <span key={item}>&nbsp;{item}</span>;
-                                                        })
-                                                    }
-                                                </Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>
-                                                    <strong>Description:</strong>&nbsp;{t.description}
-                                                </Col>
-                                            </Row>
-                                        </Container>
                                     </Col>
 
                                     <Col xs={2} className="d-flex align-items-center">
@@ -513,15 +550,88 @@ function Wallet() {
                                     </Col>
                                 </Row>
                             )}
+                            {'usernameSplit' in t && !editList[t.id] && isMobile && (
+                                <div>
+                                    <Row>
+                                        <Row>
+                                            <Col><strong>Date:</strong>&nbsp;{t.date}</Col>
+                                            <Col><strong>Amount:</strong>&nbsp;{t.amount}€</Col>
+                                        </Row>
+                                        <Row>
+                                            <strong>Pay:</strong><span>{t.usernamePay}</span></Row>
+                                        <Row>
+                                            <strong>Splitted with:</strong>
+                                            {
+                                                t.usernameSplit.map(item => {
+                                                    return <span key={item}>{item}</span>;
+                                                })
+                                            }
+                                        </Row>
+                                        <Row>
+                                            <strong>Description:</strong><span>{t.description}</span>
+                                        </Row>
+                                    </Row>
+                                    {usernameLogged == t.usernamePay &&
+                                        <Row>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    handleEditListPayment(e, t.id, t.date, t.amount, t.description, t.usernamePay, t.usernameSplit);
+                                                }}>
+                                                    <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                                </Button>
+                                            </Col>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteTransaction(e, t.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    }
+                                </div>
+                            )}
                             {'usernameSplit' in t && editList[t.id] && (
                                 <Form>
                                     <Row>
-                                        <Col xs={1} className="d-flex align-items-center"><MdShoppingCartCheckout
+                                        {!isMobile &&
+                                            <Col xs={1} className="d-flex align-items-center"><MdShoppingCartCheckout
                                             style={{fontSize: '30px'}}/></Col>
+                                        }
                                         <Col>
                                             <Container>
-                                                <Row>
-                                                    <Col>
+                                                {!isMobile &&
+                                                    <Row>
+                                                        <Col>
+                                                            <strong>Date:</strong>&nbsp;
+                                                            <Form.Group className="" controlId="dateEdit">
+                                                                <Form.Control required type="date" placeholder='Name'
+                                                                              defaultValue={t.date} onChange={e =>
+                                                                    setDateEdit(items => ({
+                                                                        ...items,
+                                                                        [t.id]: e.target.value
+                                                                    }))}/>
+                                                            </Form.Group>
+                                                        </Col>
+
+                                                        <Col>
+                                                            <strong>Amount:</strong>&nbsp;
+                                                            <InputGroup className="mb-3">
+                                                                <InputGroup.Text id="amountEdit">€</InputGroup.Text>
+                                                                <Form.Control required type="number" step="0.01"
+                                                                              placeholder="00.00" defaultValue={t.amount}
+                                                                              onChange={e =>
+                                                                                  setAmountEdit(items => ({
+                                                                                      ...items,
+                                                                                      [t.id]: e.target.value
+                                                                                  }))}/>
+                                                            </InputGroup>
+                                                        </Col>
+                                                    </Row>
+                                                }
+                                                {isMobile &&
+                                                    <Row>
                                                         <strong>Date:</strong>&nbsp;
                                                         <Form.Group className="" controlId="dateEdit">
                                                             <Form.Control required type="date" placeholder='Name'
@@ -531,9 +641,10 @@ function Wallet() {
                                                                     [t.id]: e.target.value
                                                                 }))}/>
                                                         </Form.Group>
-                                                    </Col>
-
-                                                    <Col>
+                                                    </Row>
+                                                }
+                                                {isMobile &&
+                                                    <Row>
                                                         <strong>Amount:</strong>&nbsp;
                                                         <InputGroup className="mb-3">
                                                             <InputGroup.Text id="amountEdit">€</InputGroup.Text>
@@ -545,8 +656,8 @@ function Wallet() {
                                                                                   [t.id]: e.target.value
                                                                               }))}/>
                                                         </InputGroup>
-                                                    </Col>
-                                                </Row>
+                                                    </Row>
+                                                }
                                                 <Row>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="payPayment">Pay:</InputGroup.Text>
@@ -592,48 +703,61 @@ function Wallet() {
                                                 </Row>
                                             </Container>
                                         </Col>
-
-                                        <Col xs={2} className="d-flex align-items-center">
-                                            {usernameLogged == t.usernamePay &&
-                                                <div className="d-flex align-items-center">
-                                                    <Button className="HoMatesButton" onClick={(e) => {
-                                                        handleSaveEditListPayment(e, t.id);
-                                                    }}>
-                                                        Save
-                                                    </Button>&nbsp;
-                                                    <Button className="action-button" onClick={(e) => {
-                                                        // @ts-ignore
-                                                        handleDeleteTransaction(e, t.id);
-                                                    }}>
-                                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                                    </Button>
-                                                </div>
-                                            }
-                                        </Col>
+                                        {!isMobile &&
+                                            <Col xs={2} className="d-flex align-items-center">
+                                                {usernameLogged == t.usernamePay &&
+                                                    <div className="d-flex align-items-center">
+                                                        <Button className="HoMatesButton" onClick={(e) => {
+                                                            handleSaveEditListPayment(e, t.id);
+                                                        }}>
+                                                            Save
+                                                        </Button>&nbsp;
+                                                        <Button className="action-button" onClick={(e) => {
+                                                            // @ts-ignore
+                                                            handleDeleteTransaction(e, t.id);
+                                                        }}>
+                                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                        </Button>
+                                                    </div>
+                                                }
+                                            </Col>
+                                        }
                                     </Row>
+                                    {isMobile && usernameLogged == t.usernamePay &&
+                                        <Row>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="HoMatesButton action-button-centre" onClick={(e) => {
+                                                    handleSaveEditListPayment(e, t.id);
+                                                }}>
+                                                    Save
+                                                </Button>
+                                            </Col>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteTransaction(e, t.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    }
                                 </Form>
                             )}
-                            {'usernameTo' in t && !editList[t.id] && (
+                            {'usernameTo' in t && !editList[t.id] && !isMobile && (
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><RiRefund2Line
                                         style={{fontSize: '30px'}}/></Col>
                                     <Col>
-                                        <Container>
-                                            <Row>
-                                                <Col xs={4}>{t.date}</Col>
-                                                <Col xs={4}>{t.amount}€</Col>
-                                            </Row>
-                                            <Row>
-                                                <Col xs={4}><strong>From:</strong>&nbsp;{t.usernameFrom}</Col>
-                                                <Col xs={1}><FaMoneyBillTransfer style={{fontSize: '30px'}}/></Col>
-                                                <Col xs={4}><strong>To:</strong>&nbsp;{t.usernameTo}</Col>
-                                            </Row>
-                                            <Row>
-                                                <Col>
-                                                    <strong>Description:</strong>&nbsp;{t.description}
-                                                </Col>
-                                            </Row>
-                                        </Container>
+                                        <Row>
+                                            <Col xs={4}><strong>Date:</strong>&nbsp;{t.date}</Col>
+                                            <Col xs={4}><strong>Amount:</strong>&nbsp;{t.amount}€</Col>
+                                        </Row>
+                                        <Row><strong>From:</strong><span>{t.usernameFrom}</span></Row>
+                                        <Row><strong>To:</strong><span>{t.usernameTo}</span></Row>
+                                        <Row>
+                                            <strong>Description:</strong><span>{t.description}</span>
+                                        </Row>
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
                                         {usernameLogged == t.usernameFrom &&
@@ -654,15 +778,80 @@ function Wallet() {
                                     </Col>
                                 </Row>
                             )}
+                            {'usernameTo' in t && !editList[t.id] && isMobile && (
+                                <div>
+                                    <Row>
+                                        <Row>
+                                            <Col><strong>Date:</strong>&nbsp;{t.date}</Col>
+                                            <Col><strong>Amount:</strong>&nbsp;{t.amount}€</Col>
+                                        </Row>
+                                        <Row><strong>From:</strong><span>{t.usernameFrom}</span></Row>
+                                        <Row><strong>To:</strong><span>{t.usernameTo}</span></Row>
+                                        <Row>
+                                            <strong>Description:</strong><span>{t.description}</span>
+                                        </Row>
+                                    </Row>
+                                    {usernameLogged == t.usernameFrom &&
+                                        <Row>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    handleEditListRefund(e, t.id, t.date, t.amount, t.description, t.usernameFrom, t.usernameTo);
+                                                }}>
+                                                    <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                                </Button>
+                                            </Col>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteTransaction(e, t.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    }
+                                </div>
+                            )}
                             {'usernameTo' in t && editList[t.id] && (
                                 <Form>
                                     <Row>
-                                        <Col xs={1} className="d-flex align-items-center"><RiRefund2Line
+                                        {!isMobile &&
+                                            <Col xs={1} className="d-flex align-items-center"><RiRefund2Line
                                             style={{fontSize: '30px'}}/></Col>
+                                        }
                                         <Col>
                                             <Container>
-                                                <Row>
-                                                    <Col>
+                                                {!isMobile &&
+                                                    <Row>
+                                                        <Col>
+                                                            <strong>Date:</strong>&nbsp;
+                                                            <Form.Group className="" controlId="dateEdit">
+                                                                <Form.Control required type="date" placeholder='Name'
+                                                                              defaultValue={t.date} onChange={e =>
+                                                                    setDateEdit(items => ({
+                                                                        ...items,
+                                                                        [t.id]: e.target.value
+                                                                    }))}/>
+                                                            </Form.Group>
+                                                        </Col>
+
+                                                        <Col>
+                                                            <strong>Amount:</strong>&nbsp;
+                                                            <InputGroup className="mb-3">
+                                                                <InputGroup.Text id="amountEdit">€</InputGroup.Text>
+                                                                <Form.Control required type="number" step="0.01"
+                                                                              placeholder="00.00" defaultValue={t.amount}
+                                                                              onChange={e =>
+                                                                                  setAmountEdit(items => ({
+                                                                                      ...items,
+                                                                                      [t.id]: e.target.value
+                                                                                  }))}/>
+                                                            </InputGroup>
+                                                        </Col>
+                                                    </Row>
+                                                }
+                                                {isMobile &&
+                                                    <Row>
                                                         <strong>Date:</strong>&nbsp;
                                                         <Form.Group className="" controlId="dateEdit">
                                                             <Form.Control required type="date" placeholder='Name'
@@ -672,9 +861,10 @@ function Wallet() {
                                                                     [t.id]: e.target.value
                                                                 }))}/>
                                                         </Form.Group>
-                                                    </Col>
-
-                                                    <Col>
+                                                    </Row>
+                                                }
+                                                {isMobile &&
+                                                    <Row>
                                                         <strong>Amount:</strong>&nbsp;
                                                         <InputGroup className="mb-3">
                                                             <InputGroup.Text id="amountEdit">€</InputGroup.Text>
@@ -686,9 +876,8 @@ function Wallet() {
                                                                                   [t.id]: e.target.value
                                                                               }))}/>
                                                         </InputGroup>
-                                                    </Col>
-                                                </Row>
-
+                                                    </Row>
+                                                }
                                                 <Row>
                                                     <InputGroup className="mb-3">
                                                         <InputGroup.Text id="fromRefund">From:</InputGroup.Text>
@@ -737,24 +926,46 @@ function Wallet() {
                                                 </Row>
                                             </Container>
                                         </Col>
-                                        <Col xs={2} className="d-flex align-items-center">
-                                            {usernameLogged == t.usernameFrom &&
-                                                <div className="d-flex align-items-center">
-                                                    <Button className="HoMatesButton" onClick={(e) => {
-                                                        handleSaveEditListRefund(e, t.id);
-                                                    }}>
-                                                        Save
-                                                    </Button>&nbsp;
-                                                    <Button className="action-button" onClick={(e) => {
-                                                        // @ts-ignore
-                                                        handleDeleteTransaction(e, t.id);
-                                                    }}>
-                                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                                    </Button>
-                                                </div>
-                                            }
-                                        </Col>
+                                        {!isMobile &&
+                                            <Col xs={2} className="d-flex align-items-center">
+                                                {usernameLogged == t.usernameFrom &&
+                                                    <div className="d-flex align-items-center">
+                                                        <Button className="HoMatesButton" onClick={(e) => {
+                                                            handleSaveEditListRefund(e, t.id);
+                                                        }}>
+                                                            Save
+                                                        </Button>&nbsp;
+                                                        <Button className="action-button" onClick={(e) => {
+                                                            // @ts-ignore
+                                                            handleDeleteTransaction(e, t.id);
+                                                        }}>
+                                                            <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                        </Button>
+                                                    </div>
+                                                }
+                                            </Col>
+                                        }
                                     </Row>
+
+                                    {isMobile && usernameLogged == t.usernameFrom &&
+                                        <Row>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="HoMatesButton action-button-centre" onClick={(e) => {
+                                                    handleSaveEditListRefund(e, t.id);
+                                                }}>
+                                                    Save
+                                                </Button>
+                                            </Col>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteTransaction(e, t.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    }
                                 </Form>
                             )}
                         </Container>

@@ -86,3 +86,17 @@ a.simpleLink:hover{
 .HoMatesTab .nav-link {
     color: black !important;
 }
+
+.action-button-centre.btn.btn-primary {
+    margin: 0 auto;
+}
+
+
+
+
+
+@media screen and (max-width: 500px) {
+    .ContentWrap {
+        background-color: transparent;
+    }
+}
