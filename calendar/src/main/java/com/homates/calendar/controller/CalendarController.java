@@ -1,9 +1,6 @@
 package com.homates.calendar.controller;
 
-import com.homates.calendar.dto.AddEventDto;
-import com.homates.calendar.dto.CalendarDto;
-import com.homates.calendar.dto.EventInDateDto;
-import com.homates.calendar.dto.EventsForUserDto;
+import com.homates.calendar.dto.*;
 import com.homates.calendar.model.Calendar;
 import com.homates.calendar.model.Event;
 import com.homates.calendar.model.EventInDate;
@@ -95,6 +92,7 @@ public class CalendarController {
                 eventInDateRepository.save(_currEventInDate);
                 cal.getEvents().add(_currEventInDate);
                 _currDate = _currDate.plusWeeks(1);
+                System.out.println(_currEventInDate.getDate());
         }
 
         repository.save(cal);
@@ -146,7 +144,7 @@ public class CalendarController {
 
     @PostMapping(value = "/add_event/yearly/{id}")
     public ResponseEntity<String> addYearlyEvents(@PathVariable("id") int id){
-        System.out.println("Add event every recurrence of day in years...");
+        System.out.println("Add event one a year...");
 
         //recupero evento
         Optional<Event> addEvent = eventRepository.findById(id);
@@ -204,22 +202,18 @@ public class CalendarController {
 
 
     //metodo per cancellare una specifica istanza dell'evento per una certa data
-    @DeleteMapping("/events_in_date/delete/{id}")
-    public ResponseEntity<String> deleteEventInDate(@PathVariable("id") int id,@RequestBody EventInDateDto eventInDateDto){
+    @DeleteMapping("/events_in_date/delete/{id}/{house}")
+    public ResponseEntity<String> deleteEventInDate(@PathVariable("id") int id,@PathVariable("house") int idHouse){
         System.out.println("Deleting event in specific date...");
-        Optional<Calendar> c = repository.findByIdHouse(eventInDateDto.getIdHouse());
+        Optional<Calendar> c = repository.findByIdHouse(idHouse);
         if(c.isEmpty())
             return new ResponseEntity<>("Calendar not found", HttpStatus.NOT_FOUND);
         Calendar cal = c.get();
-
-        List<EventInDate> events = eventInDateRepository.findByDate(eventInDateDto.getDate());
-        System.out.println(events);
-        if (events.isEmpty())
+        List<EventInDate> _events = cal.getEvents();
+        if (_events.isEmpty())
             return new ResponseEntity<>("Events not found", HttpStatus.NOT_FOUND);
-        //List<EventInDate> events = _events.get();
-
-        for (EventInDate eid : events) {
-            if (eid.getEvent().getId() == id) {
+        for (EventInDate eid : _events) {
+            if (eid.getId() == id) {
                 cal.getEvents().remove(eid);
                 eventInDateRepository.delete(eid);
                 //eventInDateRepository.deleteById(eid.getId());
@@ -269,6 +263,137 @@ public class CalendarController {
             return new ResponseEntity<>("Calendar has been deleted!", HttpStatus.OK);
         }
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
+    //metodo per recuperare tutti gli eventi in un certo range di date
+    @GetMapping("event/events")
+    ResponseEntity<Iterable<Event>> getEventsInDates(@RequestBody EventDatesDto eventDatesDto) {
+        Iterable<Event> _currentEvents = new ArrayList<>();
+
+        Optional<List<Event>> events = eventRepository.findBetweenStartAndEnd(eventDatesDto.getStart(),eventDatesDto.getEnd());
+        if (events.isEmpty())
+            return new ResponseEntity<>(_currentEvents, HttpStatus.NOT_FOUND);
+        _currentEvents = events.get();
+        return new ResponseEntity<>(_currentEvents, HttpStatus.OK);
+    }
+
+    //metodo per creare un nuovo evento
+    @PostMapping(value= "event/create")
+    public ResponseEntity<Event> createEvent(@RequestBody EventDto eventDto) {
+        System.out.println("Creating new event...");
+        Event event = new Event();
+        event.setColor(eventDto.getColor());
+        event.setTime(eventDto.getTime());
+        event.setDescription(eventDto.getDescription());
+        event.setStart(eventDto.getStart());
+        event.setEnd(eventDto.getEnd());
+        event.setUser(eventDto.getUser());
+        event.setIdHouse(eventDto.getIdHouse());
+        event.setRepetition(eventDto.getRepetition());
+
+        eventRepository.save(event);
+        return new ResponseEntity<>(event, HttpStatus.OK);
+
+    }
+    @GetMapping("event/get_event/{id}")
+    ResponseEntity<Event> getEvent(@PathVariable("id") int id) {
+        System.out.println("Get event...");
+        Event _currentEvent = new Event();
+        Optional<Event> event = eventRepository.findById(id);
+        if (event.isEmpty())
+            return new ResponseEntity<>(_currentEvent, HttpStatus.NOT_FOUND);
+        _currentEvent = event.get();
+        return new ResponseEntity<>(_currentEvent, HttpStatus.OK);
+    }
+
+
+    //metodo per modificare i vari parametri dell'evento
+    //ogni volta che si fa una modifica il Dto deve essere settato a null per tutti i valori immutati
+    @PutMapping("event/update/{id}")
+    ResponseEntity<String> updateEvent(@PathVariable("id") int id,@RequestBody ChangeEventDto changeEventDto) {
+        System.out.println("Changing event params...");
+        boolean nuovo = false;
+
+        Optional<Event> event = eventRepository.findById(id);
+        if (event.isEmpty())
+            return new ResponseEntity<>("Event not found.", HttpStatus.NOT_FOUND);
+
+        Event _currentEvent = event.get();
+
+        if (changeEventDto.getStart() != null) {
+            _currentEvent.setStart(changeEventDto.getStart());
+            nuovo = true;
+        }
+        if (changeEventDto.getEnd() != null) {
+            _currentEvent.setEnd(changeEventDto.getEnd());
+            nuovo = true;
+        }
+        if (changeEventDto.getColor() != null) {
+            _currentEvent.setColor(changeEventDto.getColor());
+        }
+        if (changeEventDto.getDescription() != null) {
+            _currentEvent.setDescription(changeEventDto.getDescription());
+        }
+        if (changeEventDto.getUser() != null) {
+            _currentEvent.setUser(changeEventDto.getUser());
+        }
+        if (changeEventDto.getTime() != null) {
+            _currentEvent.setTime(changeEventDto.getTime());
+        }
+        if (changeEventDto.getRepetition() != null) {
+            _currentEvent.setRepetition(changeEventDto.getRepetition());
+            nuovo = true;
+        }
+        eventRepository.save(_currentEvent);
+
+        if (nuovo) {
+            EventDto ev =new EventDto();
+            ev.setDescription(_currentEvent.getDescription());
+            ev.setTime(_currentEvent.getTime());
+            ev.setUser(_currentEvent.getUser());
+            ev.setStart(_currentEvent.getStart());
+            ev.setIdHouse(_currentEvent.getIdHouse());
+            ev.setColor(_currentEvent.getColor());
+            ev.setEnd(_currentEvent.getEnd());
+            ev.setRepetition(_currentEvent.getRepetition());
+
+            Event change  = createEvent(ev).getBody();
+
+            AddEventDto dto = new AddEventDto();
+            dto.setDay_month(changeEventDto.getFrequency());
+            System.out.println(ev.getRepetition());
+
+            if (change.getRepetition().equals("everyday")) {
+                addEverydayEvents(change.getId());
+            } else if (change.getRepetition().equals("weekly")) {
+                System.out.println(dto.getDay_month());
+                addWeeklyEvents(change.getId(), dto);
+            }else if (change.getRepetition().equals("monthly")) {
+                System.out.println(dto.getDay_month());
+                addMonthlyEvents(change.getId(), dto);
+            } else if (change.getRepetition().equals("yearly")) {
+                addYearlyEvents(change.getId());
+            }
+            eventRepository.deleteById(id);
+        }
+
+        return new ResponseEntity<>("Event updated.", HttpStatus.OK);
+
+    }
+
+
+    //metodo per cancellare un evento
+    @DeleteMapping("event/delete/{id}")
+    public ResponseEntity<String> deleteEvent(@PathVariable("id") int id) {
+        System.out.println("Deleting event...");
+
+        Optional<Event> e = eventRepository.findById(id);
+        if (e.isPresent()) {
+            eventRepository.deleteById(id);
+            return new ResponseEntity<>("Event has been deleted!", HttpStatus.OK);
+        }else {
+            return new ResponseEntity<String>("Event not found",HttpStatus.NOT_FOUND);}
     }
 
 }

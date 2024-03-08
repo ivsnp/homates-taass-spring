@@ -13,4 +13,5 @@ public class ChangeEventDto {
     private LocalTime time;
     private String repetition;
     private String color;
+    private int frequency;
 }
