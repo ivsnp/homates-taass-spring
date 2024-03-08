@@ -13,3 +13,9 @@
 .Brand{
     font-weight: bold;
 }
+
+@media screen and (max-width: 500px) {
+    .ContentWrap .row {
+        padding: 10px 5px;
+    }
+}

@@ -1,10 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './HeaderGuest.css';
 import {FaRegQuestionCircle, FaRegUserCircle} from "react-icons/fa";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 function HeaderGuest() {
+
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
+
     const title: string = "Mates";
 
     // @ts-ignore
@@ -15,7 +30,7 @@ function HeaderGuest() {
                     <Container>
                         <Navbar.Brand>
                             <Link to="/">
-                                <img src="/img/logo/logo_guest.svg" alt="HoMates logo"/>
+                                <img className="brand-icon-logged" src="/img/logo/logo_guest.svg" alt="HoMates logo"/>
                             </Link>
                         </Navbar.Brand>
                     </Container>
@@ -25,8 +40,8 @@ function HeaderGuest() {
             <div className="Header-right">
 
                 <div className="Account">
-                    <FaRegUserCircle style={{fontSize: '30px'}}/>
-                    <a href="/login">Sign in | sign up</a>
+                    {!isMobile && <FaRegUserCircle style={{fontSize: '30px'}}/>}
+                    <a href="/login">Login</a>
                 </div>
             </div>
         </header>

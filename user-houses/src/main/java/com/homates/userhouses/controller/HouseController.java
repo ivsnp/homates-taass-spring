@@ -56,8 +56,9 @@ public class HouseController {
         if (user.isEmpty())
             return new ResponseEntity<>(houseUsersDto, HttpStatus.NOT_FOUND);
 
-        UserEntity userOwner = user.get();
-        ArrayList<House> houses = new ArrayList<>(houseRepository.findByOwner(userOwner));
+        UserEntity userLogged = user.get();
+        //ArrayList<House> houses = new ArrayList<>(houseRepository.findByOwner(userLogged));
+        ArrayList<House> houses = new ArrayList<>(houseRepository.findByOwnerOrRoomMatesContaining(userLogged, userLogged));
         for (House hu: houses){
             UserEntity owner = hu.getOwner();
 

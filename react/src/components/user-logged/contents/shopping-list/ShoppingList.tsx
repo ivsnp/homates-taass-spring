@@ -9,6 +9,20 @@ import axios, {AxiosResponse} from "axios";
 
 function ShoppingList() {
 
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
+
     interface Product {
         id: number,
         name: string
@@ -31,6 +45,11 @@ function ShoppingList() {
         "Content-Type": "application/json",
         "Accept": "application/json"
     };
+
+    const usernameLogged: string | null = localStorage.getItem("username");
+    if (usernameLogged == null) {
+        window.location.assign("/");
+    }
 
     const title: string = "Shopping list";
 
@@ -155,7 +174,7 @@ function ShoppingList() {
             });
     }, [localStorage.getItem("idHomeSelected")]);
 
-    if (shoppingList === undefined || Object.keys(editList).length == 0) return (
+    if (shoppingList === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -230,15 +249,17 @@ function ShoppingList() {
                         </Accordion.Body>
                     </Accordion.Item>
                 </Accordion>
-                <br/>
-                <h3>
-                    {title}
-                </h3>
+
+                <div className="TitleContent">
+                    <h3>
+                        {title}
+                    </h3>
+                </div>
 
                 {shoppingList.map((shopl) => (
                     <Card body>
                         <Container>
-                            {!editList[shopl.id] &&
+                            {!editList[shopl.id] && !isMobile &&
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
                                     <Col className="d-flex align-items-center">
@@ -260,7 +281,32 @@ function ShoppingList() {
                                     </Col>
                                 </Row>
                             }
-                            {editList[shopl.id] &&
+                            {!editList[shopl.id] && isMobile &&
+                                <div>
+                                    <Row className="d-flex align-items-center">
+                                        <div className="">
+                                            <strong>Name:</strong>&nbsp;{shopl.name}
+                                        </div>
+                                    </Row>
+                                    <Row>
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="action-button action-button-centre" onClick={(e) => {
+                                                handleEditList(e, shopl.id, shopl.name);
+                                            }}>
+                                                <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                            </Button>
+                                        </Col>
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="action-button action-button-centre" onClick={(e) => {
+                                                handleDeleteList(e, shopl.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            }
+                            {editList[shopl.id] && !isMobile &&
                                 <Form>
                                     <Row>
                                         <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
@@ -285,29 +331,79 @@ function ShoppingList() {
                                     </Row>
                                 </Form>
                             }
+                            {editList[shopl.id] && isMobile &&
+                                <Form>
+                                    <Row className="d-flex align-items-center">
+                                        <div className="">
+                                            <strong>Name:</strong>
+                                        </div>
+                                        <Form.Group className="" controlId="nameUser">
+                                            <Form.Control required type="text" placeholder='Name' defaultValue={shopl.name}  onChange={e =>
+                                                setNameShopL(nameShopL => ({...nameShopL, [shopl.id]: e.target.value}))}/>
+                                        </Form.Group>
+                                    </Row>
+                                    <Row>
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="HoMatesButton  action-button-centre" onClick={(e) => {
+                                                handleSaveEditList(e, shopl.id);
+                                            }}>
+                                                Save
+                                            </Button>
+                                        </Col>
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="action-button action-button-centre" onClick={(e) => {
+                                                handleDeleteList(e, shopl.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            }
                             <Row>
                                 <Col>
                                     {
                                         shopl.productList.map(item => {
                                             return <Card body>
                                                 <Container>
-                                                    <Row>
-                                                        <Col>
-                                                            <div className="">
-                                                                <strong>Item:</strong>&nbsp;{item.product.name}
-                                                            </div>
-                                                            <div className="">
-                                                                <strong>Description:</strong>&nbsp;{item.description}
-                                                            </div>
-                                                        </Col>
-                                                        <Col xs={1} className="d-flex align-items-center">
-                                                            <Button className="action-button" onClick={(e) => {
-                                                                handleDeleteProduct(e, item.id);
-                                                            }}>
-                                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                                            </Button>
-                                                        </Col>
-                                                    </Row>
+                                                    {!isMobile &&
+                                                        <Row>
+                                                            <Col>
+                                                                <div className="">
+                                                                    <strong>Item:</strong>&nbsp;{item.product.name}
+                                                                </div>
+                                                                <div className="">
+                                                                    <strong>Description:</strong>&nbsp;{item.description}
+                                                                </div>
+                                                            </Col>
+                                                            <Col xs={1} className="d-flex align-items-center">
+                                                                <Button className="action-button" onClick={(e) => {
+                                                                    handleDeleteProduct(e, item.id);
+                                                                }}>
+                                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    }
+                                                    {isMobile &&
+                                                        <div>
+                                                            <Row>
+                                                                <div className="">
+                                                                    <strong>Item:</strong>&nbsp;{item.product.name}
+                                                                </div>
+                                                                <div className="">
+                                                                    <strong>Description:</strong>&nbsp;{item.description}
+                                                                </div>
+                                                            </Row>
+                                                            <Row className="d-flex align-items-center">
+                                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                                    handleDeleteProduct(e, item.id);
+                                                                }}>
+                                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                                </Button>
+                                                            </Row>
+                                                        </div>
+                                                    }
                                                 </Container>
 
                                             </Card>;

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Board.css';
 import {Accordion, Button, Col, Container, Form, Row, Tab, Tabs, InputGroup, Spinner, Card} from "react-bootstrap";
 import {CgNotes} from "react-icons/cg";
@@ -6,10 +6,22 @@ import {MdDeleteForever, MdNoteAdd} from "react-icons/md";
 import axios, {AxiosResponse} from "axios";
 import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";
-import {Console} from "inspector";
 
 function Board() {
 
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
 
     interface Announcement{
         id: number,
@@ -19,8 +31,8 @@ function Board() {
         date: string,
         documents: []
     }
-    const username: string = "ivsnp";
-    const title: string = "Announcements";
+    const username: string | null = localStorage.getItem("username");
+    const title: string = "Board";
 
     const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
     const [descriptionEdit, setDescriptionEdit] = useState<{[idItem: string]: boolean}>({});
@@ -87,13 +99,17 @@ function Board() {
     const handleSaveEditList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
+        console.log("Saving edited description for ID:", id);
+        console.log("Edited description:", descriptionEdit[id]);
         const item = {
             idAnnounce: id,
             description: descriptionEdit[id]
         };
 
+        console.log("Item:", item);
         axios.put("http://localhost:8080/api/v1/bacheca/announces/update", item)
             .then(function (response) {
+                console.log("Update successful");
                 window.location.reload();
             })
             .catch(function (error) {
@@ -126,7 +142,7 @@ function Board() {
     }, [localStorage.getItem("idHomeSelected")]);
 
 
-    if (announces === undefined || Object.keys(editList).length == 0) return (
+    if (announces === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -157,7 +173,7 @@ function Board() {
                 {announces.map((announce) => (
                     <Card body>
                         <Container>
-                            {!editList[announce.id] &&
+                            {!editList[announce.id] && !isMobile &&
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
                                     <Col>
@@ -188,7 +204,41 @@ function Board() {
                                     }
                                 </Row>
                             }
-                            {editList[announce.id] &&
+                            {!editList[announce.id] && isMobile &&
+                                <div>
+                                    <Row>
+                                        <div className="">
+                                            <strong>User:</strong>&nbsp;{announce.user}
+                                        </div>
+                                        <div className="">
+                                            <strong>Description:</strong>&nbsp;{announce.description}
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Date:</strong>&nbsp;{announce.date}
+                                        </div>
+                                    </Row>
+                                    {username == announce.user &&
+                                        <Row>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    handleEditList(e, announce.id, announce.description);
+                                                }}>
+                                                    <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                                </Button>
+                                            </Col>
+                                            <Col className="d-flex align-items-center">
+                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDelete(e, announce.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        </Row>
+                                    }
+                                </div>
+                            }
+                            {editList[announce.id] && !isMobile &&
                                 <Form>
                                     <Row>
                                         <Col xs={1} className="d-flex align-items-center"><CiStickyNote style={{fontSize: '30px'}}/></Col>
@@ -223,6 +273,42 @@ function Board() {
                                     </Row>
                                 </Form>
                             }
+                            {editList[announce.id] && isMobile &&
+                                <Form>
+                                    <Row>
+                                        <div className="">
+                                            <strong>User:</strong>&nbsp;{announce.user}
+                                        </div>
+                                        <div className="">
+                                            <strong>Description:</strong>&nbsp;
+                                            <Form.Group className="" controlId="descriptionEdit">
+                                                <Form.Control required type="text" placeholder='Name' defaultValue={announce.description}  onChange={e =>
+                                                    setDescriptionEdit(items => ({...items, [announce.id]: e.target.value}))}/>
+                                            </Form.Group>
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Date:</strong>&nbsp;{announce.date}
+                                        </div>
+                                    </Row>
+                                    <Row xs={2} className="d-flex align-items-center">
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="HoMatesButton  action-button-centre" onClick={(e) => {
+                                                handleSaveEditList(e, announce.id);
+                                            }}>
+                                                Save
+                                            </Button>
+                                        </Col>
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="action-button  action-button-centre" onClick={(e) => {
+                                                // @ts-ignore
+                                                handleDelete(e, announce.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Form>
+                            }
                         </Container>
                     </Card>
                 ))}
@@ -232,40 +318,3 @@ function Board() {
 }
 
 export default Board;
-
-//<Tabs defaultActiveKey="announces">
-//    <Tab eventKey = "announces" title = "Announces">
-//        <table className="table-spacing">
-//            <thead>
-//            <tr>
-//                <th>Description</th>
-//                <th>User</th>
-//                <th>Date</th>
-//            </tr>
-//            </thead>
-//            <tbody>
-//            {announces.map(announces => (
-//                <tr>
-//                    <td>{announces.description} </td>
-//                    <td>{announces.user} </td>
-//                    <td>{announces.date} </td>
-//                </tr>
-//            ))}
-//            </tbody>
-//        </table>
-//    </Tab>
-//    <Tab eventKey="documents" title="Documents">
-//        <Row classname = "icon-row">
-//            <Col><CgNotes style={{fontSize: '50px', display: "flex", justifyContent: "center"}}/></Col>
-//            <Col><CgNotes style={{fontSize: '50px', display: "flex", justifyContent: "center"}}/></Col>
-//            <Col><CgNotes style={{fontSize: '50px', display: "flex", justifyContent: "center"}}/></Col>
-//            <Col><CgNotes style={{fontSize: '50px', display: "flex", justifyContent: "center"}}/></Col>
-//        </Row>
-//        <Row>
-//            <Col>Bolletta luce</Col>
-//            <Col>Chiusura acqua</Col>
-//            <Col>Orari portineria</Col>
-//            <Col>Squadre</Col>
-//        </Row>
-//    </Tab>
-//</Tabs>

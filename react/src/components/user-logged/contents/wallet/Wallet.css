@@ -8,6 +8,7 @@
     border: 7px solid #f1f1f1;
     border-radius: 25px;
     padding: 15px;
+    background-color: #fff;
 }
 
 .MyWallet{
@@ -48,7 +49,7 @@
 }
 
 .accordion {
-    margin: 10px;
+    margin: 10px 0px;
 }
 
 .WalletBalance h3 {
@@ -58,3 +59,5 @@
 .TitleContent {
     padding: 10px 0 0 10px;
 }
+
+

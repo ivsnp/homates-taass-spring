@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface HouseRepository extends JpaRepository<House, Integer> {
     Optional<House> findById(int id);
     List<House> findByOwner(UserEntity owner);
+
+    List<House> findByOwnerOrRoomMatesContaining(UserEntity owner, UserEntity roommate);
 }

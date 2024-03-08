@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './Houses.css';
 import {
     Accordion,
@@ -23,6 +23,20 @@ import {CiStickyNote} from "react-icons/ci";
 
 function Houses() {
 
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
+
     interface HousesAttributes {
         id: number,
         name: string,
@@ -32,8 +46,11 @@ function Houses() {
         roomMates: Array<string>
     }
 
+    const usernameLogged: string | null = localStorage.getItem("username");
+    if (usernameLogged == null) {
+        window.location.assign("/");
+    }
 
-    const username: string = "ivsnp";
     const title: string = "My Houses";
 
     const [editList, setEditList] = useState<{[idItem: string]: boolean}> ({});
@@ -61,7 +78,7 @@ function Houses() {
             name: newHouseName,
             description: newHouseDescription,
             address: newHouseAddress,
-            username_owner: username
+            username_owner: usernameLogged
         };
 
         axios.post("http://localhost:8080/api/v1/user-houses/houses/create", house, {headers})
@@ -141,7 +158,7 @@ function Houses() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+username, {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+usernameLogged, {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);
@@ -159,7 +176,7 @@ function Houses() {
             });
     }, []);
 
-    if (myhomes === undefined || Object.keys(editList).length == 0) return (
+    if (myhomes === undefined) return (
         <div>
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
@@ -170,9 +187,10 @@ function Houses() {
     // @ts-ignore
     return (
         <div className="Houses">
-            <Container>
-                <Row>
-                    <Col>
+
+            <div className="ContentWrap">
+                <Container>
+                    <Row>
                         <Accordion>
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>
@@ -206,8 +224,8 @@ function Houses() {
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
-                    </Col>
-                    <Col>
+                    </Row>
+                    <Row>
                         <Accordion>
                             <Accordion.Item eventKey="0">
                                 <Accordion.Header>
@@ -244,11 +262,8 @@ function Houses() {
                                 </Accordion.Body>
                             </Accordion.Item>
                         </Accordion>
-                    </Col>
-                </Row>
-            </Container>
-            <br/>
-            <div className="ContentWrap">
+                    </Row>
+                </Container>
                 <div className="TitleContent">
                     <h3>
                         {title}
@@ -257,7 +272,7 @@ function Houses() {
                 {myhomes.map((myhome) => (
                     <Card body>
                         <Container>
-                            {!editList[myhome.id] &&
+                            {!editList[myhome.id] && !isMobile &&
                                 <Row>
                                     <Col xs={1} className="d-flex align-items-center"><BsHouse style={{fontSize: '30px'}}/></Col>
                                     <Col>
@@ -273,14 +288,6 @@ function Houses() {
                                         </div>
                                         <div className="descrHouse">
                                             <strong>Owner:</strong>&nbsp;{myhome.owner}
-                                        </div>
-                                        <div className="matesHouse">
-                                            <strong>Roommates:</strong>
-                                            {
-                                                myhome.roomMates.map(item => {
-                                                    return <span key={item}>&nbsp;{item}</span>;
-                                                })
-                                            }
                                         </div>
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
@@ -298,7 +305,44 @@ function Houses() {
                                     </Col>
                                 </Row>
                             }
-                            {editList[myhome.id] &&
+                            {!editList[myhome.id] && isMobile &&
+                                <div>
+                                    <Row>
+                                        <div className="nameHouse">
+                                            {myhome.name}
+                                        </div>
+                                    </Row>
+                                    <Row>
+                                        <div className="addressHouse">
+                                            <strong>Address:</strong>&nbsp;{myhome.address}
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Description:</strong>&nbsp;{myhome.description}
+                                        </div>
+                                        <div className="descrHouse">
+                                            <strong>Owner:</strong>&nbsp;{myhome.owner}
+                                        </div>
+                                    </Row>
+                                    <Row className="d-flex align-items-center">
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="action-button action-button-centre" onClick={(e) => {
+                                                handleEditList(e, myhome.id, myhome.name, myhome.address, myhome.description);
+                                            }}>
+                                                <BiEditAlt style={{fontSize: '30px', color: '#000'}}/>
+                                            </Button>
+                                        </Col>
+                                        <Col className="d-flex align-items-center">
+                                            <Button className="action-button action-button-centre" onClick={(e) => {
+                                                // @ts-ignore
+                                                handleDeleteHouse(e, myhome.id);
+                                            }}>
+                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </div>
+                            }
+                            {editList[myhome.id] && !isMobile &&
                                 <Form>
                                     <Row>
                                         <Col xs={1} className="d-flex align-items-center"><BsHouse style={{fontSize: '30px'}}/></Col>
@@ -327,33 +371,110 @@ function Houses() {
                                             <div className="descrHouse">
                                                 <strong>Owner:</strong>&nbsp;{myhome.owner}
                                             </div>
-                                            <div className="matesHouse">
-                                                <strong>Roommates:</strong>
-                                                {
-                                                    myhome.roomMates.map(item => {
-                                                        return <span key={item}>&nbsp;{item}</span>;
-                                                    })
-                                                }
-                                            </div>
                                         </Col>
-                                        <Col xs={2} className="d-flex align-items-center">
-                                            <Button className="HoMatesButton" onClick={(e) => {
-                                                handleSaveEditList(e, myhome.id);
-                                            }}>
-                                                Save
-                                            </Button>&nbsp;
-                                            <Button className="action-button" onClick={(e) => {
-                                                // @ts-ignore
-                                                handleDeleteHouse(e, myhome.id);
-                                            }}>
-                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                            </Button>
-                                        </Col>
+                                        {usernameLogged == myhome.owner &&
+                                            <Col xs={2} className="d-flex align-items-center">
+                                                <Button className="HoMatesButton" onClick={(e) => {
+                                                    handleSaveEditList(e, myhome.id);
+                                                }}>
+                                                    Save
+                                                </Button>&nbsp;
+                                                <Button className="action-button" onClick={(e) => {
+                                                    // @ts-ignore
+                                                    handleDeleteHouse(e, myhome.id);
+                                                }}>
+                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                </Button>
+                                            </Col>
+                                        }
                                     </Row>
                                 </Form>
                             }
-                            <Row>
-                                <Col>
+                            {editList[myhome.id] && isMobile &&
+                                <Form>
+                                    <Row>
+                                        <Col>
+                                            <div className="nameHouse">
+                                                House name:
+                                                <Form.Group className="" controlId="nameHouseEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={myhome.name}  onChange={e =>
+                                                        setNameHouseEdit(items => ({...items, [myhome.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <br/>
+                                            <div className="addressHouse">
+                                                <strong>Address:</strong>&nbsp;
+                                                <Form.Group className="" controlId="addressHouseEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={myhome.address}  onChange={e =>
+                                                        setAddressHouseEdit(items => ({...items, [myhome.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <br/>
+                                            <div className="descrHouse">
+                                                <strong>Description:</strong>&nbsp;
+                                                <Form.Group className="" controlId="descriptionHouseEdit">
+                                                    <Form.Control required type="text" placeholder='Name' defaultValue={myhome.description}  onChange={e =>
+                                                        setDescriptionHouseEdit(items => ({...items, [myhome.id]: e.target.value}))}/>
+                                                </Form.Group>
+                                            </div>
+                                            <br/>
+                                            <div className="descrHouse">
+                                                <strong>Owner:</strong>&nbsp;{myhome.owner}
+                                            </div>
+                                        </Col>
+                                    </Row>
+                                        {usernameLogged == myhome.owner &&
+                                            <Row className="d-flex align-items-center">
+                                                <Col className="d-flex align-items-center">
+                                                    <Button className="HoMatesButton action-button-centre" onClick={(e) => {
+                                                        handleSaveEditList(e, myhome.id);
+                                                    }}>
+                                                        Save
+                                                    </Button>
+                                                </Col>
+                                                <Col className="d-flex align-items-center">
+                                                    <Button className="action-button action-button-centre" onClick={(e) => {
+                                                        // @ts-ignore
+                                                        handleDeleteHouse(e, myhome.id);
+                                                    }}>
+                                                        <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                    </Button>
+                                                </Col>
+                                            </Row>
+                                        }
+                                </Form>
+                            }
+                            {!isMobile &&
+                                <Row>
+                                    <div className="">
+                                        <strong>Roommates:</strong>
+                                    </div>
+                                    {
+                                        myhome.roomMates.map(item => {
+                                            return (
+                                                <Container>
+                                                    <Row>
+                                                        <Col className="d-flex align-items-center">
+                                                            <strong>Email:</strong>&nbsp;{item}
+                                                        </Col>
+                                                        {usernameLogged == myhome.owner &&
+                                                            <Col xs={1} className="d-flex align-items-center">
+                                                                <Button className="action-button" onClick={(e) => {
+                                                                    handleDeleteRoommate(e, myhome.id, item);
+                                                                }}>
+                                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                                </Button>
+                                                            </Col>
+                                                        }
+                                                    </Row>
+                                                </Container>
+                                            );
+                                        })
+                                    }
+                                </Row>
+                            }
+                            {isMobile &&
+                                <Row>
                                     <div className="">
                                         <strong>Roommates:</strong>
                                     </div>
@@ -362,24 +483,26 @@ function Houses() {
                                             return <Card body>
                                                 <Container>
                                                     <Row>
-                                                        <Col className="d-flex align-items-center">
-                                                            <strong>Name:</strong>&nbsp;{item}
-                                                        </Col>
-                                                        <Col xs={1} className="d-flex align-items-center">
-                                                            <Button className="action-button" onClick={(e) => {
-                                                                handleDeleteRoommate(e, myhome.id, item);
-                                                            }}>
-                                                                <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
-                                                            </Button>
-                                                        </Col>
+                                                        {item}
                                                     </Row>
+                                                    {usernameLogged == myhome.owner &&
+                                                        <Row className="d-flex align-items-center">
+                                                            <Col className="d-flex align-items-center">
+                                                                <Button className="action-button action-button-centre" onClick={(e) => {
+                                                                    handleDeleteRoommate(e, myhome.id, item);
+                                                                }}>
+                                                                    <MdDeleteForever style={{fontSize: '30px', color: '#FF914D'}}/>
+                                                                </Button>
+                                                            </Col>
+                                                        </Row>
+                                                    }
                                                 </Container>
 
                                             </Card>;
                                         })
                                     }
-                                </Col>
-                            </Row>
+                                </Row>
+                            }
                         </Container>
                     </Card>
                 ))}

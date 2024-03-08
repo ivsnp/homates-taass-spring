@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './Contents.css';
 import {Button, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {FiSettings} from "react-icons/fi";
@@ -11,6 +11,20 @@ import ShoppingList from "./shopping-list/ShoppingList";
 import Calendar from "./calendar/Calendar";
 
 function Houses() {
+
+    const [width, setWidth] = useState<number>(window.innerWidth);
+
+    function handleWindowSizeChange() {
+        setWidth(window.innerWidth);
+    }
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowSizeChange);
+        return () => {
+            window.removeEventListener('resize', handleWindowSizeChange);
+        }
+    }, []);
+
+    const isMobile = width <= 768;
 
     interface HousesAttributes {
         id: number,
@@ -31,7 +45,7 @@ function Houses() {
     const [selectedHome, setSelectedHome] = useState<number>();
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/ivsnp", {
+        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+localStorage.getItem("username"), {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 if (response.data === undefined || response.data.length == 0){
@@ -41,8 +55,9 @@ function Houses() {
 
                 setMyhomes(response.data);
                 setSelectedHome(response.data[0].id);
-                if (localStorage.getItem("idHomeSelected") === null)
-                    localStorage.setItem('idHomeSelected', ""+response.data[0].id);
+                if (localStorage.getItem("idHomeSelected") === null) {
+                    localStorage.setItem('idHomeSelected', "" + response.data[0].id);
+                }
             })
             .catch(error => {
                 console.log(error)
@@ -60,9 +75,29 @@ function Houses() {
     return (
         <div className="Contents">
             <div className="HomeSelection">
-                <Container>
-                    <Row>
-                        <Col>
+                {!isMobile ?
+                    <Container>
+                        <Row>
+                            <Col>
+                                <Form.Select onChange={(e) => onChangeHome(e)} aria-label="Default select example" className="HomeSelectionSelect" size="sm">
+                                    <option disabled>Choose your home</option>
+                                    {
+                                        myhomes.map((myhome) => (
+                                            <option value={myhome.id} key={myhome.id} selected={myhome.id+"" === localStorage.getItem("idHomeSelected")}>{myhome.name}</option>
+                                        ))
+                                    }
+                                </Form.Select>
+                            </Col>
+                            <Col>
+                                <Button className="HoMatesButton" size="sm" href="/user/houses">
+                                    <FiSettings style={{fontSize: '20px'}}/> Manage your homes
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Container>
+                :
+                    <Container>
+                        <Row>
                             <Form.Select onChange={(e) => onChangeHome(e)} aria-label="Default select example" className="HomeSelectionSelect" size="sm">
                                 <option disabled>Choose your home</option>
                                 {
@@ -71,14 +106,15 @@ function Houses() {
                                     ))
                                 }
                             </Form.Select>
-                        </Col>
-                        <Col>
+                        </Row>
+                        <Row>
                             <Button className="HoMatesButton" size="sm" href="/user/houses">
                                 <FiSettings style={{fontSize: '20px'}}/> Manage your homes
                             </Button>
-                        </Col>
-                    </Row>
-                </Container>
+                        </Row>
+                    </Container>
+                }
+
             </div>
             <div className="ContentWrap">
                 <Switch>

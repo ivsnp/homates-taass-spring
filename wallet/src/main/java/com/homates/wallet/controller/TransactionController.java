@@ -83,14 +83,19 @@ public class TransactionController {
         if (payment.isEmpty())
             return new ResponseEntity<>("Payment not found.", HttpStatus.NOT_FOUND);
 
+        // state before edit
         Payment _currentTransaction = payment.get();
+        List<String> _currentUsernameSplit = _currentTransaction.getUsernameSplit();
         int _currentIdHouse = _currentTransaction.getIdHouse();
-        float _currentAmount = _currentTransaction.getAmount() / _currentTransaction.getUsernameSplit().size();
+        float _currentAmountPerPerson = _currentTransaction.getAmount() / _currentUsernameSplit.size();
         float _currentAmountPaid = _currentTransaction.getAmount();
         String _currentUsernamePay = _currentTransaction.getUsernamePay();
-        int idHouse = paymentDto.getIdHouse();
-        float amount = paymentDto.getAmount() / paymentDto.getUsernameSplit().size();
 
+        // editing state
+        int idHouse = paymentDto.getIdHouse();
+        float amountPerPerson = paymentDto.getAmount() / paymentDto.getUsernameSplit().size();
+
+        // updating transaction
         _currentTransaction.setDescription(paymentDto.getDescription());
         _currentTransaction.setAmount(paymentDto.getAmount());
         _currentTransaction.setDate(paymentDto.getDate());
@@ -100,14 +105,15 @@ public class TransactionController {
         _currentTransaction.setUsernameSplit(paymentDto.getUsernameSplit());
 
         // update wallet balance
-        updateWalletBalance(_currentUsernamePay, _currentIdHouse, -_currentAmountPaid);
-        for (String user: paymentDto.getUsernameSplit()){
-            updateWalletBalance(user, _currentIdHouse, _currentAmount);
+        updateWalletBalance(_currentUsernamePay, _currentIdHouse, -_currentAmountPaid);  // who pay
+        for (String user: _currentUsernameSplit) {
+            updateWalletBalance(user, _currentIdHouse, _currentAmountPerPerson);
         }
-        updateWalletBalance(paymentDto.getUsernamePay(), idHouse, paymentDto.getAmount());
-        for (String user: paymentDto.getUsernameSplit())
-            updateWalletBalance(user, idHouse, -amount);
 
+        updateWalletBalance(paymentDto.getUsernamePay(), idHouse, paymentDto.getAmount());  // who pay
+        for (String user: paymentDto.getUsernameSplit()) {
+            updateWalletBalance(user, idHouse, -amountPerPerson);
+        }
 
         paymentRepository.save(_currentTransaction);
         return new ResponseEntity<>("Payment updated.", HttpStatus.OK);

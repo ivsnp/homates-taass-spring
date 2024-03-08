@@ -1,6 +1,6 @@
 .App-header {
-    overflow: hidden;
-    padding: 0px 70px;
+    overflow: auto;
+    padding: 0px;
     display: flex;
     align-items: center;
     font-size: calc(10px + 2vmin);
@@ -58,6 +58,8 @@
 }
 
 .App-header img{
+    max-width: none;
+
     /*padding: 0 15px 0 0;*/
 }
 
@@ -67,10 +69,13 @@
     align-items: center;
 }
 
+
+
 .Header-right {
     display: flex;
     flex-direction: unset;
     align-items: center;
+    padding-right: 20px;
 }
 
 .App-header.Guest {
@@ -78,15 +83,21 @@
     padding-bottom: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
 }
 .navbar-brand img{
-    max-height: 108px;
+    max-height: 200px;
     /*padding: 0 15px 0 0;*/
+}
+
+.brand-icon-logged {
+    width: 300px !important;
 }
 
 /* mobile */
 
 @media screen and (max-width: 500px) {
-    .App-header{
-        flex-direction: column;
+
+    .App-header {
+        flex-direction: row; /* Change flex direction back to row */
+        flex-wrap: wrap; /* Allow items to wrap if needed */
         padding: 0px;
     }
 
@@ -98,17 +109,22 @@
 
     .Header-right {
         float: none;
+        padding-right: 20px;
     }
 
-
-
-    .navbar-brand img{
-        max-width: 100%;
-        max-height: auto;
-        /*padding: 0 15px 0 0;*/
+    .navbar-brand img {
+        /*max-width: 100%;*/
+        /*width: 200px;*/
+        margin-left: 15px;
     }
 
     .navbar-brand {
         margin-right: 0px !important;
     }
+
+    .Account {
+        column-gap: 0px;
+    }
 }
+
+

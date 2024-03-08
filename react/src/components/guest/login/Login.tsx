@@ -5,13 +5,68 @@ import { MDBBtn } from 'mdb-react-ui-kit';
 import {FcGoogle} from "react-icons/fc";
 import {Button, Container, Nav, Navbar, Tab, Tabs} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
+import {GoogleLogin} from 'react-google-login';
+import { Redirect } from 'react-router-dom';
+import axios from "axios";
 
 
+const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
 function Login() {
+
     const title: string = "Login HoMates";
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [justifyActive, setJustifyActive] = useState('tab1');
+    const [userImage, setUserImage] = useState("");
 
-    const [justifyActive, setJustifyActive] = useState('tab1');;
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    };
 
+    const onSuccess = (res: any) => {
+        //console.log("LOGIN SUCCESS! Current user ", res.profileObj);
+        const firstName = res.profileObj.givenName;
+        const surnameName = res.profileObj.familyName;
+        const mail = res.profileObj.email;  // get google email
+        const profileImage = res.profileObj.imageUrl;  // get google image
+        localStorage.setItem('username', mail);
+        localStorage.setItem('firstname', firstName);
+        localStorage.setItem('userImage', profileImage);
+        setUserName(firstName);
+        setUserImage(profileImage);
+        setIsLoggedIn(true); // Set isLoggedIn to true upon successful login
+
+        axios.post("http://localhost:8080/api/v1/user-houses/user/"+userName, {},
+            {headers})
+            .then(function (response) {
+                window.location.reload();
+            })
+            .catch(function (error) {
+                const newUser = {
+                    username: mail,
+                    name: firstName,
+                    surname: surnameName,
+                    email: mail
+                };
+                axios.post("http://localhost:8080/api/v1/user-houses/user/create", newUser,
+                    {headers})
+                    .then(function (response) {
+                        window.location.reload();
+                    })
+                    .catch(function (error) {
+                        console.log("Error during login.");
+                    });
+            });
+    }
+
+
+    if (isLoggedIn) {
+        return <Redirect to="/user" />;
+    }
+    const onFailure = (res: any) => {
+        console.log("LOGIN FAILED! res: ", res);
+    }
     const handleJustifyClick = (value: string) => {
         if (value === justifyActive) {
             return;
@@ -24,8 +79,22 @@ function Login() {
         <div className="Login">
 
             <a href="/"><img src="/img/logo/logo_complete.svg" alt="HoMates logo"/></a>
+            <div className="text-center mb-3">
+                <p>Welcome to HoMates, join us!</p>
 
-            <Tabs
+                <MDBBtn tag='a' color='none' className='m-1'>
+                    {/* <FcGoogle style={{fontSize: '30px'}}/>*/}
+                    <GoogleLogin
+                        clientId={clientId}
+                        buttonText="Login"
+                        onSuccess={onSuccess}
+                        onFailure={onFailure}
+                        cookiePolicy={'single_host_origin'}
+                        isSignedIn={true} />
+                </MDBBtn>
+            </div>
+
+            {/*<Tabs
                 defaultActiveKey="login"
                 id="loginTab"
                 className="mb-3 HoMatesTab"
@@ -37,14 +106,21 @@ function Login() {
                         <div className='d-flex justify-content-between mx-auto' style={{width: 'fit-content'}}>
 
                             <MDBBtn tag='a' color='none' className='m-1'>
-                                <FcGoogle style={{fontSize: '30px'}}/>
+                                {/* <FcGoogle style={{fontSize: '30px'}}/>/}
+                                <GoogleLogin
+                                    clientId={clientId}
+                                    buttonText="Login | Signin"
+                                    onSuccess={onSuccess}
+                                    onFailure={onFailure}
+                                    cookiePolicy={'single_host_origin'}
+                                    isSignedIn={true}/>
                             </MDBBtn>
                         </div>
 
-                        <p className="text-center mt-3">or:</p>
+                        {/* <p className="text-center mt-3">or:</p> /}
                     </div>
 
-                    <Form>
+                    {/*  <Form>
                         <Form.Group className="mb-3" controlId="loginUsername">
                             <Form.Control required type="text" placeholder="Username" />
                         </Form.Group>
@@ -69,13 +145,21 @@ function Login() {
                         <div className='d-flex justify-content-between mx-auto' style={{width: 'fit-content'}}>
 
                             <MDBBtn tag='a' color='none' className='m-1'>
-                                <FcGoogle style={{fontSize: '30px'}}/>
+                                {/* <FcGoogle style={{fontSize: '30px'}}/>/}
+                                <GoogleLogin
+                                    clientId={clientId}
+                                    buttonText="Login"
+                                    onSuccess={onSuccess}
+                                    onFailure={onFailure}
+                                    cookiePolicy={'single_host_origin'}
+                                    isSignedIn={true}/>
                             </MDBBtn>
                         </div>
 
-                        <p className="text-center mt-3">or:</p>
+                        {/* <p className="text-center mt-3">or:</p>/}
                     </div>
 
+                    {/*
                     <Form>
                         <Form.Group className="mb-3" controlId="registerName">
                             <Form.Control required type="text" placeholder="Name" />
@@ -100,9 +184,9 @@ function Login() {
                         <Button type="submit" className="mb-4 w-100 HoMatesButton">
                             Sign up
                         </Button>
-                    </Form>
+                    </Form> /}
                 </Tab>
-            </Tabs>
+            </Tabs>*/}
         </div>
     );
 }
