@@ -32,6 +32,7 @@ function Houses() {
         roomMates: Array<string>
     }
 
+
     const username: string = "ivsnp";
     const title: string = "My Houses";
 
