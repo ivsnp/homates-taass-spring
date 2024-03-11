@@ -2,15 +2,17 @@ package com.homates.userhouses.controller;
 
 import com.homates.userhouses.dto.HouseDto;
 import com.homates.userhouses.dto.HouseUsersDto;
-import com.homates.userhouses.dto.UserDto;
 import com.homates.userhouses.model.House;
 import com.homates.userhouses.model.UserEntity;
 import com.homates.userhouses.repo.HouseRepository;
 import com.homates.userhouses.repo.UserRepository;
+import com.homates.userhouses.service.DelHouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,12 @@ public class HouseController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    private RabbitTemplate template;
+
+    @Autowired
+    private DelHouseService delHouseService;
 
     @PostMapping("/houses/create")
     public ResponseEntity<String> addItem(@RequestBody HouseDto houseDto) {
@@ -120,6 +128,10 @@ public class HouseController {
 
         Optional<House> house = houseRepository.findById(id);
         if (house.isPresent()) {
+
+            // sending messages to the other microservices in order to clean data related to this house
+            delHouseService.sendMessage("Messaggio di test inviato");
+
             houseRepository.deleteById(id);
             return new ResponseEntity<>("House has been deleted.", HttpStatus.OK);
         } else

@@ -1,6 +1,13 @@
 spring:
   application:
     name: user-houses
+  rabbitmq:
+    host: rabbitmq
+    password: admin
+    port: 15672
+    username: admin
+    exchange: user.exchange
+    routingkey: user.routingkey
 
 server:
   port: 8081

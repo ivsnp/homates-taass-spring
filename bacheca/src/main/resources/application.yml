@@ -1,6 +1,14 @@
 spring:
   application:
     name: bacheca
+  rabbitmq:
+    host: rabbitmq
+    password: admin
+    port: 15672
+    username: admin
+    exchange: user.exchange
+    queue: user.queue
+    routingkey: user.routingkey
 
 server:
   port: 8085

@@ -1,8 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import './Account.css';
-import {Alert, Button, Form, Spinner} from "react-bootstrap";
+import {Button, Form, Spinner} from "react-bootstrap";
 import axios, {AxiosResponse} from "axios";
-import { toast } from 'react-toastify';
 import {GoogleLogout} from "react-google-login";
 
 function Account() {

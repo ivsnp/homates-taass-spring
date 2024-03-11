@@ -1,8 +1,8 @@
-FROM node:20-alpine
+FROM node
 WORKDIR /app
 COPY package.json ./
 COPY package-lock.json ./
 COPY ./ ./
-RUN npm i --force
+RUN npm i --legacy-peer-deps
 EXPOSE 3000
 CMD ["npm", "start"]

@@ -24,28 +24,6 @@ services:
       - homatesnet
     restart: on-failure
 
-  # keycloak:
-  # container_name: keycloak
-  # image: quay.io/keycloak/keycloak:legacy
-  # ports:
-  #   - "9090:8080"
-  # networks:
-  #   - homatesnet
-  # environment:
-  #   DB_VENDOR: POSTGRES
-  #   DB_ADDR: keycloak-postgres
-  #   DB_DATABASE: keycloak
-  #   DB_USER: homates
-  #   DB_SCHEMA: public
-  #   DB_PASSWORD: admin
-  #   KEYCLOAK_USER: test
-  #   KEYCLOAK_PASSWORD: admin
-  # deploy:
-  #   restart_policy:
-  #     condition: on-failure
-  # depends_on:
-  #   - keycloak-postgres
-
   rabbitmq:
     container_name: rabbitmq
     image: rabbitmq:management
@@ -59,21 +37,16 @@ services:
       - homatesnet
     restart: on-failure
 
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - 9411:9411
+    networks:
+      - homatesnet
+    restart: on-failure
+
   # DBs
-  # keycloak-postgres:
-  # container_name: keycloak-postgres
-  # image: postgres:latest
-  # ports:
-  #   - 5433:5432
-  # volumes:
-  #   - keycloak-data:/var/lib/postgresql/data
-  # networks:
-  #   - homatesnet
-  # environment:
-  #   POSTGRES_DB: keycloak
-  #   POSTGRES_USER: homates
-  #   POSTGRES_PASSWORD: admin
-  #   restart: always
 
   user-houses-postgres:
     container_name: user-houses-postgres
@@ -173,19 +146,19 @@ services:
 
   # APP microservices
 
-  react-desktop:
-    build: ./react
-    container_name: react-desktop
-    image: react-desktop:latest
-    ports:
-      - 3000:3000
-    stdin_open: true
-    tty: true
-    networks:
-      - homatesnet
-    deploy:
-      restart_policy:
-        condition: on-failure
+  #react-desktop:
+  #  build: ./react
+  #  container_name: react-desktop
+  #  image: react-desktop:latest
+  #  ports:
+  #    - 3000:3000
+  #  stdin_open: true
+  #  tty: true
+  #  networks:
+  #    - homatesnet
+  #  deploy:
+  #    restart_policy:
+  #      condition: on-failure
 
   user-houses:
     build: user-houses
@@ -275,27 +248,6 @@ services:
       - eureka-service
       - board-postgres
 
-  # user-manager:
-  # build: user-manager
-  # container_name: user-manager
-  # image: user-manager:latest
-  # ports:
-  #    - 8081:8081
-  # depends_on:
-  #   - eureka-service
-  # networks:
-  #   - homatesnet
-  # environment:
-  #   - SPRING_PROFILES_ACTIVE=docker
-  #   - eureka.client.serviceUrl.defaultZone=http://eureka-service:8761/eureka/
-  #   - SPRING_DATASOURCE_URL=jdbc:postgresql://dbhomates-postgres:5432/dbhomates
-  #   - SPRING_DATASOURCE_USERNAME=homates
-  #   - SPRING_DATASOURCE_PASSWORD=admin
-  #   - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-  # deploy:
-  #   restart_policy:
-  #     condition: on-failure
-
 volumes:
   homates-pgadmin-data:
   homates-user-houses-data:
@@ -303,7 +255,6 @@ volumes:
   homates-shopping-list-data:
   homates-board-data:
   homates-calendar-data:
-  #keycloak-data:
 networks:
   homatesnet:
     driver: bridge
