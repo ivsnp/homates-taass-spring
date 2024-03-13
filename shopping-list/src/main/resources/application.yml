@@ -8,7 +8,7 @@ spring:
     username: admin
     exchange: homates.topic
     queue: homates.shopl.queue
-    routingkey: homates.delhouse.shopl
+    routingkey: homates.shopl
 
 server:
   port: 8082

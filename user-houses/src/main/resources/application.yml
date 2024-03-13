@@ -7,10 +7,9 @@ spring:
     port: 15672
     username: admin
     exchange: homates.topic
-    routingkey: homates.delhouse.any
-    routingkeyboard: homates.delhouse.board
-    routingkeywallet: homates.delhouse.wallet
-    routingkeyshopl: homates.delhouse.shopl
+    routingkeyboard: homates.board
+    routingkeywallet: homates.wallet
+    routingkeyshopl: homates.shopl
 
 server:
   port: 8081

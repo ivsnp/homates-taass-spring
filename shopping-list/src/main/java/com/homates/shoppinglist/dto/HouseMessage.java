@@ -1,7 +1,5 @@
-package com.homates.wallet.dto;
+package com.homates.shoppinglist.dto;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class DelHouseMessage implements Serializable {
+public class HouseMessage implements Serializable {
     int idHouse;
     String message;
+    MessageType messageType;
 }

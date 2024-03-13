@@ -123,6 +123,9 @@ function Houses() {
 
         axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
             .then(function (response) {
+                if (localStorage.getItem("idHomeSelected") == ""+id) {
+                    localStorage.removeItem("idHomeSelected");
+                }
                 window.location.reload();
             })
             .catch(function (error) {

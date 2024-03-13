@@ -8,7 +8,7 @@ spring:
     username: admin
     exchange: homates.topic
     queue: homates.wallet.queue
-    routingkey: homates.delhouse.wallet
+    routingkey: homates.wallet
 
 server:
   port: 8082

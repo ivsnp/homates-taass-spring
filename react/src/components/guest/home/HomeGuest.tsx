@@ -6,6 +6,11 @@ import {Button} from "react-bootstrap";
 function HomeGuest() {
     const title: string = "Guest component";
 
+    if (localStorage.getItem("username") != null){
+        // if there are no homes
+        window.location.assign("/user/houses");
+    }
+
     return (
         <div className="Home">
             <div className="IntroducingHoMates">

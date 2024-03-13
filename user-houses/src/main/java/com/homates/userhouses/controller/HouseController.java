@@ -1,8 +1,9 @@
 package com.homates.userhouses.controller;
 
-import com.homates.userhouses.dto.DelHouseMessage;
 import com.homates.userhouses.dto.HouseDto;
+import com.homates.userhouses.dto.HouseMessage;
 import com.homates.userhouses.dto.HouseUsersDto;
+import com.homates.userhouses.dto.MessageType;
 import com.homates.userhouses.model.House;
 import com.homates.userhouses.model.UserEntity;
 import com.homates.userhouses.repo.HouseRepository;
@@ -132,7 +133,7 @@ public class HouseController {
 
             // sending messages to the other microservices in order to clean data related to this house
             System.out.println("USER-HOUSES:\tCleaning data related to house "+id);
-            delHouseService.sendMessage(new DelHouseMessage(id, "Cleaning data related to house "+id));
+            delHouseService.sendMessage(new HouseMessage(id, "Cleaning data related to house "+id, MessageType.DEL));
 
             houseRepository.deleteById(id);
             return new ResponseEntity<>("House has been deleted.", HttpStatus.OK);
