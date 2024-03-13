@@ -6,10 +6,11 @@ spring:
     password: admin
     port: 15672
     username: admin
-    exchange: homates.topic
+    exchange: homates.exchange
     routingkeyboard: homates.board
     routingkeywallet: homates.wallet
     routingkeyshopl: homates.shopl
+    routingkeycalendar: homates.calendar
 
 server:
   port: 8081

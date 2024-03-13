@@ -1,6 +1,6 @@
 package com.homates.bacheca.dto;
 
-enum MessageType {
+public enum MessageType {
     DEL,
     CREATE
 }

@@ -21,15 +21,16 @@ public class ConsumerService {
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
     public void receivedMessage(HouseMessage item) {
-        System.out.println("RabbitMQ - status: in progress - message: "+item.getMessage());
-        System.out.println("RabbitMQ - house message type: "+item.getMessageType());
-
-        System.out.println("Get all shopping lists related to house "+item.getIdHouse());
-        List<ShoppingList> shoppingList = shoppingListRepository.findByIdHouse(item.getIdHouse());
-        for (ShoppingList s : shoppingList) {
-            shoppingListRepository.deleteById(s.getId());
+        switch(item.getMessageType()) {
+            case DEL:
+                System.out.println("Deleting shopping lists related to house "+item.getIdHouse());
+                List<ShoppingList> shoppingList = shoppingListRepository.findByIdHouse(item.getIdHouse());
+                for (ShoppingList s : shoppingList) {
+                    shoppingListRepository.deleteById(s.getId());
+                }
+                break;
+            default:
+                System.out.println("MessageType not found");
         }
-
-        System.out.println("RabbitMQ - status: completed - message: "+item.getMessage());
     }
 }

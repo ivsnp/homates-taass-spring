@@ -17,15 +17,16 @@ public class ConsumerService {
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
     public void receivedMessage(HouseMessage item) {
-        System.out.println("RabbitMQ - status: in progress - message: "+item.getMessage());
-        System.out.println("RabbitMQ - house message type: "+item.getMessageType());
-
-        System.out.println("Get all announces related to house "+item.getIdHouse());
-        List<Announce> announceList = repository.findByIdHouse(item.getIdHouse());
-        for (Announce a : announceList) {
-            repository.deleteById(a.getId());
+        switch(item.getMessageType()) {
+            case DEL:
+                System.out.println("Get all announces related to house "+item.getIdHouse());
+                List<Announce> announceList = repository.findByIdHouse(item.getIdHouse());
+                for (Announce a : announceList) {
+                    repository.deleteById(a.getId());
+                }
+                break;
+            default:
+                System.out.println("MessageType not found");
         }
-
-        System.out.println("RabbitMQ - status: completed - message: "+item.getMessage());
     }
 }

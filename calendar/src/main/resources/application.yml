@@ -1,6 +1,14 @@
 spring:
   application:
     name: calendar
+  rabbitmq:
+    host: rabbitmq
+    password: admin
+    port: 15672
+    username: admin
+    exchange: homates.exchange
+    queue: homates.calendar.queue
+    routingkey: homates.calendar
 
 server:
   port: 8084

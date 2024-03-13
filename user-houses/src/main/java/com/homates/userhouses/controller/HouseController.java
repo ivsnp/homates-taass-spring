@@ -8,6 +8,7 @@ import com.homates.userhouses.model.House;
 import com.homates.userhouses.model.UserEntity;
 import com.homates.userhouses.repo.HouseRepository;
 import com.homates.userhouses.repo.UserRepository;
+import com.homates.userhouses.service.CreateHouseService;
 import com.homates.userhouses.service.DelHouseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,6 +38,9 @@ public class HouseController {
     @Autowired
     private DelHouseService delHouseService;
 
+    @Autowired
+    private CreateHouseService createHouseService;
+
     @PostMapping("/houses/create")
     public ResponseEntity<String> addItem(@RequestBody HouseDto houseDto) {
         System.out.println("Creating a new house...");
@@ -54,6 +58,11 @@ public class HouseController {
         house.setOwner(owner);
 
         houseRepository.save(house);
+
+        // sending messages to the other microservices in order to create data related to this house
+        System.out.println("USER-HOUSES:\tCreating data related to house "+house.getId());
+        createHouseService.sendMessage(new HouseMessage(house.getId(), "Creating data related to house "+house.getId(), MessageType.CREATE));
+
         return new ResponseEntity<>("House added.", HttpStatus.OK);
     }
 

@@ -1,6 +1,6 @@
 package com.homates.shoppinglist.dto;
 
-enum MessageType {
+public enum MessageType {
     DEL,
     CREATE
 }

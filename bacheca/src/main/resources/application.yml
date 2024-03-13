@@ -6,7 +6,7 @@ spring:
     password: admin
     port: 15672
     username: admin
-    exchange: homates.topic
+    exchange: homates.exchange
     queue: homates.board.queue
     routingkey: homates.board
 

@@ -1,4 +1,4 @@
-package com.homates.wallet.dto;
+package com.homates.calendar.dto;
 
 public enum MessageType {
     DEL,

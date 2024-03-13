@@ -21,21 +21,20 @@ public class ConsumerService {
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
     public void receivedMessage(HouseMessage item) {
-        System.out.println("RabbitMQ - status: in progress - message: "+item.getMessage());
-        System.out.println("RabbitMQ - house message type: "+item.getMessageType());
+        switch(item.getMessageType()) {
+            case DEL:
+                System.out.println("Deleting wallets and transactions related to house "+item.getIdHouse());
+                List<Wallet> wallets = walletRepository.findByIdHouse(item.getIdHouse());
+                List<Transaction> transactionsDto = transactionRepository.findByIdHouse(item.getIdHouse());
 
-        System.out.println("Get all wallets and transactions related to house "+item.getIdHouse());
-        List<Wallet> wallets = walletRepository.findByIdHouse(item.getIdHouse());
-        List<Transaction> transactionsDto = transactionRepository.findByIdHouse(item.getIdHouse());
+                for (Wallet w : wallets) {
+                    walletRepository.deleteById(w.getId());
+                }
 
-        for (Wallet w : wallets) {
-            walletRepository.deleteById(w.getId());
+                for (Transaction t : transactionsDto) {
+                    transactionRepository.deleteById(t.getId());
+                }
+                break;
         }
-
-        for (Transaction t : transactionsDto) {
-            transactionRepository.deleteById(t.getId());
-        }
-
-        System.out.println("RabbitMQ - status: completed - message: "+item.getMessage());
     }
 }
