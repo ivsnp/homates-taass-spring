@@ -6,9 +6,9 @@ spring:
     password: admin
     port: 15672
     username: admin
-    exchange: user.exchange
-    queue: user.queue
-    routingkey: user.routingkey
+    exchange: homates.topic
+    queue: homates.wallet.queue
+    routingkey: homates.delhouse.wallet
 
 server:
   port: 8082

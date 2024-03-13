@@ -6,8 +6,11 @@ spring:
     password: admin
     port: 15672
     username: admin
-    exchange: user.exchange
-    routingkey: user.routingkey
+    exchange: homates.topic
+    routingkey: homates.delhouse.any
+    routingkeyboard: homates.delhouse.board
+    routingkeywallet: homates.delhouse.wallet
+    routingkeyshopl: homates.delhouse.shopl
 
 server:
   port: 8081

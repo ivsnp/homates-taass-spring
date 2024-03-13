@@ -1,5 +1,6 @@
 package com.homates.userhouses.service;
 
+import com.homates.userhouses.dto.DelHouseMessage;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,10 +19,18 @@ public class DelHouseService {
     @Value("${spring.rabbitmq.exchange}")
     private String exchange;
 
-    @Value("${spring.rabbitmq.routingkey}")
-    private String routingkey;
+    @Value("${spring.rabbitmq.routingkeyboard}")
+    private String routingkeyboard;
 
-    public void sendMessage(String item) {
-        rabbitTemplate.convertAndSend(exchange, routingkey, item);
+    @Value("${spring.rabbitmq.routingkeywallet}")
+    private String routingkeywallet;
+
+    @Value("${spring.rabbitmq.routingkeyshopl}")
+    private String routingkeyshopl;
+
+    public void sendMessage(DelHouseMessage item) {
+        rabbitTemplate.convertAndSend(exchange, routingkeyboard, item);
+        rabbitTemplate.convertAndSend(exchange, routingkeywallet, item);
+        rabbitTemplate.convertAndSend(exchange, routingkeyshopl, item);
     }
 }
