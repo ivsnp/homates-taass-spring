@@ -28,9 +28,13 @@ public class DelHouseService {
     @Value("${spring.rabbitmq.routingkeyshopl}")
     private String routingkeyshopl;
 
+    @Value("${spring.rabbitmq.routingkeycalendar}")
+    private String routingkeycalendar;
+
     public void sendMessage(HouseMessage item) {
         rabbitTemplate.convertAndSend(exchange, routingkeyboard, item);
         rabbitTemplate.convertAndSend(exchange, routingkeywallet, item);
         rabbitTemplate.convertAndSend(exchange, routingkeyshopl, item);
+        rabbitTemplate.convertAndSend(exchange, routingkeycalendar, item);
     }
 }

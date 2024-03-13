@@ -18,7 +18,7 @@ import java.util.Optional;
 public class ConsumerService {
 
     @Autowired
-    CalendarRepository repository;
+    CalendarRepository calendarRepository;
 
     @Autowired
     EventRepository eventRepository;
@@ -28,13 +28,13 @@ public class ConsumerService {
         switch(item.getMessageType()) {
             case DEL:
                 System.out.println("Deleting calendar related to house "+item.getIdHouse());
-                Optional<Calendar> c = repository.findByIdHouse(item.getIdHouse());
+                Optional<Calendar> c = calendarRepository.findByIdHouse(item.getIdHouse());
                 if(c.isPresent()) {
                     Calendar cal = c.get();
                     for (EventInDate eid : cal.getEvents()) {
                         eventRepository.deleteById(eid.getEvent().getId());
                     }
-                    repository.deleteById(cal.getId());
+                    calendarRepository.deleteById(cal.getId());
                 }
                 break;
             case CREATE:
@@ -42,7 +42,7 @@ public class ConsumerService {
                 Calendar _currentCalendar = new Calendar();
                 _currentCalendar.setIdHouse(item.getIdHouse());
                 _currentCalendar.setEvents(new ArrayList<>());
-                repository.save(_currentCalendar);
+                calendarRepository.save(_currentCalendar);
                 break;
             default:
                 System.out.println("MessageType not found");

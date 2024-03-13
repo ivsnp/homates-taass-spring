@@ -1,4 +1,4 @@
-spring:
+spring:org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role
   application:
     name: user-houses
   rabbitmq:
