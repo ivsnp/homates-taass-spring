@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.homates</groupId>
     <artifactId>calendar</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>calendar</name>
     <description>calendar</description>
     <properties>

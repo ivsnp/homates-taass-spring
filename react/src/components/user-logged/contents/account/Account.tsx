@@ -77,6 +77,12 @@ function Account() {
 
     if (userdata === undefined) return (
         <div>
+            <GoogleLogout
+                clientId={clientId}
+                buttonText={"Logout"}
+                onLogoutSuccess={onSuccess}
+                className="logoutButton"
+            />
             <Spinner animation="border" role="status" className="spinner">
                 <span className="visually-hidden">Loading...</span>
             </Spinner>
