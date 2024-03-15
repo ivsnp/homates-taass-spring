@@ -127,7 +127,7 @@ function Calendar() {
             repetition: addEventRepetition,
             color:addEventColor
         }
-        console.log(newEvent);
+        console.log(newEvent);  // TODO: comment
 
         axios.post("http://localhost:8080/api/v1/calendar/event/create", newEvent,
             {headers})
@@ -138,6 +138,9 @@ function Calendar() {
                     case "everyday":
                         axios.post("http://localhost:8080/api/v1/calendar/add_event/everyday/"+resp.id,
                             {headers})
+                            .then(function (response) {
+                                window.location.reload();
+                            })
                             .catch(function (error) {
                                 setErrorNewEvent("Error adding event to calendar, check the data and try again.");
                             });
@@ -146,6 +149,9 @@ function Calendar() {
                         var info = {day_month : frequency}
                         axios.post("http://localhost:8080/api/v1/calendar/add_event/weekly/"+resp.id, info,
                             {headers})
+                            .then(function (response) {
+                                window.location.reload();
+                            })
                             .catch(function (error) {
                                 setErrorNewEvent("Error adding event to calendar, check the data and try again.");
                             });
@@ -154,6 +160,9 @@ function Calendar() {
                         var info = {day_month : frequency}
                         axios.post("http://localhost:8080/api/v1/calendar/add_event/monthly/"+resp.id, info,
                             {headers})
+                            .then(function (response) {
+                                window.location.reload();
+                            })
                             .catch(function (error) {
                                 setErrorNewEvent("Error adding event to calendar, check the data and try again.");
                             });
@@ -161,16 +170,17 @@ function Calendar() {
                     case "yearly":
                         axios.post("http://localhost:8080/api/v1/calendar/add_event/yearly/"+resp.id,
                             {headers})
+                            .then(function (response) {
+                                window.location.reload();
+                            })
                             .catch(function (error) {
                                 setErrorNewEvent("Error adding event to calendar, check the data and try again.");
                             });
                         break;
-                    default:
-                        console.log(frequency);
-                        console.log(addEventRepetition);
+                    // default:
+                        //     console.log(frequency);
+                        //     console.log(addEventRepetition);
                 }
-
-                window.location.reload();
             })
             .catch(function (error) {
                 setErrorNewEvent("Error adding event to calendar, check the data and try again.");
@@ -216,7 +226,7 @@ function Calendar() {
             color:addEventColor,
             frequency:frequency
         }
-        console.log(editEvent);
+        // console.log(editEvent);
 
             axios.put("http://localhost:8080/api/v1/calendar/event/update/" + id, editEvent)
                 .then(function (response) {
@@ -264,12 +274,12 @@ function Calendar() {
         axios.get("http://localhost:8080/api/v1/calendar/my-calendar/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Calendar>) => {
-                    console.log(response.data);
+                    // console.log(response.data);
                     setCalendar(response.data);
 
                     if (response.data.events === undefined || response.data.events.length == 0){
                         setEvents([]);
-                        console.log(events);
+                        //console.log(events);
 
                     } else {
                         // @ts-ignore
