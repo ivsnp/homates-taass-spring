@@ -58,6 +58,8 @@ function Calendar() {
     const [frequency, setFrequency] = useState(0);
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const months = ['All','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    // Get the current date in the format "YYYY-MM-DD"
+    const currentDate = new Date().toISOString().split('T')[0];
 
     const [show, setShow] = useState(false);
     const [ev, setEv] = useState(0);
@@ -86,13 +88,23 @@ function Calendar() {
     const [errorNewEvent, setErrorNewEvent] = useState('');
     const [addEventDescription, setAddEventDescription] = useState<string |null>('');
     const [addEventUsername, setAddEventUsername] = useState<string | null>('');
-    const [addEventColor, setAddEventColor] = useState<string | null>('');
+    const [addEventColor, setAddEventColor] = useState<string | null>('#00BFFF');
     const [addEventTime, setAddEventTime] = useState<string | null>('');
-    const [addEventStartDate, setAddEventStartDate] = useState<string | null>('');
+    const [addEventStartDate, setAddEventStartDate] = useState<string | null>(currentDate);
     const [addEventEndDate, setAddEventEndDate] = useState<string | null>('');
     const [addEventRepetition, setAddEventRepetition] = useState<string | null>('');
 
-
+    const groupedEvents = events.reduce((groups: {[key: string]: EventInDate[]}, event) => {
+        const date = event.date.split('T')[0]; // assuming date is in ISO format
+        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+            day: 'numeric', month: 'short', year: 'numeric'
+        });
+        if (!groups[formattedDate]) {
+            groups[formattedDate] = [];
+        }
+        groups[formattedDate].push(event);
+        return groups;
+    }, {});
 
     const headers = {
         "Content-Type": "application/json",
@@ -274,17 +286,17 @@ function Calendar() {
         axios.get("http://localhost:8080/api/v1/calendar/my-calendar/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Calendar>) => {
-                    // console.log(response.data);
                     setCalendar(response.data);
 
                     if (response.data.events === undefined || response.data.events.length == 0){
                         setEvents([]);
-                        //console.log(events);
 
                     } else {
-                        // @ts-ignore
-                        response.data.events.sort((a, b) => b.date.localeCompare(a.date));
-                        setEvents(response.data.events);
+                        const now = new Date();
+                        now.setDate(now.getDate() - 1);
+                        const filteredEvents = (response.data.events as EventInDate[]).filter(event => new Date(event.date) >= now);
+                        filteredEvents.sort((a, b) => a.date.localeCompare(b.date));
+                        setEvents(filteredEvents);
                     }
 
                     const eList: {[idItem: number]: boolean} = {}
@@ -359,12 +371,12 @@ function Calendar() {
                                         </Form.Group>
                                         <InputGroup className="mb-3">
                                             <InputGroup.Text id="startDateEvent">Start Date:</InputGroup.Text>
-                                                <Form.Control required type="date" placeholder="Start Date"
+                                                <Form.Control required type="date" placeholder="Start Date" min={currentDate}
                                                               onChange={e => setAddEventStartDate(e.target.value)}/>
                                         </InputGroup>
                                         <InputGroup className="mb-3">
                                             <InputGroup.Text id="endDateEvent">End Date:</InputGroup.Text>
-                                            <Form.Control required type="date" placeholder="End Date"
+                                            <Form.Control required type="date" placeholder="End Date" min={currentDate}
                                                           onChange={e => setAddEventEndDate(e.target.value)}/>
                                         </InputGroup>
                                         <InputGroup className="mb-3">
@@ -373,7 +385,7 @@ function Calendar() {
                                                           onChange={e => setAddEventTime(e.target.value)}/>
                                         </InputGroup>
                                         <Form.Group className="mb-3" controlId="colorEvent">
-                                            <Form.Control required type="color" placeholder="Color" defaultValue="#563d7c"
+                                            <Form.Control required type="color" placeholder="Color" defaultValue="#00BFFF"
                                                           onChange={e => setAddEventColor(e.target.value)}/>
                                         </Form.Group>
                                         <InputGroup className="mb-3">
@@ -442,11 +454,11 @@ function Calendar() {
                     {title}
                 </h3>
                 <Container>
-                    <Row>
-                    <Col xs={2} >
-                        24 feb 2024
-                    </Col>
-                    <Col>
+                    {Object.entries(groupedEvents).map(([date, events]) => (
+
+                        <Row key={date}>
+                            <h4>{date}</h4>
+                            <Col>
                         {events.map((event,index) => (
                             <Card body style={{backgroundColor: event.event.color}}>
                                 <Container>
@@ -488,6 +500,7 @@ function Calendar() {
                         ))}
                     </Col>
                     </Row>
+                    ))}
                     {events.length > 0 &&
                         <Modal show={show} onHide={handleClose}>
                             <Modal.Header closeButton>
@@ -501,12 +514,12 @@ function Calendar() {
                                     </InputGroup>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="startDateEvent">Start Date:</InputGroup.Text>
-                                        <Form.Control  type="date" placeholder="Start Date" defaultValue={(events[ev] === undefined) ? "":events[ev].event.start}
+                                        <Form.Control  type="date" placeholder="Start Date" min={currentDate} defaultValue={(events[ev] === undefined) ? "":events[ev].event.start}
                                                       onChange={e => setAddEventStartDate(e.target.value)}/>
                                     </InputGroup>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="endDateEvent">End Date:</InputGroup.Text>
-                                        <Form.Control  type="date" placeholder="End Date" defaultValue={(events[ev] === undefined) ? "":events[ev].event.end}
+                                        <Form.Control  type="date" placeholder="End Date" min={currentDate} defaultValue={(events[ev] === undefined) ? "":events[ev].event.end}
                                                       onChange={e => setAddEventEndDate(e.target.value)}/>
                                     </InputGroup>
                                     <InputGroup className="mb-3">
