@@ -15,10 +15,9 @@ import {
     DropdownButton,
     Dropdown, Stack, Modal
 } from "react-bootstrap";
-import {CgNotes} from "react-icons/cg";
+
 import {MdDeleteForever, MdNoteAdd} from "react-icons/md";
 import axios, {AxiosResponse} from "axios";
-import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";
 import {LiaCartArrowDownSolid, LiaCartPlusSolid} from "react-icons/lia";
 
@@ -48,19 +47,26 @@ function Calendar() {
         event:Event,
         date:string
     }
-    interface Freq {
-        day_month: number
-    }
+
 
     const title: string = "Calendar";
     const [roommates,setRoommates] = useState<String[]>();
+
+    //handling repetitions and frequency
     const [selectedRepetition, setSelectedRepetition] = useState("");
     const [frequency, setFrequency] = useState(0);
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const months = ['All','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    // Get the current date in the format "YYYY-MM-DD"
-    const currentDate = new Date().toISOString().split('T')[0];
 
+    const currentDate = new Date().toISOString().split('T')[0];
+    const [now,setNewDate] = useState(currentDate);
+
+    const handleFilterDate = (date: string) => {
+        console.log(date);
+        setNewDate(date);
+    };
+
+    //handling the modal
     const [show, setShow] = useState(false);
     const [ev, setEv] = useState(0);
     const handleShow = (event: React.MouseEvent<HTMLButtonElement>,id: number) => {
@@ -84,7 +90,7 @@ function Calendar() {
     const [events, setEvents] = useState<EventInDate[]>([]);
     const [editListEvents, setEditListEvents] = useState<{[idItem: string]: boolean}> ({});
 
-
+//setting the state for the new event
     const [errorNewEvent, setErrorNewEvent] = useState('');
     const [addEventDescription, setAddEventDescription] = useState<string |null>('');
     const [addEventUsername, setAddEventUsername] = useState<string | null>('');
@@ -94,17 +100,20 @@ function Calendar() {
     const [addEventEndDate, setAddEventEndDate] = useState<string | null>('');
     const [addEventRepetition, setAddEventRepetition] = useState<string | null>('');
 
+    //const to group events by date
     const groupedEvents = events.reduce((groups: {[key: string]: EventInDate[]}, event) => {
-        const date = event.date.split('T')[0]; // assuming date is in ISO format
+        const date = event.date.split('T')[0];
         const formattedDate = new Date(date).toLocaleDateString('en-US', {
             day: 'numeric', month: 'short', year: 'numeric'
         });
+
         if (!groups[formattedDate]) {
             groups[formattedDate] = [];
         }
         groups[formattedDate].push(event);
         return groups;
     }, {});
+
 
     const headers = {
         "Content-Type": "application/json",
@@ -201,7 +210,6 @@ function Calendar() {
     }
 
     const handleDeleteEventInDate = (id: number) => {
-        //event.preventDefault(); // reload page after submit
         const house = localStorage.getItem("idHomeSelected");
 
         axios.delete("http://localhost:8080/api/v1/calendar/events_in_date/delete/"+id+"/"+house, {})
@@ -213,8 +221,6 @@ function Calendar() {
             });
     }
     const handleDeleteEvent = (id: number) => {
-        //event.preventDefault(); // reload page after submit
-
         axios.delete("http://localhost:8080/api/v1/calendar/event/delete/"+id, {})
             .then(function (response) {
                 window.location.reload();
@@ -238,7 +244,6 @@ function Calendar() {
             color:addEventColor,
             frequency:frequency
         }
-        // console.log(editEvent);
 
             axios.put("http://localhost:8080/api/v1/calendar/event/update/" + id, editEvent)
                 .then(function (response) {
@@ -256,7 +261,6 @@ function Calendar() {
         setAddEventRepetition(rep);
         setFrequency(freq);
         setSelectedRepetition(rep);
-
     }
 
 
@@ -292,9 +296,10 @@ function Calendar() {
                         setEvents([]);
 
                     } else {
-                        const now = new Date();
-                        now.setDate(now.getDate() - 1);
-                        const filteredEvents = (response.data.events as EventInDate[]).filter(event => new Date(event.date) >= now);
+                        //const now = new Date();
+                        //now.setDate(now.getDate() - 1);
+                        console.log("nuovooo" + now);
+                        const filteredEvents = (response.data.events as EventInDate[]).filter(event => new Date(event.date) >= new Date(now));
                         filteredEvents.sort((a, b) => a.date.localeCompare(b.date));
                         setEvents(filteredEvents);
                     }
@@ -311,7 +316,7 @@ function Calendar() {
                 console.log(error)
                 //setCalExists(false);
             });
-    }, [localStorage.getItem("idHomeSelected")]);
+    }, [localStorage.getItem("idHomeSelected"), now]);
 
 
     if (roommates === undefined || calendar === undefined) return (
@@ -454,6 +459,14 @@ function Calendar() {
                     {title}
                 </h3>
                 <Container>
+                    <Row>
+                        <Col className="HomeSelectionSelect">
+                            <InputGroup className="mb-3">
+                            <Form.Control  type="date"  defaultValue={now}
+                                           onChange={e => handleFilterDate(e.target.value)}/>
+                            </InputGroup>
+                        </Col>
+                    </Row>
                     {Object.entries(groupedEvents).map(([date, events]) => (
 
                         <Row key={date}>
