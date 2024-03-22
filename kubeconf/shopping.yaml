@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopping-list  #nome deployment
+spec:
+  replicas: 1 #repliche dell'shopping-list in caso di rottura
+  selector:
+    matchLabels:
+      app: shopping-list
+  template:
+    metadata:
+      labels:
+        app: shopping-list
+    spec:
+      containers:
+        - name: shopping-list #pod nel deployment
+          image: mattialadisa/shopping-list:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: EUREKA_DZ
+              value: "http://eureka-service-0.eureka-service:8761/eureka"
+            - name: DB_CONNECTION
+              value: "jdbc:postgresql://shopping-list-postgres.default.svc.cluster.local:5432/homates-shopping-list"
+            - name : SPRING_DATASOURCE_USERNAME
+              value: "homates"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "admin"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbit.default.svc.cluster.local"
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+            - name: SPRING_RABBITMQ_USERNAME
+              value: "admin"
+            - name: SPRING_RABBITMQ_PASSWORD
+              value: "admin"
+
+          ports:
+            - containerPort: 8083 #porta in cui esce il pod ossia il container
+---
+#file service
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopping-list
+spec:
+  selector:
+    app: shopping-list
+  ports:
+    - port: 8083
+      targetPort: 8083
+  type: ClusterIP

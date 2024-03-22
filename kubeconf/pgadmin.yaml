@@ -1,0 +1,51 @@
+# Definizione del Deployment per pgAdmin
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin  # Nome del deployment
+spec:
+  replicas: 1  # Numero di repliche del pod pgAdmin in caso di rottura
+  selector:
+    matchLabels:
+      app: pgadmin  # Selezione dei pod con etichetta "app: pgadmin"
+  template:
+    metadata:
+      labels:
+        app: pgadmin  # Etichetta dei pod con "app: pgadmin"
+    spec:
+      containers:
+        - name: pgadmin  # Nome del container nel pod
+          image: dpage/pgadmin4  # Immagine del container da utilizzare
+          imagePullPolicy: Always  # Politica di estrazione dell'immagine (sempre aggiornata)
+          env:  # Variabili di ambiente per configurare pgAdmin
+            - name: PGADMIN_DEFAULT_EMAIL
+              value: "homates@homates.com"
+            - name: PGADMIN_DEFAULT_PASSWORD
+              value: "admin"
+            - name: PGADMIN_LISTEN_PORT
+              value: "50"
+          volumeMounts:  # Montaggio di volumi nel container
+            - name: pgadmin-servers
+              mountPath: /pgadmin4/servers.json
+              subPath: servers.json
+              readOnly: true
+          ports:
+            - containerPort: 50  # Porta del container esposta
+      volumes:
+        - name: pgadmin-servers
+          configMap:
+            name: pgadmin-servers-configmap  # ConfigMap per la configurazione dei server pgAdmin
+---
+
+# Definizione del Service per pgAdmin
+apiVersion: v1
+kind: Service
+metadata:
+  name: pgadmin  # Nome del servizio
+spec:
+  selector:
+    app: pgadmin  # Seleziona i pod con etichetta "app: pgadmin"
+  ports:
+    - port: 5050  # Porta del servizio
+      targetPort: 50  # Porta a cui il traffico deve essere instradato
+  type: ClusterIP  # Tipo di servizio ClusterIP (accessibile solo all'interno del cluster)

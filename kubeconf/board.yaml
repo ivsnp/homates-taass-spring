@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: board  #nome deployment
+spec:
+  replicas: 1 #repliche dell'api-gateway in caso di rottura
+  selector:
+    matchLabels:
+      app: board
+  template:
+    metadata:
+      labels:
+        app: board
+    spec:
+      containers:
+        - name: board #pod nel deployment
+          image: mattialadisa/board:1.0.0 #immagine pushata sul dockerhub
+          imagePullPolicy: Always #recupera sempre immagine da dockerhub. Non la recupera in lcoale se esiste
+          env:  #variabili d'ambiente per il pod
+            #necessaria questa variabile per raggiungere l'eureka server all'interno del cluster.
+            - name: EUREKA_DZ
+              value: "http://eureka-service-0.eureka-service:8761/eureka"
+              #connection string per raggiungere il DB (statefulset) all'interno del cluster.
+            - name: DB_CONNECTION
+              value: "jdbc:postgresql://board-postgres.default.svc.cluster.local:5432/homates-board"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "homates"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "admin"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbit.default.svc.cluster.local"
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+            - name: SPRING_RABBITMQ_USERNAME
+              value: "admin"
+            - name: SPRING_RABBITMQ_PASSWORD
+              value: "admin"
+
+
+          ports:
+            - containerPort: 8085 #porta in cui esce il pod ossia il container
+---
+#file service
+#interfaccia del deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: board
+spec:
+  selector:
+    app: board
+  ports:
+    - port: 8085
+      targetPort: 8085
+  type: ClusterIP

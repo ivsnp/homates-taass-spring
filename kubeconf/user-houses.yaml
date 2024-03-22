@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-houses  #nome deployment
+spec:
+  replicas: 1 #repliche dell'user-houses in caso di rottura
+  selector:
+    matchLabels:
+      app: user-houses
+  template:
+    metadata:
+      labels:
+        app: user-houses
+    spec:
+      containers:
+        - name: user-houses #pod nel deployment
+          image: mattialadisa/user-houses:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: EUREKA_DZ
+              value: "http://eureka-service-0.eureka-service:8761/eureka"
+            - name: DB_CONNECTION
+              value: "jdbc:postgresql://user-houses-postgres.default.svc.cluster.local:5432/homates-user-houses"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "homates"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "admin"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
+            - name: SPRING_RABBITMQ_HOST
+              value: "rabbit.default.svc.cluster.local"
+            - name: SPRING_RABBITMQ_PORT
+              value: "5672"
+            - name: SPRING_RABBITMQ_USERNAME
+              value: "admin"
+            - name: SPRING_RABBITMQ_PASSWORD
+              value: "admin"
+
+          ports:
+            - containerPort: 8081 #porta in cui esce il pod ossia il container
+---
+#file service
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-houses
+spec:
+  selector:
+    app: user-houses
+  ports:
+    - port: 8081
+      targetPort: 8081
+  type: ClusterIP

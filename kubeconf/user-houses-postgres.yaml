@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: user-houses-postgres  #nome deployment
+spec:
+  serviceName: user-houses-postgres
+  replicas: 1 #repliche dell'eureka-service in caso di rottura
+  selector:
+    matchLabels:
+      app: user-houses-postgres
+  template:
+    metadata:
+      labels:
+        app: user-houses-postgres
+    spec:
+      containers:
+        - name: user-houses-postgres #pod nel deployment
+          image: postgres:latest
+          imagePullPolicy: Always
+          env:
+            - name: POSTGRES_DB
+              value: "homates-user-houses"
+            - name: POSTGRES_USER
+              value: "homates"
+            - name: POSTGRES_PASSWORD
+              value: "admin"
+          ports:
+            - containerPort: 5432 #porta in cui esce il pod ossia il container
+---
+#file service
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-houses-postgres
+spec:
+  clusterIP: None
+  selector:
+    app: user-houses-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP

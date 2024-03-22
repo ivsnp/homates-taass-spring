@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: eureka-service  #nome deployment
+spec:
+  serviceName: eureka-service
+  replicas: 1 #repliche dell'eureka-service in caso di rottura
+  selector:
+    matchLabels:
+      app: eureka-service
+  template:
+    metadata:
+      labels:
+        app: eureka-service
+    spec:
+      containers:
+        - name: eureka-service #pod nel deployment 
+          image: mattialadisa/eurekaservice:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: EUREKA_DZ
+              value: "http://eureka-service-0.eureka-service:8761/eureka"
+            - name: EUREKA_HOSTNAME
+              value: "eureka-service"
+          ports:
+            - containerPort: 8761 #porta in cui esce il pod ossia il container
+---
+#file service
+apiVersion: v1
+kind: Service
+metadata:
+  name: eureka-service
+spec:
+  clusterIP: None
+  selector:
+    app: eureka-service
+  ports:
+    - port: 8761
+      targetPort: 8761
+  type: ClusterIP
