@@ -1,4 +1,4 @@
-# HoMates: join, set up and share
+# HoMates: simpliflying the cohabitation
 
 University of Turin, Computer Science Department
 
