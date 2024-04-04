@@ -93,7 +93,13 @@ kubectl get ingress --namespace=homates
 watch kubectl get all -n homates
 
 # check services
-kubectl get services -w
+kubectl get services
+
+# check persistent volume
+kubectl get pv
+
+# check persistent volume claim
+kubectl get pvc
 
 # see usage metrics, needs metrics-server addon (two alternatives)
 watch kubectl top pods
@@ -130,7 +136,13 @@ kubectl get ingress --namespace=homates
 watch kubectl get all -n homates
 
 # check services
-kubectl get services -w
+kubectl get services
+
+# check persistent volume
+kubectl get pv
+
+# check persistent volume claim
+kubectl get pvc
 
 # see usage metrics, needs metrics-server addon (two alternatives)
 watch kubectl top pods
@@ -163,7 +175,13 @@ kubectl describe pods pod-name-XXX
 kubectl logs -f pod-name-XXX
 
 # check services
-kubectl get services -w
+kubectl get services
+
+# check persistent volume
+kubectl get pv
+
+# check persistent volume claim
+kubectl get pvc
 
 # see usage metrics, needs metrics-server addon (two alternatives)
 kubectl top pods
