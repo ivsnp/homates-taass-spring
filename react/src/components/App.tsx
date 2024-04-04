@@ -12,8 +12,7 @@ import { gapi } from 'gapi-script';
 const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
 function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userName, setUserName] = useState("");
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userName, setUserName] = useState("")
 
     //non so se sta cosa va fatta o meno
     useEffect(() => {

@@ -1,13 +1,10 @@
 import React from 'react';
 import './AppGuest.css';
-import HeaderGuest from "./headerGuest/HeaderGuest";
-import Footer from "../footer/Footer";
 import HomeGuest from "./home/HomeGuest";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import About from "../about/About";
 import Contacts from "../contacts/Contacts";
 import Terms from "../terms/Terms";
-import Login from "./login/Login";
 import NotFound from "../notFound/NotFound";
 
 function AppGuest() {

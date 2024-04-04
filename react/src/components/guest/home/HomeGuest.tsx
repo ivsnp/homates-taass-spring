@@ -1,10 +1,8 @@
 import React from 'react';
 import './HomeGuest.css';
-import {FiSettings} from "react-icons/fi";
 import {Button} from "react-bootstrap";
 
 function HomeGuest() {
-    const title: string = "Guest component";
 
     if (localStorage.getItem("username") != null){
         // if there are no homes

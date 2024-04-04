@@ -3,10 +3,7 @@ import './Wallet.css';
 import {Accordion, Button, Col, Container, Form, Row, Tab, Tabs, InputGroup, Card, Spinner} from "react-bootstrap";
 import {MdOutlineAddCard, MdShoppingCartCheckout, MdDeleteForever} from "react-icons/md";
 import {RiRefund2Line} from "react-icons/ri";
-import {FaMoneyBillTransfer} from "react-icons/fa6";
-import {TbArrowsSplit} from "react-icons/tb";
 import {BiEditAlt} from "react-icons/bi";
-import {BsHouse} from "react-icons/bs";
 import axios, {AxiosResponse} from "axios";
 
 
@@ -217,7 +214,7 @@ function Wallet() {
             headers: {}
         })
             .then((response: AxiosResponse<(Payment | Refund)[]>) => {
-                if (response.data === undefined || response.data.length == 0) {
+                if (response.data === undefined || response.data.length === 0) {
                     setTransactions([]);
                 } else {
                     response.data.sort((a, b) => b.date.localeCompare(a.date));
@@ -241,7 +238,7 @@ function Wallet() {
             headers: {}
         })
             .then((response: AxiosResponse<Wallet[]>) => {
-                if (response.data === undefined || response.data.length == 0) {
+                if (response.data === undefined || response.data.length === 0) {
                     // if there are no roommates
                     setRoommatesBalances([]);
                 } else {
@@ -263,7 +260,7 @@ function Wallet() {
             headers: {}
         })
             .then((response: AxiosResponse<string[]>) => {
-                if (response.data === undefined || response.data.length == 0) {
+                if (response.data === undefined || response.data.length === 0) {
                     // if there are no roommates
                     setRoommates([]);
                 } else {
@@ -532,7 +529,7 @@ function Wallet() {
                                     </Col>
 
                                     <Col xs={2} className="d-flex align-items-center">
-                                        {usernameLogged == t.usernamePay &&
+                                        {usernameLogged === t.usernamePay &&
                                             <div className="d-flex align-items-center">
                                                 <Button className="action-button" onClick={(e) => {
                                                     handleEditListPayment(e, t.id, t.date, t.amount, t.description, t.usernamePay, t.usernameSplit);
@@ -571,7 +568,7 @@ function Wallet() {
                                             <strong>Description:</strong><span>{t.description}</span>
                                         </Row>
                                     </Row>
-                                    {usernameLogged == t.usernamePay &&
+                                    {usernameLogged === t.usernamePay &&
                                         <Row>
                                             <Col className="d-flex align-items-center">
                                                 <Button className="action-button action-button-centre" onClick={(e) => {
@@ -705,7 +702,7 @@ function Wallet() {
                                         </Col>
                                         {!isMobile &&
                                             <Col xs={2} className="d-flex align-items-center">
-                                                {usernameLogged == t.usernamePay &&
+                                                {usernameLogged === t.usernamePay &&
                                                     <div className="d-flex align-items-center">
                                                         <Button className="HoMatesButton" onClick={(e) => {
                                                             handleSaveEditListPayment(e, t.id);
@@ -723,7 +720,7 @@ function Wallet() {
                                             </Col>
                                         }
                                     </Row>
-                                    {isMobile && usernameLogged == t.usernamePay &&
+                                    {isMobile && usernameLogged === t.usernamePay &&
                                         <Row>
                                             <Col className="d-flex align-items-center">
                                                 <Button className="HoMatesButton action-button-centre" onClick={(e) => {
@@ -760,7 +757,7 @@ function Wallet() {
                                         </Row>
                                     </Col>
                                     <Col xs={2} className="d-flex align-items-center">
-                                        {usernameLogged == t.usernameFrom &&
+                                        {usernameLogged === t.usernameFrom &&
                                             <div className="d-flex align-items-center">
                                                 <Button className="action-button" onClick={(e) => {
                                                     handleEditListRefund(e, t.id, t.date, t.amount, t.description, t.usernameFrom, t.usernameTo);
@@ -791,7 +788,7 @@ function Wallet() {
                                             <strong>Description:</strong><span>{t.description}</span>
                                         </Row>
                                     </Row>
-                                    {usernameLogged == t.usernameFrom &&
+                                    {usernameLogged === t.usernameFrom &&
                                         <Row>
                                             <Col className="d-flex align-items-center">
                                                 <Button className="action-button action-button-centre" onClick={(e) => {
@@ -928,7 +925,7 @@ function Wallet() {
                                         </Col>
                                         {!isMobile &&
                                             <Col xs={2} className="d-flex align-items-center">
-                                                {usernameLogged == t.usernameFrom &&
+                                                {usernameLogged === t.usernameFrom &&
                                                     <div className="d-flex align-items-center">
                                                         <Button className="HoMatesButton" onClick={(e) => {
                                                             handleSaveEditListRefund(e, t.id);
@@ -947,7 +944,7 @@ function Wallet() {
                                         }
                                     </Row>
 
-                                    {isMobile && usernameLogged == t.usernameFrom &&
+                                    {isMobile && usernameLogged === t.usernameFrom &&
                                         <Row>
                                             <Col className="d-flex align-items-center">
                                                 <Button className="HoMatesButton action-button-centre" onClick={(e) => {

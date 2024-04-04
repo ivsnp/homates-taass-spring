@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './ShoppingList.css';
-import {Accordion, Button, Card, Col, Container, Form, Row, Spinner, Tab, Tabs} from "react-bootstrap";
+import {Accordion, Button, Card, Col, Container, Form, Row, Spinner} from "react-bootstrap";
 import {LiaCartArrowDownSolid, LiaCartPlusSolid} from "react-icons/lia";
 import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";

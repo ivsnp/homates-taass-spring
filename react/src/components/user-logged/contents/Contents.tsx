@@ -48,7 +48,7 @@ function Houses() {
         axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/"+localStorage.getItem("username"), {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
-                if (response.data === undefined || response.data.length == 0){
+                if (response.data === undefined || response.data.length === 0){
                     // if there are no homes
                     window.location.assign("/user/houses");
                 }

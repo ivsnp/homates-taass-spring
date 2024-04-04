@@ -1,11 +1,6 @@
-import React, {useState} from 'react';
+import React from 'react';
 import './AppUser.css';
-import Header from "./header/Header";
-import Footer from "../footer/Footer";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import {Button, Col, Container, Form, Row} from "react-bootstrap";
-import {FiSettings} from "react-icons/fi";
-import Wallet from "./contents/wallet/Wallet";
 import Houses from "./contents/houses/Houses";
 import About from "../about/About";
 import Terms from "../terms/Terms";

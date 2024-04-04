@@ -6,12 +6,9 @@ import {Container, Nav, Navbar, Offcanvas} from "react-bootstrap";
 
 function Header() {
 
-    const title: string = "Mates";
     const [isLoggedOut, setIsLoggedOut] = useState(false);
     const [userName, setUserName] = useState<string | null>(null);
     const [userImage, setUserImage] = useState<string | null>(null);
-    //var userName = localStorage.getItem("username")?.split(" ")[0] || ""; // Ottieni solo il nome dell'utente memorizzato in localStorage
-
 
     useEffect(() => {
         const storedName = localStorage.getItem("firstname");
@@ -25,14 +22,6 @@ function Header() {
 
 
     }, []);
-
-    const onSuccess = () => {
-        console.log("Log out successfull!");
-        localStorage.removeItem('username');
-        localStorage.removeItem('userImage');
-        setIsLoggedOut(true);
-    }
-
 
     if (isLoggedOut) {
         window.location.assign("/");

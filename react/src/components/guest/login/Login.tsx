@@ -2,9 +2,6 @@ import React from 'react';
 import './Login.css';
 import { useState } from 'react';
 import { MDBBtn } from 'mdb-react-ui-kit';
-import {FcGoogle} from "react-icons/fc";
-import {Button, Container, Nav, Navbar, Tab, Tabs} from "react-bootstrap";
-import Form from 'react-bootstrap/Form';
 import {GoogleLogin} from 'react-google-login';
 import { Redirect } from 'react-router-dom';
 import axios from "axios";
@@ -13,10 +10,8 @@ import axios from "axios";
 const clientId = "903884998155-d5fqjb5mj7n5202e7qbdj3r9d3citfgj.apps.googleusercontent.com"
 function Login() {
 
-    const title: string = "Login HoMates";
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [userName, setUserName] = useState("");
-    const [justifyActive, setJustifyActive] = useState('tab1');
     const [userImage, setUserImage] = useState("");
 
     const headers = {
@@ -67,13 +62,6 @@ function Login() {
     const onFailure = (res: any) => {
         console.log("LOGIN FAILED! res: ", res);
     }
-    const handleJustifyClick = (value: string) => {
-        if (value === justifyActive) {
-            return;
-        }
-
-        setJustifyActive(value);
-    };
 
     return (
         <div className="Login">

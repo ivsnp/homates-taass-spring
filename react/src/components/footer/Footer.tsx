@@ -1,10 +1,8 @@
 import React from 'react';
 import './Footer.css';
 import {Container, Nav, Navbar} from "react-bootstrap";
-import {FaRegQuestionCircle} from "react-icons/fa";
 
 function Footer() {
-    const title: string = "Footer component";
 
     return (
         <nav className="Footer">

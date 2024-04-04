@@ -73,7 +73,7 @@ function Account() {
             .catch(error => {
                 console.log(error)
             });
-    }, []);
+    }, [usernameLogged]);
 
     if (userdata === undefined) return (
         <div>

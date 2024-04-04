@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './Board.css';
-import {Accordion, Button, Col, Container, Form, Row, Tab, Tabs, InputGroup, Spinner, Card} from "react-bootstrap";
-import {CgNotes} from "react-icons/cg";
-import {MdDeleteForever, MdNoteAdd} from "react-icons/md";
+import {Button, Col, Container, Form, Row, Spinner, Card} from "react-bootstrap";
+import {MdDeleteForever} from "react-icons/md";
 import axios, {AxiosResponse} from "axios";
 import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";
@@ -122,7 +121,7 @@ function Board() {
             headers: {}})
             .then((response: AxiosResponse<Announcement[]>) => {
 
-                if (response.data === undefined || response.data.length == 0) {
+                if (response.data === undefined || response.data.length === 0) {
                     setAnnounces([]);
                 } else {
                     response.data.sort((a, b) => b.date.localeCompare(a.date));
@@ -187,7 +186,7 @@ function Board() {
                                             <strong>Date:</strong>&nbsp;{announce.date}
                                         </div>
                                     </Col>
-                                    {username == announce.user &&
+                                    {username === announce.user &&
                                         <Col xs={2} className="d-flex align-items-center">
                                             <Button className="action-button" onClick={(e) => {
                                                 handleEditList(e, announce.id, announce.description);
@@ -217,7 +216,7 @@ function Board() {
                                             <strong>Date:</strong>&nbsp;{announce.date}
                                         </div>
                                     </Row>
-                                    {username == announce.user &&
+                                    {username === announce.user &&
                                         <Row>
                                             <Col className="d-flex align-items-center">
                                                 <Button className="action-button action-button-centre" onClick={(e) => {

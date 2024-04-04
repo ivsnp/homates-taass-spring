@@ -7,20 +7,17 @@ import {
     Container,
     Form,
     Row,
-    Tab,
-    Tabs,
     InputGroup,
     Spinner,
     Card,
     DropdownButton,
-    Dropdown, Stack, Modal
+    Dropdown, Modal
 } from "react-bootstrap";
-import {CgNotes} from "react-icons/cg";
-import {MdDeleteForever, MdNoteAdd} from "react-icons/md";
+
+import {MdDeleteForever} from "react-icons/md";
 import axios, {AxiosResponse} from "axios";
-import {CiStickyNote} from "react-icons/ci";
 import {BiEditAlt} from "react-icons/bi";
-import {LiaCartArrowDownSolid, LiaCartPlusSolid} from "react-icons/lia";
+import {LiaCartArrowDownSolid} from "react-icons/lia";
 
 
 function Calendar() {
@@ -48,17 +45,26 @@ function Calendar() {
         event:Event,
         date:string
     }
-    interface Freq {
-        day_month: number
-    }
+
 
     const title: string = "Calendar";
     const [roommates,setRoommates] = useState<String[]>();
+
+    //handling repetitions and frequency
     const [selectedRepetition, setSelectedRepetition] = useState("");
     const [frequency, setFrequency] = useState(0);
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     const months = ['All','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
+    const currentDate = new Date().toISOString().split('T')[0];
+    const [now,setNewDate] = useState(currentDate);
+
+    const handleFilterDate = (date: string) => {
+        console.log(date);
+        setNewDate(date);
+    };
+
+    //handling the modal
     const [show, setShow] = useState(false);
     const [ev, setEv] = useState(0);
     const handleShow = (event: React.MouseEvent<HTMLButtonElement>,id: number) => {
@@ -82,16 +88,29 @@ function Calendar() {
     const [events, setEvents] = useState<EventInDate[]>([]);
     const [editListEvents, setEditListEvents] = useState<{[idItem: string]: boolean}> ({});
 
-
+//setting the state for the new event
     const [errorNewEvent, setErrorNewEvent] = useState('');
     const [addEventDescription, setAddEventDescription] = useState<string |null>('');
     const [addEventUsername, setAddEventUsername] = useState<string | null>('');
-    const [addEventColor, setAddEventColor] = useState<string | null>('');
+    const [addEventColor, setAddEventColor] = useState<string | null>('#00BFFF');
     const [addEventTime, setAddEventTime] = useState<string | null>('');
-    const [addEventStartDate, setAddEventStartDate] = useState<string | null>('');
+    const [addEventStartDate, setAddEventStartDate] = useState<string | null>(currentDate);
     const [addEventEndDate, setAddEventEndDate] = useState<string | null>('');
     const [addEventRepetition, setAddEventRepetition] = useState<string | null>('');
 
+    //const to group events by date
+    const groupedEvents = events.reduce((groups: {[key: string]: EventInDate[]}, event) => {
+        const date = event.date.split('T')[0];
+        const formattedDate = new Date(date).toLocaleDateString('en-US', {
+            day: 'numeric', month: 'short', year: 'numeric'
+        });
+
+        if (!groups[formattedDate]) {
+            groups[formattedDate] = [];
+        }
+        groups[formattedDate].push(event);
+        return groups;
+    }, {});
 
 
     const headers = {
@@ -157,7 +176,7 @@ function Calendar() {
                             });
                         break;
                     case "monthly":
-                        var info = {day_month : frequency}
+                        info = {day_month : frequency}
                         axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/add_event/monthly/"+resp.id, info,
                             {headers})
                             .then(function (response) {
@@ -189,7 +208,6 @@ function Calendar() {
     }
 
     const handleDeleteEventInDate = (id: number) => {
-        //event.preventDefault(); // reload page after submit
         const house = localStorage.getItem("idHomeSelected");
 
         axios.delete(process.env.REACT_APP_API_URL+"/api/v1/calendar/events_in_date/delete/"+id+"/"+house, {})
@@ -226,7 +244,6 @@ function Calendar() {
             color:addEventColor,
             frequency:frequency
         }
-        // console.log(editEvent);
 
             axios.put(process.env.REACT_APP_API_URL+"/api/v1/calendar/event/update/" + id, editEvent)
                 .then(function (response) {
@@ -244,7 +261,6 @@ function Calendar() {
         setAddEventRepetition(rep);
         setFrequency(freq);
         setSelectedRepetition(rep);
-
     }
 
 
@@ -253,7 +269,7 @@ function Calendar() {
         axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/rommates/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<string[]>) => {
-                if (response.data === undefined || response.data.length == 0){
+                if (response.data === undefined || response.data.length === 0){
                     // if there are no roommates
                     setRoommates([]);
                 } else {
@@ -274,17 +290,18 @@ function Calendar() {
         axios.get(process.env.REACT_APP_API_URL+"/api/v1/calendar/my-calendar/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Calendar>) => {
-                    // console.log(response.data);
                     setCalendar(response.data);
 
-                    if (response.data.events === undefined || response.data.events.length == 0){
+                    if (response.data.events === undefined || response.data.events.length === 0){
                         setEvents([]);
-                        //console.log(events);
 
                     } else {
-                        // @ts-ignore
-                        response.data.events.sort((a, b) => b.date.localeCompare(a.date));
-                        setEvents(response.data.events);
+                        //const now = new Date();
+                        //now.setDate(now.getDate() - 1);
+                        console.log("nuovooo" + now);
+                        const filteredEvents = (response.data.events as EventInDate[]).filter(event => new Date(event.date) >= new Date(now));
+                        filteredEvents.sort((a, b) => a.date.localeCompare(b.date));
+                        setEvents(filteredEvents);
                     }
 
                     const eList: {[idItem: number]: boolean} = {}
@@ -299,7 +316,7 @@ function Calendar() {
                 console.log(error)
                 //setCalExists(false);
             });
-    }, [localStorage.getItem("idHomeSelected")]);
+    }, [localStorage.getItem("idHomeSelected"), now]);
 
 
     if (roommates === undefined || calendar === undefined) return (
@@ -359,12 +376,12 @@ function Calendar() {
                                         </Form.Group>
                                         <InputGroup className="mb-3">
                                             <InputGroup.Text id="startDateEvent">Start Date:</InputGroup.Text>
-                                                <Form.Control required type="date" placeholder="Start Date"
+                                                <Form.Control required type="date" placeholder="Start Date" min={currentDate}
                                                               onChange={e => setAddEventStartDate(e.target.value)}/>
                                         </InputGroup>
                                         <InputGroup className="mb-3">
                                             <InputGroup.Text id="endDateEvent">End Date:</InputGroup.Text>
-                                            <Form.Control required type="date" placeholder="End Date"
+                                            <Form.Control required type="date" placeholder="End Date" min={currentDate}
                                                           onChange={e => setAddEventEndDate(e.target.value)}/>
                                         </InputGroup>
                                         <InputGroup className="mb-3">
@@ -373,7 +390,7 @@ function Calendar() {
                                                           onChange={e => setAddEventTime(e.target.value)}/>
                                         </InputGroup>
                                         <Form.Group className="mb-3" controlId="colorEvent">
-                                            <Form.Control required type="color" placeholder="Color" defaultValue="#563d7c"
+                                            <Form.Control required type="color" placeholder="Color" defaultValue="#00BFFF"
                                                           onChange={e => setAddEventColor(e.target.value)}/>
                                         </Form.Group>
                                         <InputGroup className="mb-3">
@@ -443,10 +460,18 @@ function Calendar() {
                 </h3>
                 <Container>
                     <Row>
-                    <Col xs={2} >
-                        24 feb 2024
-                    </Col>
-                    <Col>
+                        <Col className="HomeSelectionSelect">
+                            <InputGroup className="mb-3">
+                            <Form.Control  type="date"  defaultValue={now}
+                                           onChange={e => handleFilterDate(e.target.value)}/>
+                            </InputGroup>
+                        </Col>
+                    </Row>
+                    {Object.entries(groupedEvents).map(([date, events]) => (
+
+                        <Row key={date}>
+                            <h4>{date}</h4>
+                            <Col>
                         {events.map((event,index) => (
                             <Card body style={{backgroundColor: event.event.color}}>
                                 <Container>
@@ -488,6 +513,7 @@ function Calendar() {
                         ))}
                     </Col>
                     </Row>
+                    ))}
                     {events.length > 0 &&
                         <Modal show={show} onHide={handleClose}>
                             <Modal.Header closeButton>
@@ -501,12 +527,12 @@ function Calendar() {
                                     </InputGroup>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="startDateEvent">Start Date:</InputGroup.Text>
-                                        <Form.Control  type="date" placeholder="Start Date" defaultValue={(events[ev] === undefined) ? "":events[ev].event.start}
+                                        <Form.Control  type="date" placeholder="Start Date" min={currentDate} defaultValue={(events[ev] === undefined) ? "":events[ev].event.start}
                                                       onChange={e => setAddEventStartDate(e.target.value)}/>
                                     </InputGroup>
                                     <InputGroup className="mb-3">
                                         <InputGroup.Text id="endDateEvent">End Date:</InputGroup.Text>
-                                        <Form.Control  type="date" placeholder="End Date" defaultValue={(events[ev] === undefined) ? "":events[ev].event.end}
+                                        <Form.Control  type="date" placeholder="End Date" min={currentDate} defaultValue={(events[ev] === undefined) ? "":events[ev].event.end}
                                                       onChange={e => setAddEventEndDate(e.target.value)}/>
                                     </InputGroup>
                                     <InputGroup className="mb-3">
