@@ -49,7 +49,7 @@ function Account() {
             "Accept": "application/json"
         };
 
-        axios.put("http://localhost:8080/api/v1/user-houses/user/update/"+usernameLogged, user, {headers})
+        axios.put(process.env.REACT_APP_API_URL+"/api/v1/user-houses/user/update/"+usernameLogged, user, {headers})
             .then(function (response) {
                 window.location.reload();
             })
@@ -60,7 +60,7 @@ function Account() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/user/"+usernameLogged, {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/user/"+usernameLogged, {
             headers: {}})
             .then((response: AxiosResponse<UserAttributes>) => {
                 setUserdata(response.data);

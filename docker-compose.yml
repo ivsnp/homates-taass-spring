@@ -5,7 +5,7 @@ services:
   eureka-service:
     build: eureka-service
     container_name: eureka-service
-    image: mattialadisa/eurekaservice:latest
+    image: ivsnp/homates-eureka:1.0.0
     ports:
       - 8761:8761
     networks:
@@ -15,7 +15,7 @@ services:
   api-gateway:
     build: api-gateway
     container_name: api-gateway
-    image: mattialadisa/api-gateway:latest
+    image: ivsnp/homates-apigateway:1.0.0
     ports:
       - 8080:8080
     depends_on:
@@ -146,24 +146,24 @@ services:
 
   # APP microservices
 
-  #react-desktop:
-  #  build: ./react
-  #  container_name: react-desktop
-  #  image: react-desktop:latest
-  #  ports:
-  #    - 3000:3000
-  #  stdin_open: true
-  #  tty: true
-  #  networks:
-  #    - homatesnet
-  #  deploy:
-  #    restart_policy:
-  #      condition: on-failure
+  react-desktop:
+    build: ./react
+    container_name: react-desktop
+    image: react-desktop:latest
+    ports:
+      - 3000:3000
+    stdin_open: true
+    tty: true
+    networks:
+      - homatesnet
+    deploy:
+      restart_policy:
+        condition: on-failure
 
   user-houses:
     build: user-houses
     container_name: user-houses
-    image: mattialadisa/user-houses:latest
+    image: ivsnp/homates-userhouses:1.0.0
     ports:
       - 8081:8081
     networks:
@@ -185,7 +185,7 @@ services:
   wallet:
     build: wallet
     container_name: wallet
-    image: mattialadisa/wallet:latest
+    image: ivsnp/homates-wallet:1.0.0
     ports:
       - 8082:8082
     networks:
@@ -207,7 +207,7 @@ services:
   shopping-list:
     build: shopping-list
     container_name: shopping-list
-    image: mattialadisa/shopping-list:latest
+    image: ivsnp/homates-shopl:1.0.0
     ports:
       - 8083:8083
     networks:
@@ -229,7 +229,7 @@ services:
   calendar:
     build: calendar
     container_name: calendar
-    image: mattialadisa/calendar:latest
+    image: ivsnp/homates-calendar:1.0.0
     ports:
       - 8084:8084
     networks:
@@ -251,7 +251,7 @@ services:
   board:
     build: bacheca
     container_name: board
-    image: mattialadisa/board:latest
+    image: ivsnp/homates-board:1.0.0
     ports:
       - 8085:8085
     networks:

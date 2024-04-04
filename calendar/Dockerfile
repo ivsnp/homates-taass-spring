@@ -1,6 +1,12 @@
+# multistage building
+
+FROM maven:latest AS build
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+
 FROM openjdk:19
-VOLUME /tmp
 EXPOSE 8084
-ARG DEPENDENCY=target
-ADD ${DEPENDENCY}/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+WORKDIR /app
+COPY --from=build /app/target/calendar-1.0.0.jar calendar-1.0.0.jar
+CMD ["java", "-jar", "calendar-1.0.0.jar"]

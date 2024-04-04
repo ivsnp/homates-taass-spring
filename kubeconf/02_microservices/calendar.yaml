@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: homates
   name: calendar  #nome deployment
 spec:
   replicas: 1 #repliche dell'api-gateway in caso di rottura
@@ -14,7 +15,7 @@ spec:
     spec:
       containers:
         - name: calendar #pod nel deployment
-          image: mattialadisa/calendar:1.0.0 #immagine pushata sul dockerhub
+          image: ivsnp/homates-calendar:1.0.0 #immagine pushata sul dockerhub
           imagePullPolicy: Always #recupera sempre immagine da dockerhub. Non la recupera in lcoale se esiste
           env:  #variabili d'ambiente per il pod
             #necessaria questa variabile per raggiungere l'eureka server all'interno del cluster.
@@ -22,7 +23,7 @@ spec:
               value: "http://eureka-service-0.eureka-service:8761/eureka"
               #connection string per raggiungere il DB (statefulset) all'interno del cluster.
             - name: DB_CONNECTION
-              value: "jdbc:postgresql://calendar-postgres.default.svc.cluster.local:5432/homates-calendar"
+              value: "jdbc:postgresql://calendar-postgres:5432/homates-calendar"
             - name: SPRING_DATASOURCE_USERNAME
               value: "homates"
             - name: SPRING_DATASOURCE_PASSWORD
@@ -30,7 +31,7 @@ spec:
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbit.default.svc.cluster.local"
+              value: "rabbit"
             - name: SPRING_RABBITMQ_PORT
               value: "5672"
             - name: SPRING_RABBITMQ_USERNAME
@@ -41,12 +42,20 @@ spec:
             #  value: "amqp://rabbit.default.svc.cluster.local:5672"
           ports:
             - containerPort: 8084 #porta in cui esce il pod ossia il container
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "300Mi"
 ---
-#file service
+# service
 #interfaccia del deployment
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: homates
   name: calendar
 spec:
   selector:

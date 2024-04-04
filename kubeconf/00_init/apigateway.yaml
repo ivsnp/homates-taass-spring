@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: homates
+  name: api-gateway  #nome deployment
+spec:
+  replicas: 1 #repliche dell'api-gateway in caso di rottura
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway #pod nel deployment
+          image: ivsnp/homates-apigateway:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: EUREKA_DZ
+              value: "http://eureka-service-0.eureka-service:8761/eureka"
+          ports:
+            - containerPort: 8080 #porta in cui esce il pod ossia il container
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "500Mi"
+---
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: homates
+  name: api-gateway
+spec:
+  selector:
+    app: api-gateway
+  ports:
+      - port: 8080
+        targetPort: 8080
+  type: ClusterIP
+
+---
+# ingress creation (permette di associare un dns a un service e renderlo pubblico
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homates
+  name: apigateway-homates
+spec:
+  rules:
+    - host: api.homates.it
+      http:
+        paths:
+          - backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080
+            path: /
+            pathType: Prefix

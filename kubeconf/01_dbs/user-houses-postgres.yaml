@@ -1,6 +1,39 @@
+# persistent volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: userhouses-pv-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 200Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/lib/postgresql/data"
+
+---
+# persistent volume claim
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: userhouses-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Mi
+
+---
+# deployment
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  namespace: homates
   name: user-houses-postgres  #nome deployment
 spec:
   serviceName: user-houses-postgres
@@ -13,6 +46,10 @@ spec:
       labels:
         app: user-houses-postgres
     spec:
+      volumes:
+        - name: userhouses-pv-storage
+          persistentVolumeClaim:
+            claimName: userhouses-pv-claim
       containers:
         - name: user-houses-postgres #pod nel deployment
           image: postgres:latest
@@ -26,11 +63,19 @@ spec:
               value: "admin"
           ports:
             - containerPort: 5432 #porta in cui esce il pod ossia il container
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "300Mi"
 ---
-#file service
+# service
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: homates
   name: user-houses-postgres
 spec:
   clusterIP: None

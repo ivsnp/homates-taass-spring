@@ -81,7 +81,7 @@ function Houses() {
             username_owner: usernameLogged
         };
 
-        axios.post("http://localhost:8080/api/v1/user-houses/houses/create", house, {headers})
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/create", house, {headers})
             .then(function (response) {
                 window.location.reload();
             })
@@ -95,7 +95,7 @@ function Houses() {
         event.preventDefault(); // reload page after submit
         //, idHouse: number, usernameMate: string
 
-        axios.post("http://localhost:8080/api/v1/user-houses/houses/add-roommate/"+idHouseNewPerson+"/"+usernameNewPerson, {},
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/add-roommate/"+idHouseNewPerson+"/"+usernameNewPerson, {},
             {headers})
             .then(function (response) {
                 window.location.reload();
@@ -109,7 +109,7 @@ function Houses() {
     const handleDeleteRoommate = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, idHouse: number, username: string) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/user-houses/houses/remove-roommate/"+idHouse+"/"+username, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/remove-roommate/"+idHouse+"/"+username, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -121,7 +121,7 @@ function Houses() {
     const handleDeleteHouse = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/user-houses/houses/delete/"+id, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/delete/"+id, {})
             .then(function (response) {
                 if (localStorage.getItem("idHomeSelected") == ""+id) {
                     localStorage.removeItem("idHomeSelected");
@@ -151,7 +151,7 @@ function Houses() {
             address: addressHouseEdit[id]
         };
 
-        axios.put("http://localhost:8080/api/v1/user-houses/houses/update/"+id, itemEdit)
+        axios.put(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/update/"+id, itemEdit)
             .then(function (response) {
                 window.location.reload();
             })
@@ -161,7 +161,7 @@ function Houses() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+usernameLogged, {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/"+usernameLogged, {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 setMyhomes(response.data);

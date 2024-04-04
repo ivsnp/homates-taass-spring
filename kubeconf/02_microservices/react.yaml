@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: homates
+  name: react
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react
+  template:
+    metadata:
+      labels:
+        app: react
+    spec:
+      containers:
+        - name: react
+          image: ivsnp/homates-react:1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: REACT_APP_API_URL
+              value: "http://api.homates.it"
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "300m"
+              memory: "1000Mi"
+            limits:
+              cpu: "400m"
+              memory: "1500Mi"
+---
+# service
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: homates
+  name: react
+spec:
+  selector:
+    app: react
+  ports:
+    - port: 3000
+      targetPort: 3000
+  type: ClusterIP
+
+---
+# ingress creation (permette di associare un dns a un service e renderlo pubblico
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homates
+  name: react-homates
+spec:
+  rules:
+  - host: webui.homates.it
+    http:
+      paths:
+      - backend:
+          service:
+            name: react
+            port:
+              number: 3000
+        path: /
+        pathType: Prefix

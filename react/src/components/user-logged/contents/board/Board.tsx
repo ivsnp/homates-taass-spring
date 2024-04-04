@@ -68,7 +68,7 @@ function Board() {
         console.log(announcement.user+"");
         console.log(announcement.date+"");
 
-        axios.post("http://localhost:8080/api/v1/bacheca/announces/create", announcement,
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/bacheca/announces/create", announcement,
             {headers})
             .then(function (response) {
                 window.location.reload();
@@ -81,7 +81,7 @@ function Board() {
     const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/bacheca/announces/delete/"+id, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/bacheca/announces/delete/"+id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -107,7 +107,7 @@ function Board() {
         };
 
         console.log("Item:", item);
-        axios.put("http://localhost:8080/api/v1/bacheca/announces/update", item)
+        axios.put(process.env.REACT_APP_API_URL+"/api/v1/bacheca/announces/update", item)
             .then(function (response) {
                 console.log("Update successful");
                 window.location.reload();
@@ -118,7 +118,7 @@ function Board() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/bacheca/announces/house/"+localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/bacheca/announces/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Announcement[]>) => {
 

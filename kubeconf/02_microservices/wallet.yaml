@@ -1,34 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: shopping-list  #nome deployment
+  namespace: homates
+  name: wallet  #nome deployment
 spec:
-  replicas: 1 #repliche dell'shopping-list in caso di rottura
+  replicas: 1 #repliche dell'wallet in caso di rottura
   selector:
     matchLabels:
-      app: shopping-list
+      app: wallet
   template:
     metadata:
       labels:
-        app: shopping-list
+        app: wallet
     spec:
       containers:
-        - name: shopping-list #pod nel deployment
-          image: mattialadisa/shopping-list:1.0.0
+        - name: wallet #pod nel deployment
+          image: ivsnp/homates-wallet:1.0.0
           imagePullPolicy: Always
           env:
             - name: EUREKA_DZ
               value: "http://eureka-service-0.eureka-service:8761/eureka"
             - name: DB_CONNECTION
-              value: "jdbc:postgresql://shopping-list-postgres.default.svc.cluster.local:5432/homates-shopping-list"
-            - name : SPRING_DATASOURCE_USERNAME
+              value: "jdbc:postgresql://wallet-postgres:5432/homates-wallet"
+            - name: SPRING_DATASOURCE_USERNAME
               value: "homates"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "admin"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbit.default.svc.cluster.local"
+              value: "rabbit"
             - name: SPRING_RABBITMQ_PORT
               value: "5672"
             - name: SPRING_RABBITMQ_USERNAME
@@ -37,17 +38,25 @@ spec:
               value: "admin"
 
           ports:
-            - containerPort: 8083 #porta in cui esce il pod ossia il container
+            - containerPort: 8082 #porta in cui esce il pod ossia il container
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "350Mi"
+            limits:
+              cpu: "200m"
+              memory: "500Mi"
 ---
-#file service
+# service
 apiVersion: v1
 kind: Service
 metadata:
-  name: shopping-list
+  namespace: homates
+  name: wallet
 spec:
   selector:
-    app: shopping-list
+    app: wallet
   ports:
-    - port: 8083
-      targetPort: 8083
+    - port: 8082
+      targetPort: 8082
   type: ClusterIP

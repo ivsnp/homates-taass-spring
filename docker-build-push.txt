@@ -1,0 +1,9 @@
+docker build ./api-gateway --tag ivsnp/homates-apigateway:1.0.0 && docker push ivsnp/homates-apigateway:1.0.0 
+docker build ./bacheca --tag ivsnp/homates-board:1.0.0 && docker push ivsnp/homates-board:1.0.0 
+docker build ./calendar --tag ivsnp/homates-calendar:1.0.0 && docker push ivsnp/homates-calendar:1.0.0 
+docker build ./eureka-service --tag ivsnp/homates-eureka:1.0.0 && docker push ivsnp/homates-eureka:1.0.0 
+docker build ./react --tag ivsnp/homates-react:1.0.0 && docker push ivsnp/homates-react:1.0.0 
+docker build ./shopping-list --tag ivsnp/homates-shopl:1.0.0 && docker push ivsnp/homates-shopl:1.0.0 
+docker build ./user-houses --tag ivsnp/homates-userhouses:1.0.0 && docker push ivsnp/homates-userhouses:1.0.0 
+docker build ./wallet --tag ivsnp/homates-wallet:1.0.0 && docker push ivsnp/homates-wallet:1.0.0 
+history | tail -n 9 > docker-build-push.txt

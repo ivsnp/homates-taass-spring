@@ -107,7 +107,7 @@ function Wallet() {
             usernameSplit: addPaymentUsernameSplit
         };
 
-        axios.post("http://localhost:8080/api/v1/wallet/transaction/add-payment", payment, {headers})
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/wallet/transaction/add-payment", payment, {headers})
             .then(function (response) {
                 window.location.reload();
             })
@@ -127,7 +127,7 @@ function Wallet() {
             usernameTo: addRefundUsernameTo
         };
 
-        axios.post("http://localhost:8080/api/v1/wallet/transaction/add-refund", refund, {headers})
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/wallet/transaction/add-refund", refund, {headers})
             .then(function (response) {
                 window.location.reload();
             })
@@ -139,7 +139,7 @@ function Wallet() {
     const handleDeleteTransaction = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/wallet/transaction/delete/" + id, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/wallet/transaction/delete/" + id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -182,7 +182,7 @@ function Wallet() {
             usernameSplit: usernameSplitEdit[id]
         };
 
-        axios.put("http://localhost:8080/api/v1/wallet/transaction/update-payment/" + id, itemEdit)
+        axios.put(process.env.REACT_APP_API_URL+"/api/v1/wallet/transaction/update-payment/" + id, itemEdit)
             .then(function (response) {
                 window.location.reload();
             })
@@ -203,7 +203,7 @@ function Wallet() {
             usernameTo: usernameToEdit[id]
         };
 
-        axios.put("http://localhost:8080/api/v1/wallet/transaction/update-refund/" + id, itemEdit)
+        axios.put(process.env.REACT_APP_API_URL+"/api/v1/wallet/transaction/update-refund/" + id, itemEdit)
             .then(function (response) {
                 window.location.reload();
             })
@@ -213,7 +213,7 @@ function Wallet() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/wallet/transaction/house/" + localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/wallet/transaction/house/" + localStorage.getItem("idHomeSelected"), {
             headers: {}
         })
             .then((response: AxiosResponse<(Payment | Refund)[]>) => {
@@ -237,7 +237,7 @@ function Wallet() {
     }, [localStorage.getItem("idHomeSelected")]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/wallet/balances/" + localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/wallet/balances/" + localStorage.getItem("idHomeSelected"), {
             headers: {}
         })
             .then((response: AxiosResponse<Wallet[]>) => {
@@ -259,7 +259,7 @@ function Wallet() {
     }, [localStorage.getItem("idHomeSelected")]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/rommates/" + localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/rommates/" + localStorage.getItem("idHomeSelected"), {
             headers: {}
         })
             .then((response: AxiosResponse<string[]>) => {

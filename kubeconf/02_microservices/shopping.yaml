@@ -1,34 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wallet  #nome deployment
+  namespace: homates
+  name: shopping-list  #nome deployment
 spec:
-  replicas: 1 #repliche dell'wallet in caso di rottura
+  replicas: 1 #repliche dell'shopping-list in caso di rottura
   selector:
     matchLabels:
-      app: wallet
+      app: shopping-list
   template:
     metadata:
       labels:
-        app: wallet
+        app: shopping-list
     spec:
       containers:
-        - name: wallet #pod nel deployment
-          image: mattialadisa/wallet:1.0.0
+        - name: shopping-list #pod nel deployment
+          image: ivsnp/homates-shopl:1.0.0
           imagePullPolicy: Always
           env:
             - name: EUREKA_DZ
               value: "http://eureka-service-0.eureka-service:8761/eureka"
             - name: DB_CONNECTION
-              value: "jdbc:postgresql://wallet-postgres.default.svc.cluster.local:5432/homates-wallet"
-            - name: SPRING_DATASOURCE_USERNAME
+              value: "jdbc:postgresql://shopping-list-postgres:5432/homates-shopping-list"
+            - name : SPRING_DATASOURCE_USERNAME
               value: "homates"
             - name: SPRING_DATASOURCE_PASSWORD
               value: "admin"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbit.default.svc.cluster.local"
+              value: "rabbit"
             - name: SPRING_RABBITMQ_PORT
               value: "5672"
             - name: SPRING_RABBITMQ_USERNAME
@@ -37,17 +38,25 @@ spec:
               value: "admin"
 
           ports:
-            - containerPort: 8082 #porta in cui esce il pod ossia il container
+            - containerPort: 8083 #porta in cui esce il pod ossia il container
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "300Mi"
 ---
-#file service
+# service
 apiVersion: v1
 kind: Service
 metadata:
-  name: wallet
+  namespace: homates
+  name: shopping-list
 spec:
   selector:
-    app: wallet
+    app: shopping-list
   ports:
-    - port: 8082
-      targetPort: 8082
+    - port: 8083
+      targetPort: 8083
   type: ClusterIP

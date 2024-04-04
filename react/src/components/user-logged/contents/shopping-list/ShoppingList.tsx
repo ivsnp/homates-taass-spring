@@ -75,7 +75,7 @@ function ShoppingList() {
             products: []
         };
 
-        axios.post("http://localhost:8080/api/v1/shoppinglist/create", shopl,
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/shoppinglist/create", shopl,
             {headers})
             .then(function (response) {
                 window.location.reload();
@@ -88,7 +88,7 @@ function ShoppingList() {
     const handleDeleteList = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/shoppinglist/delete/"+id, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/shoppinglist/delete/"+id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -111,7 +111,7 @@ function ShoppingList() {
             name: nameShopL[id]
         };
 
-        axios.put("http://localhost:8080/api/v1/shoppinglist/update-metadata/"+id, shopl)
+        axios.put(process.env.REACT_APP_API_URL+"/api/v1/shoppinglist/update-metadata/"+id, shopl)
             .then(function (response) {
                 window.location.reload();
             })
@@ -123,7 +123,7 @@ function ShoppingList() {
     const handleDeleteProduct = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
         event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/shoppinglist/remove-product/"+id, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/shoppinglist/remove-product/"+id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -144,7 +144,7 @@ function ShoppingList() {
             description: newProductDescription
         };
 
-        axios.post("http://localhost:8080/api/v1/shoppinglist/add-product/"+selectedShopL, product,
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/shoppinglist/add-product/"+selectedShopL, product,
             {headers})
             .then(function (response) {
                 window.location.reload();
@@ -156,7 +156,7 @@ function ShoppingList() {
     }
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/shoppinglist/house/"+localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/shoppinglist/house/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<ShoppingList[]>) => {
                 setShoppingList(response.data);

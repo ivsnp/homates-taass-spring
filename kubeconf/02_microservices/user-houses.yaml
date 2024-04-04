@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: homates
   name: user-houses  #nome deployment
 spec:
   replicas: 1 #repliche dell'user-houses in caso di rottura
@@ -14,13 +15,13 @@ spec:
     spec:
       containers:
         - name: user-houses #pod nel deployment
-          image: mattialadisa/user-houses:1.0.0
+          image: ivsnp/homates-userhouses:1.0.0
           imagePullPolicy: Always
           env:
             - name: EUREKA_DZ
               value: "http://eureka-service-0.eureka-service:8761/eureka"
             - name: DB_CONNECTION
-              value: "jdbc:postgresql://user-houses-postgres.default.svc.cluster.local:5432/homates-user-houses"
+              value: "jdbc:postgresql://user-houses-postgres:5432/homates-user-houses"
             - name: SPRING_DATASOURCE_USERNAME
               value: "homates"
             - name: SPRING_DATASOURCE_PASSWORD
@@ -28,7 +29,7 @@ spec:
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
               value: "update"
             - name: SPRING_RABBITMQ_HOST
-              value: "rabbit.default.svc.cluster.local"
+              value: "rabbit"
             - name: SPRING_RABBITMQ_PORT
               value: "5672"
             - name: SPRING_RABBITMQ_USERNAME
@@ -38,11 +39,20 @@ spec:
 
           ports:
             - containerPort: 8081 #porta in cui esce il pod ossia il container
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "300Mi"
 ---
-#file service
+# service
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: homates
   name: user-houses
 spec:
   selector:

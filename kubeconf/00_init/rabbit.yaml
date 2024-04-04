@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: homates
   name: rabbit  #nome deployment
 spec:
   replicas: 1 #repliche dell'api-gateway in caso di rottura
@@ -24,11 +25,19 @@ spec:
               value: "admin"  # RabbitMQ username
             - name: RABBITMQ_DEFAULT_PASS
               value: "admin"  # RabbitMQ password
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "250Mi"
+            limits:
+              cpu: "300m"
+              memory: "300Mi"
 ---
-#file service
+# service
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: homates
   name: rabbit
 spec:
   clusterIP: None

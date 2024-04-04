@@ -45,7 +45,7 @@ function Houses() {
     const [selectedHome, setSelectedHome] = useState<number>();
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/"+localStorage.getItem("username"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/"+localStorage.getItem("username"), {
             headers: {}})
             .then((response: AxiosResponse<Array<HousesAttributes>>) => {
                 if (response.data === undefined || response.data.length == 0){

@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
+  namespace: homates
   name: eureka-service  #nome deployment
 spec:
   serviceName: eureka-service
@@ -15,7 +16,7 @@ spec:
     spec:
       containers:
         - name: eureka-service #pod nel deployment 
-          image: mattialadisa/eurekaservice:1.0.0
+          image: ivsnp/homates-eureka:1.0.0
           imagePullPolicy: Always
           env:
             - name: EUREKA_DZ
@@ -24,11 +25,19 @@ spec:
               value: "eureka-service"
           ports:
             - containerPort: 8761 #porta in cui esce il pod ossia il container
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "300Mi"
 ---
-#file service
+# service
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: homates
   name: eureka-service
 spec:
   clusterIP: None
@@ -38,3 +47,23 @@ spec:
     - port: 8761
       targetPort: 8761
   type: ClusterIP
+
+---
+# ingress creation (permette di associare un dns a un service e renderlo pubblico
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homates
+  name: eureka-homates
+spec:
+  rules:
+    - host: eureka.homates.it
+      http:
+        paths:
+          - backend:
+              service:
+                name: eureka-service
+                port:
+                  number: 8761
+            path: /
+            pathType: Prefix

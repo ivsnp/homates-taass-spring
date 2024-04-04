@@ -37,7 +37,7 @@ function Login() {
         setUserImage(profileImage);
         setIsLoggedIn(true); // Set isLoggedIn to true upon successful login
 
-        axios.post("http://localhost:8080/api/v1/user-houses/user/"+userName, {},
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/user-houses/user/"+userName, {},
             {headers})
             .then(function (response) {
                 window.location.reload();
@@ -49,7 +49,7 @@ function Login() {
                     surname: surnameName,
                     email: mail
                 };
-                axios.post("http://localhost:8080/api/v1/user-houses/user/create", newUser,
+                axios.post(process.env.REACT_APP_API_URL+"/api/v1/user-houses/user/create", newUser,
                     {headers})
                     .then(function (response) {
                         window.location.reload();

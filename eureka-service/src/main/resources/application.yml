@@ -6,6 +6,7 @@ server:
 eureka:
   instance:
     hostname: eureka-service
+    prefer-ip-address: true
   client:
     registerWithEureka: false
     fetchRegistry: false

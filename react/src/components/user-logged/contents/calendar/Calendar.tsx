@@ -105,7 +105,7 @@ function Calendar() {
         const newCalendar = {
             idHouse: localStorage.getItem("idHomeSelected")
         }
-        axios.post("http://localhost:8080/api/v1/calendar/create", newCalendar,
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/create", newCalendar,
             {headers})
             .then(function (response) {
                 window.location.reload();
@@ -129,14 +129,14 @@ function Calendar() {
         }
         console.log(newEvent);  // TODO: comment
 
-        axios.post("http://localhost:8080/api/v1/calendar/event/create", newEvent,
+        axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/event/create", newEvent,
             {headers})
             .then(function (response) {
                 const resp = response.data
                 //console.log(resp)
                 switch (resp.repetition) {
                     case "everyday":
-                        axios.post("http://localhost:8080/api/v1/calendar/add_event/everyday/"+resp.id,
+                        axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/add_event/everyday/"+resp.id,
                             {headers})
                             .then(function (response) {
                                 window.location.reload();
@@ -147,7 +147,7 @@ function Calendar() {
                         break;
                     case "weekly":
                         var info = {day_month : frequency}
-                        axios.post("http://localhost:8080/api/v1/calendar/add_event/weekly/"+resp.id, info,
+                        axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/add_event/weekly/"+resp.id, info,
                             {headers})
                             .then(function (response) {
                                 window.location.reload();
@@ -158,7 +158,7 @@ function Calendar() {
                         break;
                     case "monthly":
                         var info = {day_month : frequency}
-                        axios.post("http://localhost:8080/api/v1/calendar/add_event/monthly/"+resp.id, info,
+                        axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/add_event/monthly/"+resp.id, info,
                             {headers})
                             .then(function (response) {
                                 window.location.reload();
@@ -168,7 +168,7 @@ function Calendar() {
                             });
                         break;
                     case "yearly":
-                        axios.post("http://localhost:8080/api/v1/calendar/add_event/yearly/"+resp.id,
+                        axios.post(process.env.REACT_APP_API_URL+"/api/v1/calendar/add_event/yearly/"+resp.id,
                             {headers})
                             .then(function (response) {
                                 window.location.reload();
@@ -192,7 +192,7 @@ function Calendar() {
         //event.preventDefault(); // reload page after submit
         const house = localStorage.getItem("idHomeSelected");
 
-        axios.delete("http://localhost:8080/api/v1/calendar/events_in_date/delete/"+id+"/"+house, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/calendar/events_in_date/delete/"+id+"/"+house, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -203,7 +203,7 @@ function Calendar() {
     const handleDeleteEvent = (id: number) => {
         //event.preventDefault(); // reload page after submit
 
-        axios.delete("http://localhost:8080/api/v1/calendar/event/delete/"+id, {})
+        axios.delete(process.env.REACT_APP_API_URL+"/api/v1/calendar/event/delete/"+id, {})
             .then(function (response) {
                 window.location.reload();
             })
@@ -228,7 +228,7 @@ function Calendar() {
         }
         // console.log(editEvent);
 
-            axios.put("http://localhost:8080/api/v1/calendar/event/update/" + id, editEvent)
+            axios.put(process.env.REACT_APP_API_URL+"/api/v1/calendar/event/update/" + id, editEvent)
                 .then(function (response) {
                     window.location.reload();
                 })
@@ -250,7 +250,7 @@ function Calendar() {
 
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/user-houses/houses/rommates/"+localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/user-houses/houses/rommates/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<string[]>) => {
                 if (response.data === undefined || response.data.length == 0){
@@ -271,7 +271,7 @@ function Calendar() {
 
 
     React.useEffect(() => {
-        axios.get("http://localhost:8080/api/v1/calendar/my-calendar/"+localStorage.getItem("idHomeSelected"), {
+        axios.get(process.env.REACT_APP_API_URL+"/api/v1/calendar/my-calendar/"+localStorage.getItem("idHomeSelected"), {
             headers: {}})
             .then((response: AxiosResponse<Calendar>) => {
                     // console.log(response.data);

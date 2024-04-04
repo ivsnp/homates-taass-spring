@@ -2,6 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: homates
   name: pgadmin  # Nome del deployment
 spec:
   replicas: 1  # Numero di repliche del pod pgAdmin in caso di rottura
@@ -31,6 +32,13 @@ spec:
               readOnly: true
           ports:
             - containerPort: 50  # Porta del container esposta
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "250Mi"
+            limits:
+              cpu: "200m"
+              memory: "300Mi"
       volumes:
         - name: pgadmin-servers
           configMap:
@@ -41,6 +49,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: homates
   name: pgadmin  # Nome del servizio
 spec:
   selector:
@@ -49,3 +58,23 @@ spec:
     - port: 5050  # Porta del servizio
       targetPort: 50  # Porta a cui il traffico deve essere instradato
   type: ClusterIP  # Tipo di servizio ClusterIP (accessibile solo all'interno del cluster)
+
+---
+# ingress creation (permette di associare un dns a un service e renderlo pubblico
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: homates
+  name: pgadmin
+spec:
+  rules:
+    - host: pgadmin.homates.it
+      http:
+        paths:
+          - backend:
+              service:
+                name: pgadmin
+                port:
+                  number: 5050
+            path: /
+            pathType: Prefix
