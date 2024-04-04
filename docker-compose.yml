@@ -140,7 +140,7 @@ services:
   react-desktop:
     build: ./react
     container_name: react-desktop
-    #image: react-desktop:latest
+    image: react-desktop:latest
     ports:
       - 3000:3000
     stdin_open: true
@@ -220,7 +220,7 @@ services:
   calendar:
     build: calendar
     container_name: calendar
-    #image: ivsnp/homates-calendar:1.0.0
+    image: ivsnp/homates-calendar:1.0.0
     ports:
       - 8084:8084
     networks:
