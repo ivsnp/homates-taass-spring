@@ -29,7 +29,6 @@ spec:
       storage: 200Mi
 
 ---
-# deployment
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

@@ -1,4 +1,4 @@
-# HoMates: simpliflying the cohabitation
+# HoMates: simplifying the cohabitation
 
 University of Turin, Computer Science Department
 
@@ -27,12 +27,19 @@ Run on terminal the following commands (or just a sample that corresponds to the
 
 ```bash
 docker build ./api-gateway --tag ivsnp/homates-apigateway:1.0.0 && docker push ivsnp/homates-apigateway:1.0.0 
+
 docker build ./bacheca --tag ivsnp/homates-board:1.0.0 && docker push ivsnp/homates-board:1.0.0 
+
 docker build ./calendar --tag ivsnp/homates-calendar:1.0.0 && docker push ivsnp/homates-calendar:1.0.0 
+
 docker build ./eureka-service --tag ivsnp/homates-eureka:1.0.0 && docker push ivsnp/homates-eureka:1.0.0 
+
 docker build ./react --tag ivsnp/homates-react:1.0.0 && docker push ivsnp/homates-react:1.0.0 
+
 docker build ./shopping-list --tag ivsnp/homates-shopl:1.0.0 && docker push ivsnp/homates-shopl:1.0.0 
+
 docker build ./user-houses --tag ivsnp/homates-userhouses:1.0.0 && docker push ivsnp/homates-userhouses:1.0.0 
+
 docker build ./wallet --tag ivsnp/homates-wallet:1.0.0 && docker push ivsnp/homates-wallet:1.0.0 
 ```
 
@@ -80,7 +87,7 @@ cat /etc/hosts
 # move to a specific namespace
 kubectl config set-context --current --namespace=homates
 
-# apply minikube configuration
+# apply minikube manifests
 kubectl apply -f ./kubeconf/homates-namespace.yaml
 kubectl apply -f ./kubeconf/00_init/
 kubectl apply -f ./kubeconf/01_dbs/
@@ -95,10 +102,10 @@ watch kubectl get all -n homates
 # check services
 kubectl get services
 
-# check persistent volume
+# check persistent volumes
 kubectl get pv
 
-# check persistent volume claim
+# check persistent volume claims
 kubectl get pvc
 
 # see usage metrics, needs metrics-server addon (two alternatives)
