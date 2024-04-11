@@ -96,7 +96,7 @@ kubectl apply -f ./kubeconf/02_microservices/
 # check ingress
 kubectl get ingress --namespace=homates
 
-# check pods status and wait untill all of them have 'Running' status, otherwise debug
+# check pods status, more infos and wait untill all of them have 'Running' status, otherwise debug
 watch kubectl get all -n homates
 
 # check services

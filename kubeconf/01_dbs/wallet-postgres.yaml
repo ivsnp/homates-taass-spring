@@ -4,9 +4,8 @@ kind: PersistentVolume
 metadata:
   name: wallet-pv-volume
   labels:
-    type: local
+    app: wallet-postgres
 spec:
-  storageClassName: manual
   capacity:
     storage: 200Mi
   accessModes:
@@ -20,8 +19,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: wallet-pv-claim
+  labels:
+    app: wallet-postgres
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -34,6 +34,8 @@ kind: StatefulSet
 metadata:
   namespace: homates
   name: wallet-postgres  #nome deployment
+  labels:
+    app: wallet-postgres
 spec:
   serviceName: wallet-postgres
   replicas: 1 #repliche dell'eureka-service in caso di rottura
@@ -45,10 +47,6 @@ spec:
       labels:
         app: wallet-postgres
     spec:
-      volumes:
-        - name: wallet-pv-storage
-          persistentVolumeClaim:
-            claimName: wallet-pv-claim
       containers:
         - name: wallet-postgres #pod nel deployment
           image: postgres:latest
@@ -62,6 +60,9 @@ spec:
               value: "admin"
           ports:
             - containerPort: 5432 #porta in cui esce il pod ossia il container
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: wallet-pv-storage
           resources:
             requests:
               cpu: "100m"
@@ -69,6 +70,10 @@ spec:
             limits:
               cpu: "200m"
               memory: "300Mi"
+      volumes:
+        - name: wallet-pv-storage
+          persistentVolumeClaim:
+            claimName: wallet-pv-claim
 ---
 # service
 apiVersion: v1

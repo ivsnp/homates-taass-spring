@@ -4,15 +4,14 @@ kind: PersistentVolume
 metadata:
   name: board-pv-volume
   labels:
-    type: local
+    app: board-postgres
 spec:
-  storageClassName: manual
   capacity:
     storage: 200Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/var/lib/postgresql/data"
+    path: /var/lib/postgresql/data
 
 ---
 # persistent volume claim
@@ -20,8 +19,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: board-pv-claim
+  labels:
+    app: board-postgres
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -34,6 +34,8 @@ kind: StatefulSet
 metadata:
   namespace: homates
   name: board-postgres  #nome deployment
+  labels:
+    app: board-postgres
 spec:
   serviceName: board-postgres
   replicas: 1 #repliche dell'eureka-service in caso di rottura
@@ -45,10 +47,6 @@ spec:
       labels:
         app: board-postgres
     spec:
-      volumes:
-        - name: board-pv-storage
-          persistentVolumeClaim:
-            claimName: board-pv-claim
       containers:
         - name: board-postgres #pod nel deployment
           image: postgres:latest    #immagine pushata sul dockerhub
@@ -62,6 +60,9 @@ spec:
               value: "admin"
           ports:
             - containerPort: 5432 #porta in cui esce il pod ossia il container
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: board-pv-storage
           resources:
             requests:
               cpu: "100m"
@@ -69,6 +70,10 @@ spec:
             limits:
               cpu: "200m"
               memory: "300Mi"
+      volumes:
+        - name: board-pv-storage
+          persistentVolumeClaim:
+            claimName: board-pv-claim
 ---
 # service
 apiVersion: v1

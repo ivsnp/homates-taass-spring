@@ -4,9 +4,8 @@ kind: PersistentVolume
 metadata:
   name: shopl-pv-volume
   labels:
-    type: local
+    app: shopping-list-postgres
 spec:
-  storageClassName: manual
   capacity:
     storage: 200Mi
   accessModes:
@@ -20,8 +19,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: shopl-pv-claim
+  labels:
+    app: shopping-list-postgres
 spec:
-  storageClassName: manual
   accessModes:
     - ReadWriteOnce
   resources:
@@ -34,6 +34,8 @@ kind: StatefulSet
 metadata:
   namespace: homates
   name: shopping-list-postgres  #nome deployment
+  labels:
+    app: shopping-list-postgres
 spec:
   serviceName: shopping-list-postgres
   replicas: 1 #repliche dell'eureka-service in caso di rottura
@@ -45,10 +47,6 @@ spec:
       labels:
         app: shopping-list-postgres
     spec:
-      volumes:
-        - name: shopl-pv-storage
-          persistentVolumeClaim:
-            claimName: shopl-pv-claim
       containers:
         - name: shopping-list-postgres #pod nel deployment
           image: postgres:latest
@@ -62,6 +60,9 @@ spec:
               value: "admin"
           ports:
             - containerPort: 5432 #porta in cui esce il pod ossia il container
+          volumeMounts:
+            - mountPath: "/var/lib/postgresql/data"
+              name: shopl-pv-storage
           resources:
             requests:
               cpu: "100m"
@@ -69,6 +70,10 @@ spec:
             limits:
               cpu: "200m"
               memory: "300Mi"
+      volumes:
+        - name: shopl-pv-storage
+          persistentVolumeClaim:
+            claimName: shopl-pv-claim
 ---
 # service
 apiVersion: v1
